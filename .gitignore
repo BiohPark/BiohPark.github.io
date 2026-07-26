@@ -1,18 +1,23 @@
-# Build and Release Folders
-bin-debug/
-bin-release/
-[Oo]bj/
-[Bb]in/
+# Jekyll 빌드 산출물
+_site/
+.jekyll-cache/
+.jekyll-metadata
+.sass-cache/
 
-# Other files and folders
-.settings/
+# Ruby
+Gemfile.lock
+vendor/
+.bundle/
 
-# Executables
-*.swf
-*.air
-*.ipa
-*.apk
+# Node
+node_modules/
 
-# Project files, i.e. `.project`, `.actionScriptProperties` and `.flexProperties`
-# should NOT be excluded as they contain compiler settings and other important
-# information for Eclipse / Flash Builder.
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*~

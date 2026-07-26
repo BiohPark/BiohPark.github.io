@@ -1,0 +1,76 @@
+window.INVITATION_DATA = Object.freeze({
+  couple: {
+    korean: '신랑 · 신부',
+    english: 'GROOM & BRIDE',
+    monogram: 'G · B',
+  },
+  groom: {
+    name: '신랑',
+    english: 'GROOM',
+    phone: '010-0000-0000',
+    father: '아버지 성함',
+    mother: '어머니 성함',
+  },
+  bride: {
+    name: '신부',
+    english: 'BRIDE',
+    phone: '010-0000-0000',
+    father: '아버지 성함',
+    mother: '어머니 성함',
+  },
+  event: {
+    iso: '2026-12-05T13:30:00+09:00',
+    dateKorean: '2026년 12월 5일 토요일 오후 1시 30분',
+    dateEnglish: 'SATURDAY, THE FIFTH OF DECEMBER · 1:30 PM',
+    shortDate: '2026. 12. 5. SAT · 1:30 PM',
+    monthEnglish: 'DECEMBER',
+    day: '05',
+    dayDisplay: '12 . 05',
+  },
+  venue: {
+    name: '티웨딩 천안',
+    hall: '투데이홀',
+    address: '충청남도 천안시 동남구 목천읍 응원3길 27',
+    lotAddress: '충남 천안시 동남구 목천읍 응원리 67-1',
+    phone: '041-555-7900',
+    parking: '대형 주차장 완비',
+    maps: {
+      kakao: `https://map.kakao.com/link/search/${encodeURIComponent('티웨딩 천안')}`,
+      naver: `https://map.naver.com/v5/search/${encodeURIComponent('티웨딩 천안')}`,
+    },
+  },
+  directions: {
+    car: '내비게이션에 티웨딩 천안 또는 충청남도 천안시 동남구 목천읍 응원3길 27을 입력해 주세요.',
+    summary: '세 경로 모두 세광엔리치빌 정류장에서 하차하시면 됩니다. (약 40분 소요)',
+    terminalPrint: '24 · 400 · 500 외',
+    stationPrint: '동부역 출구 승차 · 24 · 383 · 400 · 500',
+    ktxPrint: '전철로 천안역 이동 후 동부역 출구 승차',
+    terminal: '24 · 310 · 381 · 382 · 383 · 400 · 402 · 500 · 512 · 530 · 531 · 540',
+    station: '24 · 383 · 400 · 401 · 500 (기차·전철 하차 후 동부역 출구에서 승차)',
+    ktx: '천안아산역 → 아산역(전철) → 천안역(전철) 하차 후 동부역 출구에서 승차 · 24 · 383 · 400 · 401 · 500',
+  },
+  concepts: {
+    regency: {
+      invitation: '겨울볕이 가장 따뜻한 시각에, 두 사람이 서로의 이름을 나란히 적기로 했습니다. 오래 이어 온 마음에 매듭을 짓는 자리입니다. 귀한 걸음으로 함께해 주시면 그 하루가 오래도록 따뜻하게 남겠습니다.',
+      formal: '서로를 향해 걸어온 두 길이 이제 하나가 됩니다. 저희의 첫걸음에 함께하시어 따뜻한 축복으로 자리를 채워 주세요.',
+      closing: '따뜻한 차 한 잔의 온기로, 그날 뵙겠습니다.',
+    },
+    midnight: {
+      invitation: '겨울의 한가운데에서, 두 사람이 평생 함께 걸을 한 곡의 첫 박자를 맞춥니다. 오래 기다려 온 이 하루에 귀한 걸음으로 함께해 주시면 더없는 기쁨이겠습니다.',
+      formal: '두 사람이 서로에게 평생의 예를 갖추어 약속을 나눕니다. 오셔서 저희의 첫 약속을 지켜봐 주세요.',
+      closing: '첫 걸음을 함께 세어 주신 분들께, 오래 감사하겠습니다.',
+    },
+    garden: {
+      invitation: '겨울에도 푸른 온실처럼, 계절이 바뀌어도 변하지 않는 마음으로 두 사람이 함께 서기로 했습니다. 저희가 가꾸어 갈 첫 계절에 귀한 걸음으로 함께해 주세요.',
+      formal: '여러 계절을 지나며 서로를 지켜 온 두 사람이 이제 한 집을 이룹니다. 오셔서 저희의 첫 계절을 축복해 주세요.',
+      closing: '저희가 가꾸어 갈 계절마다, 오늘의 축복을 기억하겠습니다.',
+    },
+  },
+  accounts: {
+    groom: '은행 000-0000-0000 신랑',
+    bride: '은행 000-0000-0000 신부',
+  },
+  site: { url: 'https://biohpark.github.io/wedding/' },
+  rsvp: { endpoint: '' },
+  guestbook: { endpoint: '' },
+});

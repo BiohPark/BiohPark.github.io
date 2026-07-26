@@ -1,0 +1,42 @@
+:root { --ball-navy:#0c1528; --ball-navy-soft:#16223a; --ball-burgundy:#6a2634; --ball-gold:#c1a261; --ball-cream:#f0e4cf; }
+.ball-page { --mobile-paper:var(--ball-navy); --mobile-accent:var(--ball-gold); --mobile-line:rgba(215,184,117,.28); --shimmer-solid:var(--ball-gold); --shimmer-gradient:linear-gradient(90deg,#8a6d2f,#f0dca6,#8a6d2f); --progress-height:1px; --progress-color:var(--ball-gold); --progress-end:var(--ball-gold); --lightbox-bg:rgba(6,10,19,.95); --back-paper:var(--ball-cream); --back-ink:var(--ball-navy); color:var(--ball-cream); background:#080e1a; }
+.ball-paper .paper-panel { color:var(--ball-cream); background:repeating-radial-gradient(ellipse at 50% 0%,transparent 0 8mm,rgba(193,162,97,.035) 8.2mm 8.5mm),var(--ball-navy); }
+.ball-paper .paper-panel::before { border:.55mm double var(--ball-gold); }
+.ball-paper .paper-panel::after { border:.15mm solid rgba(193,162,97,.6); }
+.ball-paper .paper-crest { color:var(--ball-cream); background:var(--ball-burgundy); border:.5mm solid var(--ball-gold); border-radius:50%; box-shadow:0 0 0 1.2mm var(--ball-burgundy),0 0 0 1.5mm var(--ball-gold); }
+.ball-paper .paper-flourish, .ball-paper .ampersand, .ball-paper .large-date { color:var(--ball-gold); }
+.ball-paper .paper-rule { position:relative; background:var(--ball-gold); }
+.ball-paper .paper-rule::before, .ball-paper .paper-rule::after { content:'•••'; position:absolute; top:50%; padding:0 1mm; transform:translateY(-50%); background:var(--ball-navy); color:var(--ball-gold); font-size:1.8mm; line-height:1; letter-spacing:.6mm; }
+.ball-paper .paper-rule::before { right:100%; }
+.ball-paper .paper-rule::after { left:100%; }
+.ball-paper .back-panel { color:var(--ball-navy); background:var(--ball-cream); }
+.ball-paper .back-panel::before { border-color:#8a6d2f; }
+.ball-paper .back-panel::after { border-color:rgba(12,21,40,.35); }
+.ball-paper .back-panel .panel-eyebrow, .ball-paper .back-panel .info-label { color:#8a6d2f; }
+.ball-paper .back-contact { font-size:3mm; }
+.ball-paper .transit-summary { margin:0 0 .4mm; font-size:3mm; line-height:1.35; }
+
+.ball-mobile .mobile-shell { color:var(--ball-cream); background:var(--ball-navy); }
+.ball-opening { overflow:hidden; color:var(--ball-cream); background:#060a13; }
+.ball-opening .opening-content { width:100%; }
+.velvet-curtain { position:absolute; z-index:1; top:0; bottom:0; width:53%; background:repeating-linear-gradient(90deg,#3c111d 0 8%,#701f32 12%,#4d1524 20%); box-shadow:inset 0 0 60px #1a050b; transition:transform 900ms cubic-bezier(.72,0,.24,1); }
+.velvet-curtain--left { left:0; border-right:3px solid #a9823f; }
+.velvet-curtain--right { right:0; border-left:3px solid #a9823f; }
+.ball-opening.is-opening .velvet-curtain--left { transform:translateX(-101%); }
+.ball-opening.is-opening .velvet-curtain--right { transform:translateX(101%); }
+.ball-opening__copy { position:relative; z-index:3; }
+.ball-opening__copy strong { display:block; margin-bottom:1.2rem; font-family:var(--serif-display); font-size:clamp(2.7rem,12vw,5rem); font-weight:400; line-height:.88; }
+.wax-button { width:96px; height:96px; border:4px double var(--ball-gold); border-radius:50%; background:var(--ball-burgundy); color:var(--ball-cream); box-shadow:0 7px 0 #3a101b,0 18px 35px rgba(0,0,0,.4); cursor:pointer; font-family:var(--serif-display); font-size:1.2rem; font-style:italic; }
+.ball-hero .hero-overlay { background:linear-gradient(transparent 35%,rgba(5,8,15,.9)); }
+.ball-hero img, .ball-mobile .gallery-card img { filter:saturate(.72) contrast(1.06) brightness(.88); }
+.ball-section { background:var(--ball-navy); }
+.ball-section--soft { background:var(--ball-navy-soft); }
+.ball-section--burgundy { background:#431822; }
+.ball-section .eyebrow, .ball-section--soft .eyebrow, .ball-section--burgundy .eyebrow { color:var(--ball-gold); }
+.gold-divider { width:110px; height:1px; margin:2rem auto; background:var(--ball-gold); box-shadow:-26px 0 var(--ball-gold),26px 0 var(--ball-gold); }
+.ball-mobile .date-card { background:rgba(193,162,97,.04); }
+.ball-page .action-button:hover, .ball-page .action-button:focus-visible { background:var(--ball-gold); color:var(--ball-navy); }
+.ball-closing { background:#05080e; color:var(--ball-cream); }
+.ball-closing img { filter:saturate(.55) brightness(.78); }
+
+@media print { .ball-page { background:transparent; } }
