@@ -12,8 +12,8 @@ title: Bioh Park
 <div class="project-grid">
   <a class="project-card" href="/wedding/">
     <span class="project-card__eyebrow">Invitation</span>
-    <strong>Versailles Midnight Ball</strong>
-    <p>종이·모바일 청첩장. 반접이 4면 인쇄본과 모션·갤러리를 갖춘 모바일 버전.</p>
+    <strong>Wedding Invitation — 콘셉트 3종</strong>
+    <p>같은 예식 정보를 세 가지 디자인으로. 모바일 청첩장과 반접이 4면 종이 청첩장을 나란히 비교합니다.</p>
   </a>
   <a class="project-card" href="/pages/playground">
     <span class="project-card__eyebrow">Sandbox</span>

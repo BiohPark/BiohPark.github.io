@@ -16,6 +16,7 @@
 .ball-paper .back-contact { font-size:3mm; }
 .ball-paper .transit-summary { margin:0 0 .4mm; font-size:3mm; line-height:1.35; }
 
+.ball-mobile { font-size:1.0625rem; }
 .ball-mobile .mobile-shell { color:var(--ball-cream); background:var(--ball-navy); }
 .ball-opening { overflow:hidden; color:var(--ball-cream); background:#060a13; }
 .ball-opening .opening-content { width:100%; }
@@ -27,16 +28,21 @@
 .ball-opening__copy { position:relative; z-index:3; }
 .ball-opening__copy strong { display:block; margin-bottom:1.2rem; font-family:var(--serif-display); font-size:clamp(2.7rem,12vw,5rem); font-weight:400; line-height:.88; }
 .wax-button { width:96px; height:96px; border:4px double var(--ball-gold); border-radius:50%; background:var(--ball-burgundy); color:var(--ball-cream); box-shadow:0 7px 0 #3a101b,0 18px 35px rgba(0,0,0,.4); cursor:pointer; font-family:var(--serif-display); font-size:1.2rem; font-style:italic; }
-.ball-hero .hero-overlay { background:linear-gradient(transparent 35%,rgba(5,8,15,.9)); }
-.ball-hero img, .ball-mobile .gallery-card img { filter:saturate(.72) contrast(1.06) brightness(.88); }
+.ball-hero .hero-overlay { background:linear-gradient(transparent 0 48%,rgba(12,21,40,.55) 74%,rgba(8,13,24,.92) 100%); }
+.ball-section--plate { padding-block:0; background:linear-gradient(var(--ball-navy) 0%,var(--ball-navy-soft) 50%,var(--ball-navy) 100%); }
+.ball-mobile .photo-frame::before { border:1px solid rgba(193,162,97,.45); }
+.ball-mobile .photo-frame::after { background:radial-gradient(125% 95% at 50% 45%,transparent 0 46%,rgba(12,21,40,.20) 74%,rgba(12,21,40,.46) 100%); }
+.ball-mobile .photo-frame img { filter:contrast(1.03); }
+.ball-mobile .photo-frame--highkey img { filter:contrast(1.06) saturate(.97) brightness(.96); }
+.ball-mobile .photo-frame--highkey::after { background:radial-gradient(125% 95% at 50% 45%,transparent 0 40%,rgba(12,21,40,.28) 70%,rgba(12,21,40,.58) 100%); }
 .ball-section { background:var(--ball-navy); }
 .ball-section--soft { background:var(--ball-navy-soft); }
 .ball-section--burgundy { background:#431822; }
 .ball-section .eyebrow, .ball-section--soft .eyebrow, .ball-section--burgundy .eyebrow { color:var(--ball-gold); }
 .gold-divider { width:110px; height:1px; margin:2rem auto; background:var(--ball-gold); box-shadow:-26px 0 var(--ball-gold),26px 0 var(--ball-gold); }
 .ball-mobile .date-card { background:rgba(193,162,97,.04); }
+.ball-mobile .invitation-copy, .ball-mobile .directions-list p { font-size:1.125rem; letter-spacing:.01em; }
 .ball-page .action-button:hover, .ball-page .action-button:focus-visible { background:var(--ball-gold); color:var(--ball-navy); }
 .ball-closing { background:#05080e; color:var(--ball-cream); }
-.ball-closing img { filter:saturate(.55) brightness(.78); }
 
 @media print { .ball-page { background:transparent; } }

@@ -70,7 +70,7 @@ window.INVITATION_DATA = Object.freeze({
     groom: '은행 000-0000-0000 신랑',
     bride: '은행 000-0000-0000 신부',
   },
-  site: { url: 'https://biohpark.github.io/wedding/' },
+  site: { url: 'https://biohpark.github.io/wedding/midnight/' },
   rsvp: { endpoint: '' },
   guestbook: { endpoint: '' },
 });

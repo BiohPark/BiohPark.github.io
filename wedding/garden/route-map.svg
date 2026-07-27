@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 428 200" role="img" aria-labelledby="title desc">
+  <title id="title">티웨딩 천안 경로 다이어그램</title>
+  <desc id="desc">천안터미널, 천안역 동부역 출구, KTX 천안아산역에서 버스로 세광엔리치빌 정류장에 하차한 뒤 티웨딩 천안 투데이홀로 이동하는 경로입니다.</desc>
+  <rect width="428" height="200" rx="8" fill="#efe7d6"/>
+  <g fill="none" stroke="#465540" stroke-width="2">
+    <path d="M112 35 H142 V100 H156"/><path d="M112 100 H156"/><path d="M112 165 H142 V100"/>
+    <path d="M208 100 H220"/><path d="M316 100 H347"/>
+  </g>
+  <g fill="#efe7d6" stroke="#bda66a" stroke-width="2">
+    <rect x="12" y="16" width="100" height="38" rx="12"/><rect x="12" y="81" width="100" height="38" rx="12"/><rect x="12" y="146" width="100" height="38" rx="12"/>
+    <rect x="156" y="80" width="52" height="40" rx="18"/><rect x="220" y="72" width="96" height="56" rx="12"/>
+  </g>
+  <path d="M347 100 L386 40 L426 100 L386 160 Z" fill="#465540" stroke="#bda66a" stroke-width="2"/>
+  <g fill="#273025" font-family="Batang, serif" font-size="12" text-anchor="middle">
+    <text x="62" y="40">천안터미널</text><text x="62" y="98">천안역</text><text x="62" y="113">동부역 출구</text><text x="62" y="170">KTX 천안아산역</text>
+    <text x="182" y="104">버스</text><text x="268" y="95">세광엔리치빌</text><text x="268" y="111">하차 · 약 40분</text><text x="332" y="88">도보</text>
+  </g>
+  <g fill="#efe7d6" font-family="Batang, serif" font-size="11" text-anchor="middle"><text x="386" y="97">티웨딩 천안</text><text x="386" y="112">투데이홀</text></g>
+  <g fill="#bda66a"><path d="M150 96 l8 4 -8 4z"/><path d="M214 96 l8 4 -8 4z"/><path d="M339 96 l8 4 -8 4z"/></g>
+</svg>

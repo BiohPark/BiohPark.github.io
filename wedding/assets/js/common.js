@@ -30,31 +30,80 @@
     if (!opening) return;
     const main = document.querySelector('main');
     const backLink = document.querySelector('.back-link');
-    const trigger = opening.querySelector('[data-open-trigger]');
+    if (concept !== 'midnight') {
+      const trigger = opening.querySelector('[data-open-trigger]');
+      main.inert = true;
+      if (backLink) backLink.inert = true;
+      document.body.classList.add('opening-active');
+      requestAnimationFrame(() => opening.classList.add('is-ready'));
+      trigger?.focus({ preventScroll: true });
+
+      const finishManualOpening = () => {
+        opening.classList.add('is-dismissed');
+        document.body.classList.remove('opening-active');
+        main.inert = false;
+        if (backLink) backLink.inert = false;
+        main.focus({ preventScroll: true });
+      };
+
+      trigger?.addEventListener('click', () => {
+        document.body.classList.add('invitation-opened');
+        if (reduced) {
+          finishManualOpening();
+          return;
+        }
+        opening.classList.add('is-opening');
+        window.setTimeout(() => opening.classList.add('is-fading'), 600);
+        window.setTimeout(finishManualOpening, 1100);
+      }, { once: true });
+      return;
+    }
+
+    const escapeEvents = ['pointerdown', 'touchstart', 'wheel', 'keydown'];
+    const timelineTimers = [];
+    let watchdogTimer = 0;
+    let done = false;
+    let escaping = false;
     main.inert = true;
     if (backLink) backLink.inert = true;
     document.body.classList.add('opening-active');
-    requestAnimationFrame(() => opening.classList.add('is-ready'));
-    trigger?.focus({ preventScroll: true });
 
     const finish = () => {
+      if (done) return;
+      done = true;
+      timelineTimers.forEach((timer) => window.clearTimeout(timer));
+      window.clearTimeout(watchdogTimer);
+      escapeEvents.forEach((eventName) => window.removeEventListener(eventName, escapeOpening));
       opening.classList.add('is-dismissed');
+      document.body.classList.add('invitation-opened');
       document.body.classList.remove('opening-active');
       main.inert = false;
       if (backLink) backLink.inert = false;
       main.focus({ preventScroll: true });
     };
 
-    trigger?.addEventListener('click', () => {
-      document.body.classList.add('invitation-opened');
-      if (reduced) {
-        finish();
-        return;
-      }
+    function escapeOpening() {
+      if (done || escaping) return;
+      escaping = true;
+      timelineTimers.forEach((timer) => window.clearTimeout(timer));
       opening.classList.add('is-opening');
-      window.setTimeout(() => opening.classList.add('is-fading'), 600);
-      window.setTimeout(finish, 1100);
-    }, { once: true });
+      opening.classList.add('is-fading');
+      timelineTimers.push(window.setTimeout(finish, 250));
+    }
+
+    if (reduced) {
+      finish();
+      return;
+    }
+
+    requestAnimationFrame(() => opening.classList.add('is-ready'));
+    timelineTimers.push(window.setTimeout(() => opening.classList.add('is-opening'), 700));
+    timelineTimers.push(window.setTimeout(() => opening.classList.add('is-fading'), 1150));
+    timelineTimers.push(window.setTimeout(finish, 1600));
+    watchdogTimer = window.setTimeout(finish, 3000);
+    escapeEvents.forEach((eventName) => {
+      window.addEventListener(eventName, escapeOpening, { once: true, passive: true });
+    });
   }
 
   function setCountdownValue(node, value) {
@@ -171,11 +220,21 @@
 
   function initOptionalFeatures() {
     document.querySelectorAll('[data-feature="rsvp"]').forEach((region) => {
-      if (!get('rsvp.endpoint')) region.innerHTML = '<p>참석 여부 회신은 준비 중입니다. 아래 연락처로 말씀해 주셔도 좋습니다.</p>';
+      if (concept === 'midnight' && get('rsvp.endpoint')) region.closest('section')?.removeAttribute('hidden');
+      else if (concept !== 'midnight' && !get('rsvp.endpoint')) region.innerHTML = '<p>참석 여부 회신은 준비 중입니다. 아래 연락처로 말씀해 주셔도 좋습니다.</p>';
     });
     document.querySelectorAll('[data-feature="guestbook"]').forEach((region) => {
-      if (!get('guestbook.endpoint')) region.innerHTML = '<p>축하 메시지 공간은 곧 열립니다. 그때까지는 신랑·신부에게 직접 전해 주세요.</p>';
+      if (concept === 'midnight' && get('guestbook.endpoint')) region.closest('section')?.removeAttribute('hidden');
+      else if (concept !== 'midnight' && !get('guestbook.endpoint')) region.innerHTML = '<p>축하 메시지 공간은 곧 열립니다. 그때까지는 신랑·신부에게 직접 전해 주세요.</p>';
     });
+  }
+
+  function initMaskWatchdog() {
+    if (concept !== 'midnight') return;
+    window.setTimeout(() => {
+      document.querySelectorAll('.mask-inner:not(.is-mask-visible)')
+        .forEach((node) => node.classList.add('is-mask-visible'));
+    }, 4000);
   }
 
   function failOpen() {
@@ -199,6 +258,7 @@
       initCopyAndShare();
       initCalendar();
       initOptionalFeatures();
+      initMaskWatchdog();
     } catch (error) {
       failOpen();
       console.error('Invitation initialization failed.', error);

@@ -152,6 +152,7 @@ img { display: block; max-width: 100%; }
 .mobile-section { position: relative; padding: 5.5rem 1.5rem; text-align: center; }
 .mobile-section--compact { padding-block: 3.5rem; }
 .section-title { margin: 0 0 1rem; font-family: var(--serif-display); font-size: clamp(2.3rem,10vw,4rem); font-weight: 400; line-height: 1; }
+.section-title-ko { margin: -.25rem 0 1rem; font-size: 1rem; letter-spacing: .05em; }
 .invitation-copy { max-width: 28rem; margin: 1.5rem auto 0; word-break: keep-all; }
 .shimmer { color: var(--shimmer-solid,#b89a5a); }
 @supports ((background-clip: text) or (-webkit-background-clip: text)) {
@@ -165,7 +166,17 @@ img { display: block; max-width: 100%; }
 
 .gallery-scroller { display: grid; grid-auto-flow: column; grid-auto-columns: 82%; gap: 1rem; overflow-x: auto; margin: 2rem -1.5rem 0; padding: .5rem 9% 1.5rem; scroll-snap-type: x mandatory; scrollbar-width: thin; }
 .gallery-card { appearance: none; display: block; padding: .45rem; border: 1px solid var(--mobile-accent); background: transparent; cursor: zoom-in; scroll-snap-align: center; }
-.gallery-card img { width: 100%; aspect-ratio: 4/5; object-fit: cover; }
+.gallery-card img { width: 100%; height: auto; aspect-ratio: 4/5; object-fit: cover; }
+.photo-plate { padding-block: 0; }
+.photo-frame { position: relative; overflow: hidden; }
+.photo-frame::before, .photo-frame::after { content: ''; position: absolute; inset: 0; pointer-events: none; }
+.photo-frame::before { z-index: 2; }
+.photo-frame::after { z-index: 1; }
+/* height:auto 필수 — 없으면 HTML의 height 속성이 presentational hint로 먹어
+   aspect-ratio를 무력화하고 사진이 세로로 늘어난 뒤 object-fit이 좌우를 잘라낸다
+   (실측: 004가 375x1800, 012가 375x800으로 69% 크롭됨) */
+.photo-frame img { width: 100%; height: auto; }
+.photo-plate--wide img { width: 100%; height: auto; aspect-ratio: 3/2; object-fit: cover; }
 .lightbox { width: min(92vw,780px); max-width: none; padding: 3rem 1rem 1rem; border: 1px solid var(--mobile-accent); color: #fff; background: var(--lightbox-bg,rgba(10,10,10,.94)); opacity: 1; transform: scale(1); }
 .lightbox::backdrop { background: var(--lightbox-bg,rgba(10,10,10,.94)); }
 .lightbox img { width: 100%; max-height: 82vh; object-fit: contain; }
@@ -194,11 +205,11 @@ img { display: block; max-width: 100%; }
 .directions-list { max-width: 450px; margin: 2rem auto 0; text-align: left; }
 .directions-list h3 { margin: 1.4rem 0 .35rem; font-size: 1rem; }
 .directions-list p { margin: 0; word-break: keep-all; }
-.route-mobile { width: 100%; margin: 1.5rem auto .5rem; }
+.route-mobile { width: 100%; height: auto; margin: 1.5rem auto .5rem; }
 .route-caption { margin: 0; font-size: .8rem; opacity: .75; }
 .account-list { display: grid; gap: .7rem; max-width: 420px; margin: 1.5rem auto 0; }
 .account-row { display: grid; grid-template-columns: 1fr auto; gap: .75rem; align-items: center; padding: .85rem 1rem; border: 1px solid var(--mobile-line,rgba(0,0,0,.18)); text-align: left; }
-.account-row button { border: 0; background: transparent; text-decoration: underline; cursor: pointer; }
+.ball-mobile .account-row button { min-width: 60px; min-height: 44px; padding: .5rem .75rem; border: 0; background: transparent; text-decoration: underline; cursor: pointer; }
 .feature-card { max-width: 430px; margin: 1.5rem auto 0; padding: 1rem; border: 1px solid var(--mobile-line,rgba(0,0,0,.18)); }
 .closing-photo { width: 100%; max-height: 75svh; object-fit: cover; }
 
