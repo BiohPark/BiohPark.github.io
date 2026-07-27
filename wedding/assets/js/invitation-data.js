@@ -50,7 +50,7 @@ window.INVITATION_DATA = Object.freeze({
     station: '24 · 383 · 400 · 401 · 500 (기차·전철 하차 후 동부역 출구에서 승차)',
     ktx: '천안아산역 → 아산역(전철) → 천안역(전철) 하차 후 동부역 출구에서 승차 · 24 · 383 · 400 · 401 · 500',
     official: {
-      car: '네비게이션에 티웨딩 천안을 검색해 주세요. 천안IC보다 목천IC · 남천안IC를 이용하시면 더욱 편리합니다.',
+      car: '네비게이션에 티웨딩 천안을 검색해 주세요. 천안IC보다 독립기념관IC · 남천안IC를 이용하시면 더욱 편리합니다.',
       shuttleTerminal: '100m 직진 후 우리은행 앞',
       shuttleStation: '4번 출구 동부광장 건너편 GS25편의점 앞',
       shuttleInterval: '20분 간격',
@@ -78,7 +78,7 @@ window.INVITATION_DATA = Object.freeze({
     groom: '은행 000-0000-0000 신랑',
     bride: '은행 000-0000-0000 신부',
   },
-  site: { url: '' },
+  site: { url: 'https://biohpark.github.io/wedding/midnight/' },
   rsvp: { endpoint: '' },
   guestbook: { endpoint: '' },
 });
