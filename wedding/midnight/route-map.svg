@@ -1,20 +1,62 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 428 200" role="img" aria-labelledby="title desc">
-  <title id="title">티웨딩 천안 경로 다이어그램</title>
-  <desc id="desc">천안터미널, 천안역 동부역 출구, KTX 천안아산역에서 버스로 세광엔리치빌 정류장에 하차한 뒤 티웨딩 천안 투데이홀로 이동하는 경로입니다.</desc>
-  <rect width="428" height="200" rx="8" fill="#f0e4cf"/>
-  <g fill="none" stroke="#0c1528" stroke-width="2">
-    <path d="M112 35 H142 V100 H156"/><path d="M112 100 H156"/><path d="M112 165 H142 V100"/>
-    <path d="M208 100 H220"/><path d="M316 100 H347"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 428 220" role="img" aria-labelledby="title desc">
+  <title id="title">티웨딩 천안 공식 카드 기반 안내도</title>
+  <desc id="desc">목천IC, 천안JC, 남천안IC, 천안IC 도로 분기와 티웨딩 천안 및 주변 랜드마크의 관계를 단순화한 모식 안내도입니다.</desc>
+  <rect width="428" height="220" rx="8" fill="#f0e4cf"/>
+  <g fill="none" stroke="#c1a261" stroke-width="12" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M31 92 H153 C182 92 194 106 220 121"/>
+    <path d="M220 121 C266 101 308 58 365 24"/>
+    <path d="M220 121 C267 139 312 164 363 181"/>
+    <path d="M214 114 C217 101 223 89 230 75 C247 61 274 50 310 44"/>
   </g>
-  <g fill="#f0e4cf" stroke="#c1a261" stroke-width="2">
-    <rect x="12" y="16" width="100" height="38" rx="3"/><rect x="12" y="81" width="100" height="38" rx="3"/><rect x="12" y="146" width="100" height="38" rx="3"/>
-    <rect x="156" y="80" width="52" height="40" rx="3"/><rect x="220" y="72" width="96" height="56" rx="3"/>
+  <g fill="none" stroke="#0c1528" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M31 92 H153 C182 92 194 106 220 121"/>
+    <path d="M220 121 C266 101 308 58 365 24"/>
+    <path d="M220 121 C267 139 312 164 363 181"/>
+    <path d="M214 114 C217 101 223 89 230 75 C247 61 274 50 310 44"/>
   </g>
-  <path d="M347 100 L386 40 L426 100 L386 160 Z" fill="#0c1528" stroke="#c1a261" stroke-width="2"/>
-  <g fill="#0c1528" font-family="Batang, serif" font-size="12" text-anchor="middle">
-    <text x="62" y="40">천안터미널</text><text x="62" y="98">천안역</text><text x="62" y="113">동부역 출구</text><text x="62" y="170">KTX 천안아산역</text>
-    <text x="182" y="104">버스</text><text x="268" y="95">세광엔리치빌</text><text x="268" y="111">하차 · 약 40분</text><text x="332" y="88">도보</text>
+
+  <g fill="#0c1528" stroke="#c1a261" stroke-width="2">
+    <circle cx="31" cy="92" r="7"/>
+    <circle cx="220" cy="121" r="8"/>
+    <circle cx="365" cy="24" r="7"/>
+    <circle cx="363" cy="181" r="7"/>
   </g>
-  <g fill="#f0e4cf" font-family="Batang, serif" font-size="11" text-anchor="middle"><text x="386" y="97">티웨딩 천안</text><text x="386" y="112">투데이홀</text></g>
-  <g fill="#c1a261"><path d="M150 96 l8 4 -8 4z"/><path d="M214 96 l8 4 -8 4z"/><path d="M339 96 l8 4 -8 4z"/></g>
+  <g fill="#0c1528" font-family="Batang, serif" font-size="11" font-weight="700">
+    <text x="14" y="79">천안IC</text>
+    <text x="190" y="140">천안JC</text>
+    <text x="326" y="15">목천IC</text>
+    <text x="326" y="195">남천안IC</text>
+  </g>
+
+  <g font-family="Batang, serif" font-size="9.5" text-anchor="middle">
+    <g transform="translate(79 47)">
+      <rect x="-55" y="-15" width="110" height="30" rx="5" fill="#f8f0e2" stroke="#9c7d3c"/>
+      <text y="4" fill="#0c1528" font-size="8.5">천안삼거리 가구단지</text>
+    </g>
+    <g transform="translate(77 137)">
+      <rect x="-43" y="-15" width="86" height="30" rx="5" fill="#f8f0e2" stroke="#9c7d3c"/>
+      <text y="4" fill="#0c1528">천안의료원</text>
+    </g>
+    <g transform="translate(126 174)">
+      <rect x="-40" y="-15" width="80" height="30" rx="5" fill="#f8f0e2" stroke="#9c7d3c"/>
+      <text y="4" fill="#0c1528">천안박물관</text>
+    </g>
+    <g transform="translate(247 171)">
+      <rect x="-39" y="-15" width="78" height="30" rx="5" fill="#f8f0e2" stroke="#9c7d3c"/>
+      <text y="4" fill="#0c1528">부영아파트</text>
+    </g>
+    <g transform="translate(328 58)">
+      <rect x="-55" y="-15" width="110" height="30" rx="5" fill="#f8f0e2" stroke="#9c7d3c"/>
+      <text y="4" fill="#0c1528" font-size="8.5">세광엔리치빌 APT</text>
+    </g>
+  </g>
+
+  <g transform="translate(226 78)" font-family="Batang, serif" text-anchor="middle">
+    <path d="M0 -28 L43 0 L0 28 L-43 0 Z" fill="#6a2634" stroke="#c1a261" stroke-width="2"/>
+    <text y="-2" fill="#f0e4cf" font-size="11" font-weight="700">티웨딩 천안</text>
+    <text y="12" fill="#f0e4cf" font-size="9">투데이홀</text>
+  </g>
+
+  <rect x="0" y="198" width="428" height="22" fill="#0c1528"/>
+  <text x="214" y="213" fill="#f0e4cf" font-family="Batang, serif" font-size="10.5" text-anchor="middle">천안IC보다 목천IC, 남천안IC를 이용하시면 더욱 편리합니다</text>
 </svg>

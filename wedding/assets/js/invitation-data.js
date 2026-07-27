@@ -34,6 +34,7 @@ window.INVITATION_DATA = Object.freeze({
     lotAddress: '충남 천안시 동남구 목천읍 응원리 67-1',
     phone: '041-555-7900',
     parking: '대형 주차장 완비',
+    officialParking: '1,500대 · 무료주차',
     maps: {
       kakao: `https://map.kakao.com/link/search/${encodeURIComponent('티웨딩 천안')}`,
       naver: `https://map.naver.com/v5/search/${encodeURIComponent('티웨딩 천안')}`,
@@ -48,6 +49,13 @@ window.INVITATION_DATA = Object.freeze({
     terminal: '24 · 310 · 381 · 382 · 383 · 400 · 402 · 500 · 512 · 530 · 531 · 540',
     station: '24 · 383 · 400 · 401 · 500 (기차·전철 하차 후 동부역 출구에서 승차)',
     ktx: '천안아산역 → 아산역(전철) → 천안역(전철) 하차 후 동부역 출구에서 승차 · 24 · 383 · 400 · 401 · 500',
+    official: {
+      car: '네비게이션에 티웨딩 천안을 검색해 주세요. 천안IC보다 목천IC · 남천안IC를 이용하시면 더욱 편리합니다.',
+      shuttleTerminal: '100m 직진 후 우리은행 앞 탑승',
+      shuttleStation: '4번 출구 동부광장 건너편 GS25편의점 앞 탑승',
+      shuttleInterval: '20분 간격',
+      bus: '세광엔리치빌 정류장 하차 · 천안역 기준 24 · 383 · 400 · 401 · 500',
+    },
   },
   concepts: {
     regency: {
