@@ -1,75 +1,69 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 428 184" role="img" aria-labelledby="routeTitle routeDesc">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 345 230" role="img" aria-labelledby="routeTitle routeDesc">
   <title id="routeTitle">티웨딩 천안 오시는 길 안내도</title>
-  <desc id="routeDesc">천안IC보다 독립기념관IC와 남천안IC 이용을 권하는, 천안JC를 거쳐 티웨딩 천안 투데이홀에 이르는 권장 경로와 주변 랜드마크를 단순화한 모식 안내도입니다. 축척과 방위는 없습니다.</desc>
-  <rect width="428" height="184" rx="8" fill="#f0e4cf"/>
+  <desc id="routeDesc">천안IC, 천안JC, 권장 경로인 남천안IC와 독립기념관IC, 티웨딩 천안 및 다섯 곳의 주변 랜드마크를 공식 약도 배치에 따라 표시한 축척 없는 안내도입니다.</desc>
+  <rect width="345" height="230" rx="8" fill="#f7f3ea"/>
 
-  <!-- 비권장 진입로(천안IC 방면) — 금색 케이싱이 없다는 것 자체가 "권장 아님"을 뜻한다 -->
-  <path data-road="unrecommended" d="M63 135 C110 135 160 130 200 126" fill="none" stroke="#8b857c" stroke-width="6" stroke-linecap="round"/>
-
-  <!-- 권장 경로: 금색 케이싱을 넓게 먼저 깔고 -->
-  <g data-route-casing="gold" fill="none" stroke="#c1a261" stroke-width="15" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M200 126 C250 122 316 116 344 96 C374 80 386 58 376 34"/>
-    <path d="M200 126 C250 134 300 146 350 153"/>
-    <path d="M200 126 C198 112 200 98 200 86"/>
-  </g>
-  <!-- 그 위에 남색 코어를 좁게 얹는다 → 양옆에 금색 띠가 남아 흑백에서도 갈린다 -->
-  <g data-route-core="navy" fill="none" stroke="#0c1528" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M200 126 C250 122 316 116 344 96 C374 80 386 58 376 34"/>
-    <path d="M200 126 C250 134 300 146 350 153"/>
-    <path d="M200 126 C198 112 200 98 200 86"/>
-  </g>
-  <!-- 경로가 목적지로 "들어간다"는 종결 -->
-  <path data-route-arrow="venue" d="M200 82 L192 96 H208 Z" fill="#c1a261"/>
-
-  <!-- 랜드마크: 확인용이므로 낮은 위계 유지 -->
-  <g fill="#8b857c">
-    <circle data-landmark="clinic" cx="36" cy="12" r="4"/>
-    <circle data-landmark="furniture" cx="76" cy="48" r="4"/>
-    <circle data-landmark="museum" cx="56" cy="86" r="4"/>
-    <circle data-landmark="apartment" cx="246" cy="86" r="4"/>
-    <circle data-landmark="stop" cx="326" cy="40" r="4"/>
-  </g>
-  <g fill="#4a453e" font-family="Malgun Gothic, Apple SD Gothic Neo, sans-serif" font-size="12" text-anchor="middle">
-    <text x="36" y="28">천안의료원</text>
-    <text x="76" y="64">천안삼거리</text>
-    <text x="76" y="78">가구단지</text>
-    <text x="62" y="102">천안박물관</text>
-    <text x="246" y="102">부영아파트</text>
-    <text x="326" y="56">세광엔리치빌</text>
-    <text x="326" y="70">APT · 정류장</text>
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M14 92 C71 98 112 88 158 91 C216 91 269 102 334 123" stroke="#adb1b4" stroke-width="8"/>
+    <path d="M14 92 C71 98 112 88 158 91 C216 91 269 102 334 123" stroke="#f7f3ea" stroke-width="2" stroke-dasharray="7 7"/>
+    <path d="M149 34 C150 69 155 112 158 152 C142 178 122 205 105 230" stroke="#111820" stroke-width="5"/>
+    <path d="M158 152 C212 151 282 166 352 184" stroke="#111820" stroke-width="5"/>
+    <path d="M160 137 L180 122" stroke="#111820" stroke-width="2.5"/>
+    <path d="M271 103 C290 119 309 137 318 153 C309 169 295 183 285 196" stroke="#92989c" stroke-width="3.5"/>
   </g>
 
-  <!-- 목적지: 다이아몬드는 글자 효율이 나빠 카르투슈로 교체 -->
-  <g data-destination="venue" transform="translate(200 51)" text-anchor="middle">
-    <rect x="-74" y="-31" width="148" height="62" rx="5" fill="#6a2634" stroke="#c1a261" stroke-width="4"/>
-    <rect x="-68" y="-25" width="136" height="50" rx="3" fill="none" stroke="#c1a261" stroke-width="1.5"/>
-    <text y="4" fill="#f0e4cf" font-family="Batang, serif" font-size="18" font-weight="700">티웨딩 천안</text>
-    <text y="22" fill="#f0e4cf" font-family="Malgun Gothic, Apple SD Gothic Neo, sans-serif" font-size="12.5">투데이홀</text>
-  </g>
+  <g font-family="'Noto Serif KR','Malgun Gothic',sans-serif" font-size="12">
+    <text x="14" y="84" fill="#40464b">←천안아산역</text>
 
-  <!-- IC·JC 표지: 권장 두 곳만 금색 테두리 -->
-  <g font-family="Malgun Gothic, Apple SD Gothic Neo, sans-serif" font-size="12.5" text-anchor="middle">
     <g data-ic-badge="cheonan">
-      <rect x="8" y="122" width="55" height="26" rx="4" fill="#f0e4cf" stroke="#8b857c" stroke-width="1.5"/>
-      <text x="35.5" y="139" fill="#6b665e">천안IC</text>
+      <rect x="117" y="12" width="66" height="22" rx="2" fill="#eef0ed" stroke="#7d8790" stroke-width="1.5"/>
+      <text x="150" y="27" text-anchor="middle" fill="#59616a">천안IC</text>
     </g>
     <g data-ic-badge="junction">
-      <rect x="172" y="144" width="55" height="26" rx="4" fill="#0c1528" stroke="#f0e4cf" stroke-width="1"/>
-      <text x="199.5" y="161" fill="#f0e4cf">천안JC</text>
+      <rect x="87" y="154" width="72" height="22" rx="2" fill="#788396"/>
+      <text x="123" y="169" text-anchor="middle" fill="#fff">천안JC</text>
     </g>
-    <g data-ic-badge="independence">
-      <rect x="330" y="8" width="92" height="26" rx="4" fill="#0c1528" stroke="#c1a261" stroke-width="2"/>
-      <text x="376" y="25" fill="#f0e4cf">독립기념관IC</text>
+    <g data-ic-badge="south" data-recommended="true">
+      <rect x="39" y="196" width="78" height="22" rx="2" fill="#b08a3c" stroke="#765a24" stroke-width="1.5"/>
+      <text x="78" y="211" text-anchor="middle" fill="#fff">남천안IC</text>
     </g>
-    <g data-ic-badge="south">
-      <rect x="350" y="140" width="67" height="26" rx="4" fill="#0c1528" stroke="#c1a261" stroke-width="2"/>
-      <text x="383.5" y="157" fill="#f0e4cf">남천안IC</text>
+    <g data-ic-badge="independence" data-recommended="true">
+      <rect x="237" y="196" width="96" height="22" rx="2" fill="#b08a3c" stroke="#765a24" stroke-width="1.5"/>
+      <text x="285" y="211" text-anchor="middle" fill="#fff">독립기념관IC</text>
     </g>
-  </g>
 
-  <!-- 금색이 무엇인지 지도 안에서 말한다 -->
-  <g data-legend="recommended">
-    <path d="M12 166 H34" stroke="#c1a261" stroke-width="8" stroke-linecap="round"/>
-    <text x="40" y="170" font-family="Malgun Gothic, Apple SD Gothic Neo, sans-serif" font-size="12" fill="#4a453e">권장 경로</text>
+    <text x="190" y="20" fill="#59616a">천안IC보다</text>
+    <text x="190" y="36" fill="#a4332e" font-weight="700">독립기념관IC, 남천안IC를</text>
+    <text x="190" y="52" fill="#31363a">이용하시면 더욱 편리합니다</text>
+
+    <g data-destination="venue" transform="translate(194 106)">
+      <path d="M-22 -30 H22 V1 H-22 Z" fill="#fff" stroke="#777" stroke-width="1.5"/>
+      <path d="M-7 -30 V-38 H7 V-30" fill="#fff" stroke="#777" stroke-width="1.5"/>
+      <text x="0" y="-17" text-anchor="middle" fill="#222" font-size="15" font-weight="700">티웨딩</text>
+      <text x="0" y="-2" text-anchor="middle" fill="#222" font-size="15" font-weight="700">천안</text>
+      <path d="M-10 4 V23 H10 V4 M-14 4 H14 M-8 4 V-4 L-2 1 L4 -6 L10 1 L15 -4 V23 H-15 V-4 Z" fill="#4c4b49"/>
+      <rect x="-3" y="13" width="6" height="10" rx="3" fill="#f7f3ea"/>
+    </g>
+
+    <g data-landmark="hospital">
+      <circle cx="135" cy="121" r="4" fill="#1f252a"/>
+      <text x="124" y="117" text-anchor="end" fill="#30363a">천안의료원</text>
+    </g>
+    <g data-landmark="apartment">
+      <circle cx="222" cy="139" r="4" fill="#1f252a"/>
+      <text x="233" y="143" fill="#30363a">세광 엔리치빌 APT</text>
+    </g>
+    <g data-landmark="booyoung">
+      <circle cx="151" cy="187" r="4" fill="#1f252a"/>
+      <text x="162" y="191" fill="#30363a">부영아파트</text>
+    </g>
+    <g data-landmark="independence-hall">
+      <circle cx="312" cy="101" r="4" fill="#1f252a"/>
+      <text x="301" y="97" text-anchor="end" fill="#30363a">독립기념관</text>
+    </g>
+    <g data-landmark="tollgate">
+      <circle cx="318" cy="153" r="4" fill="#1f252a"/>
+      <text x="307" y="169" text-anchor="end" fill="#30363a">독립기념관 톨게이트</text>
+    </g>
   </g>
 </svg>

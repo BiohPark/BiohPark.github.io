@@ -64,6 +64,7 @@
     let watchdogTimer = 0;
     let done = false;
     let escaping = false;
+    const openingPhoto = opening.querySelector?.('.ball-opening__photo');
     main.inert = true;
     if (backLink) backLink.inert = true;
     document.body.classList.add('opening-active');
@@ -74,6 +75,7 @@
       timelineTimers.forEach((timer) => window.clearTimeout(timer));
       window.clearTimeout(watchdogTimer);
       escapeEvents.forEach((eventName) => window.removeEventListener(eventName, escapeOpening));
+      openingPhoto?.style.setProperty('will-change', 'auto');
       opening.classList.add('is-dismissed');
       document.body.classList.add('invitation-opened');
       document.body.classList.remove('opening-active');
@@ -96,14 +98,21 @@
       return;
     }
 
-    requestAnimationFrame(() => opening.classList.add('is-ready'));
-    timelineTimers.push(window.setTimeout(() => opening.classList.add('is-opening'), 700));
-    timelineTimers.push(window.setTimeout(() => opening.classList.add('is-fading'), 1150));
-    timelineTimers.push(window.setTimeout(finish, 1600));
     watchdogTimer = window.setTimeout(finish, 3000);
     escapeEvents.forEach((eventName) => {
       window.addEventListener(eventName, escapeOpening, { once: true, passive: true });
     });
+    Promise.race([
+      document.fonts?.ready ?? Promise.resolve(),
+      new Promise((resolve) => window.setTimeout(resolve, 800)),
+    ]).then(() => {
+      if (done) return;
+      requestAnimationFrame(() => opening.classList.add('is-ready'));
+      timelineTimers.push(window.setTimeout(() => opening.classList.add('is-opening'), 450));
+      timelineTimers.push(window.setTimeout(() => opening.classList.add('is-copy-out'), 1150));
+      timelineTimers.push(window.setTimeout(() => opening.classList.add('is-fading'), 1400));
+      timelineTimers.push(window.setTimeout(finish, 1800));
+    }).catch(failOpen);
   }
 
   function setCountdownValue(node, value) {
@@ -148,6 +157,22 @@
       if (document.hidden) window.clearInterval(countdownTimer);
       else startCountdown();
     });
+  }
+
+  function initBackLink() {
+    const backLink = document.querySelector('.back-link');
+    if (!backLink) return;
+    let queued = false;
+    const update = () => {
+      backLink.classList.toggle('is-compact', window.scrollY > 96);
+      queued = false;
+    };
+    window.addEventListener('scroll', () => {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(update);
+    }, { passive: true });
+    update();
   }
 
   async function copyText(text, trigger, successText = '복사했습니다') {
@@ -196,24 +221,52 @@
     return date.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z');
   }
 
+  function escapeIcsText(value) {
+    return String(value || '')
+      .replace(/\\/g, '\\\\')
+      .replace(/\r?\n/g, '\\n')
+      .replace(/([,;])/g, '\\$1');
+  }
+
+  function foldIcsLine(line) {
+    const folded = [];
+    let segment = '';
+    for (const character of line) {
+      const prefix = folded.length ? ' ' : '';
+      if (new TextEncoder().encode(`${prefix}${segment}${character}`).length > 75) {
+        folded.push(`${prefix}${segment}`);
+        segment = character;
+      } else segment += character;
+    }
+    folded.push(`${folded.length ? ' ' : ''}${segment}`);
+    return folded;
+  }
+
   function initCalendar() {
     document.querySelectorAll('[data-calendar]').forEach((trigger) => {
       trigger.addEventListener('click', () => {
         const start = new Date(get('event.iso'));
         if (Number.isNaN(start.getTime())) return;
+        const end = new Date(start.getTime() + 90 * 60 * 1000);
         const lines = [
-          'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Wedding Invitation//KO', 'BEGIN:VEVENT',
+          'BEGIN:VCALENDAR',
+          'VERSION:2.0',
+          'CALSCALE:GREGORIAN',
+          'PRODID:-//Wedding Invitation//KO',
+          'BEGIN:VEVENT',
+          `UID:${formatUtc(start)}-${concept}@wedding-invitation.local`,
+          `DTSTAMP:${formatUtc(new Date())}`,
           `DTSTART:${formatUtc(start)}`,
-          `SUMMARY:${get('couple.korean')} 결혼식`,
-          `LOCATION:${get('venue.name')} ${get('venue.hall')} ${get('venue.address')}`,
-          'END:VEVENT', 'END:VCALENDAR',
-        ];
-        const blob = new Blob([lines.join('\r\n')], { type: 'text/calendar;charset=utf-8' });
+          `DTEND:${formatUtc(end)}`,
+          `SUMMARY:${escapeIcsText(`${get('couple.korean')} 결혼식`)}`,
+          `LOCATION:${escapeIcsText(`${get('venue.name')} ${get('venue.hall')} ${get('venue.address')}`)}`,
+          'END:VEVENT',
+          'END:VCALENDAR',
+        ].flatMap(foldIcsLine);
         const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
+        link.href = `data:text/calendar;charset=utf-8,${encodeURIComponent(lines.join('\r\n'))}`;
         link.download = 'wedding-invitation.ics';
         link.click();
-        window.setTimeout(() => URL.revokeObjectURL(link.href), 0);
       });
     });
   }
@@ -255,6 +308,7 @@
       document.documentElement.classList.add('js-ready');
       initOpenings();
       initCountdown();
+      initBackLink();
       initCopyAndShare();
       initCalendar();
       initOptionalFeatures();

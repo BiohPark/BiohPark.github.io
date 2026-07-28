@@ -52,11 +52,12 @@
     const units = /[가-힣]/.test(original) ? original.split(/(\s+)/) : [...original];
     node.textContent = '';
     node.setAttribute('aria-label', original);
+    const unitDelay = Math.min(34, 400 / Math.max(1, units.length - 1));
     units.forEach((unit, index) => {
       const span = document.createElement('span');
       span.setAttribute('aria-hidden', 'true');
       span.className = 'title-unit';
-      span.style.setProperty('--unit-delay', `${Math.min(34, 1200 / Math.max(1, units.length)) * index}ms`);
+      span.style.setProperty('--unit-delay', `${unitDelay * index}ms`);
       span.textContent = unit;
       node.append(span);
     });

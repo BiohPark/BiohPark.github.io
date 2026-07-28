@@ -60,7 +60,9 @@ img { display: block; max-width: 100%; }
 .concept-card--garden .concept-art { background: #3c4937; color: #cdb882; }
 .showcase-footer { padding: 2rem 5vw 5rem; text-align: center; color: rgba(255,255,255,.48); font-family: var(--serif-display); }
 
-.back-link { position: fixed; z-index: 120; top: 1rem; left: 1rem; display: inline-flex; align-items: center; min-height: 44px; padding: .5rem .8rem; background: rgba(20,18,16,.72); color: #fff; border: 1px solid rgba(255,255,255,.25); text-decoration: none; backdrop-filter: blur(10px); }
+.back-link { position: fixed; z-index: 120; top: .75rem; left: .75rem; display: inline-flex; align-items: center; min-height: 44px; padding: .45rem .8rem; border: 1px solid rgba(215,184,117,.82); border-radius: 999px; background: rgba(12,21,40,.84); color: #d7b875; box-shadow: 0 6px 22px rgba(0,0,0,.18); text-decoration: none; backdrop-filter: blur(10px); transform-origin: top left; transition: opacity 180ms ease, transform 180ms ease, background-color 180ms ease; }
+.back-link.is-compact { opacity: .48; background: rgba(12,21,40,.68); transform: scale(.82); }
+.back-link:hover, .back-link:focus-visible { opacity: 1; transform: scale(1); }
 
 /* 254 × 178 mm, two sheets, four 127 × 178 mm panels. */
 .paper-preview { min-height: 100vh; padding: 5rem max(1.5rem, calc((100vw - 254mm) / 2)) 3rem; overflow-x: auto; }
@@ -126,13 +128,13 @@ img { display: block; max-width: 100%; }
 
 /* Mobile invitation and choreography. */
 /* 전역 선택 차단 (캐주얼 억제) */
-.mobile-invitation { overflow-x: hidden; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+.mobile-invitation { overflow-x: hidden; touch-action: manipulation; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
 /* 예외 — 하객이 실제로 긁어야 할 텍스트 */
 .detail-row dd,
 .account-row span,
 .directions-list p,
 [data-section="venue"] p,
-.route-caption { -webkit-user-select: text; user-select: text; -webkit-touch-callout: default; }
+.route-caption { word-break: keep-all; -webkit-user-select: text; user-select: text; -webkit-touch-callout: default; }
 .mobile-invitation.opening-active { overflow: hidden; }
 .mobile-shell { width: min(100%,560px); margin: 0 auto; background: var(--mobile-paper,#f5efe5); box-shadow: 0 0 80px rgba(0,0,0,.14); }
 .opening-screen { position: relative; min-height: 100svh; display: grid; place-items: center; padding: 2rem; text-align: center; }
@@ -199,7 +201,7 @@ img { display: block; max-width: 100%; }
 .countdown strong { display: block; font-family: var(--serif-display); font-size: 1.9rem; font-weight: 400; line-height: 1; transform-origin: center bottom; transition: transform 180ms ease-out; }
 .countdown strong.is-flipping-out { transform: rotateX(-90deg); transition-timing-function: ease-in; }
 .countdown strong.is-flipping-in { transform: rotateX(90deg); }
-.countdown span { font-family: var(--serif-display); font-size: .66rem; letter-spacing: .1em; text-transform: uppercase; }
+.countdown span { font-family: var(--serif-display); font-size: .8rem; letter-spacing: .1em; text-transform: uppercase; }
 .date-card { max-width: 390px; margin: 2rem auto 0; padding: 1.8rem 1rem; border: 1px solid var(--mobile-accent); }
 .date-card strong { display: block; font-family: var(--serif-display); font-size: 4.5rem; font-weight: 400; line-height: .9; }
 .date-card .date-month { font-family: var(--serif-display); letter-spacing: .2em; }

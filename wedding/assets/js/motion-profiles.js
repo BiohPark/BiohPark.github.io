@@ -7,7 +7,7 @@ window.INVITATION_MOTION_PROFILES = Object.freeze({
   midnight: {
     parallaxDepth: 0.22, kenBurnsScale: 1.10, kenBurnsOrigin: '50% 30%',
     maskFrom: 'inset(0 100% 0 0)', maskTo: 'inset(0)',
-    particles: { type: 'dust', count: 34, minSize: 1.5, maxSize: 3.5, minY: -6, maxY: 10, colors: ['#c1a261'], blend: 'screen' },
+    particles: { type: 'petal', count: 18, minSize: 6, maxSize: 11, minY: 22, maxY: 38, sway: 18, period: 4.2, colors: ['rgba(214,158,166,.5)', 'rgba(240,228,207,.32)'], blend: 'normal' },
   },
   garden: {
     parallaxDepth: 0.18, kenBurnsScale: 1.08, kenBurnsOrigin: '55% 45%',

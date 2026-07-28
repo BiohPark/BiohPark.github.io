@@ -1,20 +1,18 @@
-window.INVITATION_DATA = Object.freeze({
+﻿window.INVITATION_DATA = Object.freeze({
   couple: {
-    korean: '신랑 · 신부',
+    korean: '박비오 · 조예나',
     english: 'GROOM & BRIDE',
     monogram: 'G · B',
   },
   groom: {
-    name: '신랑',
+    name: '박비오',
     english: 'GROOM',
-    phone: '010-0000-0000',
     father: '아버지 성함',
     mother: '어머니 성함',
   },
   bride: {
-    name: '신부',
+    name: '조예나',
     english: 'BRIDE',
-    phone: '010-0000-0000',
     father: '아버지 성함',
     mother: '어머니 성함',
   },
@@ -22,7 +20,7 @@ window.INVITATION_DATA = Object.freeze({
     iso: '2026-12-05T13:30:00+09:00',
     dateKorean: '2026년 12월 5일 토요일 오후 1시 30분',
     dateEnglish: 'SATURDAY, THE FIFTH OF DECEMBER · 1:30 PM',
-    shortDate: '2026. 12. 5. SAT · 1:30 PM',
+    shortDate: '2026. 12. 5. 토요일 오후 1시 30분',
     monthEnglish: 'DECEMBER',
     day: '05',
     dayDisplay: '12 . 05',
@@ -50,12 +48,17 @@ window.INVITATION_DATA = Object.freeze({
     station: '24 · 383 · 400 · 401 · 500 (기차·전철 하차 후 동부역 출구에서 승차)',
     ktx: '천안아산역 → 아산역(전철) → 천안역(전철) 하차 후 동부역 출구에서 승차 · 24 · 383 · 400 · 401 · 500',
     official: {
-      car: '네비게이션에 티웨딩 천안을 검색해 주세요. 천안IC보다 독립기념관IC · 남천안IC를 이용하시면 더욱 편리합니다.',
-      shuttleTerminal: '100m 직진 후 우리은행 앞',
-      shuttleStation: '4번 출구 동부광장 건너편 GS25편의점 앞',
+      car: '내비게이션 "티웨딩 천안" 검색 (주차 1500대, 무료주차)',
+      icGuidance: '천안IC보다 독립기념관IC, 남천안IC를 이용하시면 더욱 편리합니다',
+      shuttleTerminal: '100m 직진 후 올리브영 천안타운 앞 탑승',
+      shuttleStation: '1번 출구 동부광장 건너편 GS25편의점 앞 탑승',
       shuttleInterval: '20분 간격',
-      bus: '세광엔리치빌 정류장 하차 · 천안역 기준 24 · 383 · 400 · 401 · 500',
+      bus: '세광엔리치빌 정류장 하차 (천안역 24, 383, 400, 401, 500)',
     },
+  },
+  family: {
+    groomLine: '박주연 강순호의 삼남 박비오',
+    brideLine: '이경화 조현식의 장녀 조예나',
   },
   concepts: {
     regency: {
@@ -66,7 +69,10 @@ window.INVITATION_DATA = Object.freeze({
     midnight: {
       invitation: '겨울의 한가운데에서, 두 사람이 평생 함께 걸을 한 곡의 첫 박자를 맞춥니다. 오래 기다려 온 이 하루에 귀한 걸음으로 함께해 주시면 더없는 기쁨이겠습니다.',
       formal: '두 사람이 서로에게 평생의 예를 갖추어 약속을 나눕니다. 오셔서 저희의 첫 약속을 지켜봐 주세요.',
-      closing: '첫 걸음을 함께 세어 주신 분들께, 오래 감사하겠습니다.',
+      formalLine1: '두 사람이 서로에게 평생의 예를 갖추어 약속을 나눕니다.',
+      formalLine2: '오셔서 저희의 첫 약속을 지켜봐 주세요.',
+      closingLine1: '첫 걸음을 함께 세어 주신 분들께,',
+      closingLine2: '오래 감사하겠습니다.',
     },
     garden: {
       invitation: '겨울에도 푸른 온실처럼, 계절이 바뀌어도 변하지 않는 마음으로 두 사람이 함께 서기로 했습니다. 저희가 가꾸어 갈 첫 계절에 귀한 걸음으로 함께해 주세요.',
@@ -75,10 +81,12 @@ window.INVITATION_DATA = Object.freeze({
     },
   },
   accounts: {
-    groom: '은행 000-0000-0000 신랑',
-    bride: '은행 000-0000-0000 신부',
+    brideFather: '은행 000-0000-0000 조현식',
+    bride: '은행 000-0000-0000 조예나',
+    groomMother: '은행 000-0000-0000 박주연',
+    groom: '은행 000-0000-0000 박비오',
   },
-  site: { url: 'https://biohpark.github.io/w/5gd579iq/' },
+  site: { url: '' },
   rsvp: { endpoint: '' },
   guestbook: { endpoint: '' },
 });
