@@ -133,7 +133,27 @@
   function renderCountdown() {
     const target = new Date(get('event.iso'));
     if (Number.isNaN(target.getTime())) return;
-    const remaining = Math.max(0, target.getTime() - Date.now());
+    const countdown = document.querySelector('.countdown');
+    if (!countdown) return;
+    const diff = target.getTime() - Date.now();
+    if (diff <= 0) {
+      window.clearInterval(countdownTimer);
+      countdown.classList.add('is-countdown-over');
+      const sameDay = new Date().toDateString() === target.toDateString();
+      let message = countdown.querySelector('.countdown-message');
+      if (!message) {
+        message = document.createElement('p');
+        message.className = 'countdown-message';
+        countdown.append(message);
+      }
+      message.textContent = sameDay ? '오늘은 저희의 결혼식 날입니다' : '함께해 주셔서 감사했습니다';
+      return;
+    }
+    if (countdown.classList.contains('is-countdown-over')) {
+      countdown.classList.remove('is-countdown-over');
+      countdown.querySelector('.countdown-message')?.remove();
+    }
+    const remaining = diff;
     const values = {
       days: String(Math.floor(remaining / 86_400_000)),
       hours: String(Math.floor((remaining % 86_400_000) / 3_600_000)).padStart(2, '0'),
@@ -152,6 +172,7 @@
   }
 
   function initCountdown() {
+    if (!document.querySelector('[data-countdown]')) return;
     startCountdown();
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) window.clearInterval(countdownTimer);
@@ -175,26 +196,42 @@
     update();
   }
 
-  async function copyText(text, trigger, successText = '복사했습니다') {
-    try {
-      if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(text);
-      else {
-        const area = document.createElement('textarea');
-        area.value = text;
-        area.setAttribute('readonly', '');
-        area.style.position = 'fixed';
-        area.style.opacity = '0';
-        document.body.append(area);
-        area.select();
-        document.execCommand('copy');
-        area.remove();
-      }
-      const original = trigger.textContent;
-      trigger.textContent = successText;
-      window.setTimeout(() => { trigger.textContent = original; }, 1500);
-    } catch {
-      window.prompt('아래 내용을 복사해 주세요.', text);
+  async function writeToClipboard(text) {
+    if (navigator.clipboard?.writeText) {
+      try {
+        await navigator.clipboard.writeText(text);
+        return true;
+      } catch { /* 권한 거절 — 아래 폴백으로 재시도 */ }
     }
+    const area = document.createElement('textarea');
+    area.value = text;
+    area.setAttribute('readonly', '');
+    area.style.position = 'fixed';
+    area.style.opacity = '0';
+    document.body.append(area);
+    area.select();
+    try {
+      return document.execCommand('copy');
+    } catch {
+      return false;
+    } finally {
+      area.remove();
+    }
+  }
+
+  function flashTriggerLabel(trigger, message) {
+    const label = Array.from(trigger.childNodes).find((node) => node.nodeType === Node.TEXT_NODE && node.textContent.trim());
+    if (!label) return;
+    const original = label.textContent;
+    label.textContent = message;
+    window.setTimeout(() => { label.textContent = original; }, 1500);
+  }
+
+  async function copyText(text, trigger, successText = '복사했습니다', statusText = '계좌번호가 복사되었습니다', failText = '복사하지 못했습니다. 화면의 내용을 길게 눌러 복사해 주세요.') {
+    const status = document.querySelector('[data-copy-status]');
+    const copied = await writeToClipboard(text);
+    flashTriggerLabel(trigger, copied ? successText : '복사 실패');
+    if (status) status.textContent = copied ? statusText : failText;
   }
 
   function initCopyAndShare() {
@@ -202,8 +239,13 @@
       trigger.addEventListener('click', () => {
         const value = get(trigger.dataset.copyField);
         if (value === undefined) return;
-        const success = trigger.dataset.copyField === 'venue.address' ? '주소를 복사했습니다' : '복사했습니다';
-        copyText(String(value), trigger, success);
+        const isAddress = trigger.dataset.copyField === 'venue.address';
+        const success = isAddress ? '주소를 복사했습니다' : '복사했습니다';
+        const status = isAddress ? '주소가 복사되었습니다' : '계좌번호가 복사되었습니다';
+        const fail = isAddress
+          ? '주소를 복사하지 못했습니다. 주소를 길게 눌러 복사해 주세요.'
+          : '계좌번호를 복사하지 못했습니다. 번호를 길게 눌러 복사해 주세요.';
+        copyText(String(value), trigger, success, status, fail);
       });
     });
     document.querySelectorAll('[data-share]').forEach((trigger) => {
@@ -212,7 +254,7 @@
         const shareData = core.buildShareData(activeData, get('site.url') || window.location.href);
         if (navigator.share) {
           try { await navigator.share(shareData); } catch { return; }
-        } else copyText(shareData.url, trigger, '링크를 복사했습니다');
+        } else copyText(shareData.url, trigger, '링크를 복사했습니다', '링크가 복사되었습니다', '링크를 복사하지 못했습니다. 주소창의 주소를 직접 복사해 주세요.');
       });
     });
   }
@@ -243,6 +285,13 @@
   }
 
   function initCalendar() {
+    const ics = document.querySelector('[data-calendar-ics]');
+    const google = document.querySelector('[data-calendar-google]');
+    if (ics && google && /Android/i.test(navigator.userAgent)) {
+      ics.setAttribute('href', google.getAttribute('href'));
+      google.setAttribute('href', 'event.ics');
+      google.textContent = '.ics 파일 다운로드';
+    }
     document.querySelectorAll('[data-calendar]').forEach((trigger) => {
       trigger.addEventListener('click', () => {
         const start = new Date(get('event.iso'));
@@ -268,6 +317,27 @@
         link.download = 'wedding-invitation.ics';
         link.click();
       });
+    });
+  }
+
+  function initTextScale() {
+    const trigger = document.querySelector('[data-text-scale]');
+    if (!trigger) return;
+    let isLarge = false;
+    try {
+      isLarge = localStorage.getItem('invitation-text-scale') === 'large';
+    } catch {}
+    const apply = (enabled) => {
+      document.documentElement.classList.toggle('is-large-text', enabled);
+      trigger.setAttribute('aria-pressed', String(enabled));
+    };
+    apply(isLarge);
+    trigger.addEventListener('click', () => {
+      isLarge = !document.documentElement.classList.contains('is-large-text');
+      apply(isLarge);
+      try {
+        localStorage.setItem('invitation-text-scale', isLarge ? 'large' : 'default');
+      } catch {}
     });
   }
 
@@ -311,6 +381,7 @@
       initBackLink();
       initCopyAndShare();
       initCalendar();
+      initTextScale();
       initOptionalFeatures();
       initMaskWatchdog();
     } catch (error) {

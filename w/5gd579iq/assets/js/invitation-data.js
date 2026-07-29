@@ -58,7 +58,7 @@
   },
   family: {
     groomLine: '박주연 강순호의 삼남 박비오',
-    brideLine: '이경화 조현식의 장녀 조예나',
+    brideLine: '조현식 이경화의 장녀 조예나',
   },
   concepts: {
     regency: {

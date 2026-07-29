@@ -49,6 +49,7 @@
         <p data-field="event.shortDate">2026. 12. 5. 토요일 오후 1시 30분</p>
       </div>
     </section>
+    <button type="button" class="action-button text-scale-toggle" data-text-scale aria-pressed="false">글자 크게</button>
     <section class="mobile-section ball-section" data-section="invitation" data-mask>
       <div class="mask-inner">
         <p class="eyebrow">A Promise in Winter</p>
@@ -66,7 +67,6 @@
     <section class="mobile-section ball-section--soft" data-section="schedule" data-mask>
       <div class="mask-inner">
         <p class="eyebrow">Save the Date</p>
-        <h2 class="section-title shimmer" data-letter-reveal>December</h2>
         <p class="section-title-ko">예식 안내</p>
         <table class="calendar-grid" data-calendar-grid>
           <caption>2026년 12월</caption>
@@ -102,13 +102,28 @@
       <div class="mask-inner">
         <p class="eyebrow">Directions</p>
         <h2 class="section-title-ko">티웨딩 천안 투데이홀</h2>
-        <p><span data-field="venue.address">충청남도 천안시 동남구 목천읍 응원3길 27</span></p>
+        <p class="venue-address"><span data-field="venue.address">충청남도 천안시 동남구 목천읍 응원3길 27</span></p>
         <p class="ic-guidance" data-field="directions.official.icGuidance">천안IC보다 독립기념관IC, 남천안IC를 이용하시면 더욱 편리합니다</p>
         <div class="route-card">
-          <img class="route-mobile" src="route-map2.png" width="567" height="378" loading="lazy" alt="티웨딩 천안과 네 곳의 나들목 및 주변 랜드마크를 표시한 안내도">
+          <img class="route-mobile" src="venue-map.png" width="1456" height="1125" loading="lazy" alt="티웨딩 천안과 독립기념관IC·남천안IC·천안IC 나들목, 천안분기점, 주변 랜드마크와 나들목별 거리를 표시한 안내도">
           <p class="route-caption">축척 없는 안내도입니다.</p>
         </div>
-        <div class="directions-list"><h3>자가용</h3><p data-field="directions.official.car">내비게이션 "티웨딩 천안" 검색 (주차 1500대, 무료주차)</p><h3>셔틀버스 — <span data-field="directions.official.shuttleInterval">20분 간격</span></h3><p><strong>천안터미널</strong><br><span data-field="directions.official.shuttleTerminal">100m 직진 후 올리브영 천안타운 앞 탑승</span></p><p><strong>천안역</strong><br><span data-field="directions.official.shuttleStation">1번 출구 동부광장 건너편 GS25편의점 앞 탑승</span></p><h3>버스</h3><p data-field="directions.official.bus">세광엔리치빌 정류장 하차 (천안역 24, 383, 400, 401, 500)</p></div>
+        <div class="directions-list">
+          <details class="transit-fold">
+            <summary><h3>자가용</h3></summary>
+            <p data-field="directions.official.car">내비게이션 "티웨딩 천안" 검색 (주차 1500대, 무료주차)</p>
+          </details>
+          <details class="transit-fold">
+            <summary><h3>셔틀버스 — <span data-field="directions.official.shuttleInterval">20분 간격</span></h3></summary>
+            <p><strong>천안터미널</strong><br><span data-field="directions.official.shuttleTerminal">100m 직진 후 올리브영 천안타운 앞 탑승</span></p>
+            <p><strong>천안역</strong><br><span data-field="directions.official.shuttleStation">1번 출구 동부광장 건너편 GS25편의점 앞 탑승</span></p>
+          </details>
+          <details class="transit-fold">
+            <summary><h3>버스</h3></summary>
+            <p data-field="directions.official.bus">세광엔리치빌 정류장 하차 (천안역 24, 383, 400, 401, 500)</p>
+          </details>
+        </div>
+        <a class="action-button venue-call" href="tel:041-555-7900" data-tel-field="venue.phone">예식장 문의 <span data-field="venue.phone">041-555-7900</span></a>
         <div class="action-row venue-actions">
           <button class="action-button" type="button" data-copy-field="venue.address">주소 복사</button>
           <a class="action-button" href="#" data-href-field="venue.maps.kakao" target="_blank" rel="noreferrer">카카오맵</a>
@@ -180,6 +195,7 @@
         </div>
       </div>
     </section>
+    <p class="visually-hidden" role="status" aria-live="polite" data-copy-status></p>
   </main>
 </body>
 </html>

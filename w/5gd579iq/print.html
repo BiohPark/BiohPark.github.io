@@ -14,7 +14,7 @@
   <script src="assets/js/invitation-data.js"></script><script src="assets/js/core.js"></script><script src="assets/js/common.js" defer></script>
 </head>
 <body class="ball-page paper-document" data-concept="midnight">
-  <a class="back-link" href="/">← 닫기</a>
+  <a class="back-link" href="#" data-close hidden>← 닫기</a>
   <main class="paper-preview">
     <section class="paper-sheet ball-paper" aria-label="바깥면: 뒷면과 표지">
       <article class="paper-panel back-panel" aria-label="뒷면 오시는 길"><div class="panel-content back-grid">
@@ -29,11 +29,23 @@
       <span class="fold-guide" aria-hidden="true"></span>
     </section>
     <section class="paper-sheet ball-paper" aria-label="안쪽면: 초대글과 예식 정보">
-      <article class="paper-panel invitation-panel"><div class="panel-content"><p class="panel-eyebrow">A Promise in Winter</p><h2 class="panel-title">초대합니다</h2><p class="formal-copy"><span data-field="copy.formalLine1">두 사람이 서로에게 평생의 예를 갖추어 약속을 나눕니다.</span><br><span data-field="copy.formalLine2">오셔서 저희의 첫 약속을 지켜봐 주세요.</span></p><div class="paper-rule"></div><p class="family-lines"><span data-field="family.groomLine">박주연 강순호의 삼남 박비오</span><br><span data-field="family.brideLine">이경화 조현식의 장녀 조예나</span></p></div></article>
+      <article class="paper-panel invitation-panel"><div class="panel-content"><p class="panel-eyebrow">A Promise in Winter</p><h2 class="panel-title">초대합니다</h2><p class="formal-copy"><span data-field="copy.formalLine1">두 사람이 서로에게 평생의 예를 갖추어 약속을 나눕니다.</span><br><span data-field="copy.formalLine2">오셔서 저희의 첫 약속을 지켜봐 주세요.</span></p><div class="paper-rule"></div><p class="family-lines"><span data-field="family.groomLine">박주연 강순호의 삼남 박비오</span><br><span data-field="family.brideLine">조현식 이경화의 장녀 조예나</span></p></div></article>
       <article class="paper-panel details-panel"><div class="panel-content"><p class="panel-eyebrow">Save the Date</p><h2 class="large-date" data-field="event.dayDisplay">12 . 05</h2><p class="date-time" data-field="event.dateKorean">2026년 12월 5일 토요일 오후 1시 30분</p><p class="date-english" data-field="event.dateEnglish">SATURDAY, THE FIFTH OF DECEMBER · 1:30 PM</p><div class="details-hairline"></div><p class="venue-name" data-field="venue.name">티웨딩 천안</p><p class="venue-hall" data-field="venue.hall">투데이홀</p><p class="venue-address" data-field="venue.address">충청남도 천안시 동남구 목천읍 응원3길 27</p><div class="details-hairline"></div><p class="rsvp-line">참석 여부는 신랑·신부에게 미리 알려 주시면 큰 도움이 됩니다.</p></div></article>
       <span class="fold-guide" aria-hidden="true"></span>
     </section>
     <p class="print-note">254 × 178 mm · 양면 인쇄 · 짧은 쪽 넘김 · 배율 100%(용지 맞춤 해제) · 배경 그래픽 인쇄 켜기 · A4 프루프는 가로 방향</p><button class="print-button" type="button" onclick="window.print()">인쇄 미리보기</button>
   </main>
-</body>
+<script>
+// 닫기는 청첩장 안에서 이동해 온 경우에만 노출한다. history.length는 새 탭·인앱
+// 브라우저에서 1을 넘기기 일쑤라 신뢰할 수 없고, 그 상태에서 back()을 부르면
+// 하객이 청첩장 밖(블로그 홈이나 직전 사이트)으로 튕긴다.
+(function () {
+  var link = document.querySelector('[data-close]');
+  if (!link) return;
+  var here = window.location.href.replace(/[^/]*$/, '');
+  if (document.referrer.indexOf(here) !== 0) return;
+  link.hidden = false;
+  link.addEventListener('click', function (event) { event.preventDefault(); window.history.back(); });
+})();
+</script></body>
 </html>
