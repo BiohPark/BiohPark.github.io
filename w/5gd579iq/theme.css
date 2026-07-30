@@ -37,6 +37,18 @@
 .ball-hero .mobile-title { font-family:var(--serif-korean); font-size:2.25rem; font-weight:500; line-height:1.2; letter-spacing:.08em; }
 .text-scale-toggle { display:block; margin:.5rem 1.5rem .5rem auto; }
 .text-scale-toggle[aria-pressed="true"] { background:var(--ball-gold); border-color:var(--ball-gold); color:var(--ball-navy); font-weight:600; }
+.text-scale-toggle--closing { margin:1.5rem auto 0; }
+/* 퀵 내비. 불투명 남색 — 사진 위에 반투명 바를 얹으면 대비가 무너지고 인앱 WebView가 버벅인다. */
+.quick-nav { padding-inline:env(safe-area-inset-left) env(safe-area-inset-right); background:var(--ball-navy); border-bottom:1px solid rgba(193,162,97,.3); }
+.ball-mobile .quick-nav a { color:var(--ball-cream); font-family:var(--serif-korean); font-size:.9375rem; letter-spacing:-.03em; }
+.ball-mobile .quick-nav a + a { box-shadow:-1px 0 0 rgba(193,162,97,.18); }
+/* 활성 표시는 금색을 쓰지 않는다 — 계좌 항목이 활성이 되는 순간 강조색이 붙어 "무채색·강조 금지"
+   조건을 어기게 된다. 세 항목 모두 같은 중립 표시(굵기 + 밑줄)로 현재 위치만 알린다. */
+.ball-mobile .quick-nav a.is-current { color:var(--ball-cream); font-weight:600; box-shadow:inset 0 -2px 0 rgba(240,228,207,.55); }
+.ball-mobile .quick-nav a.is-current + a { box-shadow:-1px 0 0 rgba(193,162,97,.18); }
+.ball-mobile .quick-nav a:focus-visible { outline:2px solid var(--ball-gold); outline-offset:-3px; }
+/* 닫기 링크를 문서에 붙여 두면 스크롤과 함께 사라져 sticky 바와 겹칠 일이 없다. 진입 직후에만 쓰이는 요소다. */
+.ball-mobile .back-link { position:absolute; }
 .ball-section--plate { padding-block:2rem; background:var(--ball-navy); }
 .ball-section--plate .photo-frame { overflow:hidden; margin-inline:1.25rem; border-radius:8px; }
 .ball-mobile .photo-frame::before { border:1px solid rgba(193,162,97,.45); }
@@ -64,10 +76,35 @@
 .ball-mobile .directions-list h3 { font-size:1.0625rem; }
 .ball-mobile .venue-address { width:calc(100% + 2rem); margin:0 -1rem; font-size:.95rem; letter-spacing:-.02em; line-height:1.6; word-break:keep-all; }
 .ic-guidance { max-width:430px; margin:1.5rem auto 0; color:var(--ball-cream); font-size:1.0625rem; font-weight:600; line-height:1.65; word-break:keep-all; }
+/* 최종 약도의 교통 문구가 길어져 30mm 고정 행을 15px 넘겼다. 사실을 줄이지 않고 조판만 조인다
+   (인쇄 활자 하한 2.4mm는 지킨다). midnight 인쇄에만 적용해 다른 두 콘셉트는 그대로 둔다. */
+.ball-paper .transit-summary { margin-bottom:.6mm; font-size:2.85mm; }
+.ball-paper .transit-list { gap:.3mm 2mm; grid-template-columns:19mm 1fr; }
+.ball-paper .transit-list dt, .ball-paper .transit-list dd { font-size:2.75mm; line-height:1.22; }
+.ic-distance { max-width:430px; margin:.5rem auto 0; color:rgba(240,228,207,.8); font-size:.9375rem; letter-spacing:-.01em; word-break:keep-all; }
 .route-card { box-sizing:border-box; width:calc(100% + 2.25rem); max-width:540px; margin:1rem -1.125rem 0; border-radius:12px; background:var(--ball-cream); color:var(--ball-navy); overflow:hidden; }
-.route-card .route-mobile { margin:0 auto .5rem; border-radius:6px; }
-.venue-actions { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:.45rem; }
-.venue-actions .action-button { display:flex; align-items:center; justify-content:center; min-width:0; padding:.65rem .25rem; font-size:.875rem; white-space:nowrap; }
+.route-card .route-mobile { margin:0 auto; border-radius:6px; }
+.map-tab { border-bottom:1px solid rgba(12,21,40,.16); color:rgba(12,21,40,.6); font-family:var(--serif-korean); font-size:1rem; font-weight:600; }
+#map-view-diagram:checked ~ .map-tabs .map-tab[for="map-view-diagram"],
+#map-view-apps:checked ~ .map-tabs .map-tab[for="map-view-apps"] { border-bottom:2px solid var(--ball-navy); color:var(--ball-navy); }
+#map-view-diagram:focus-visible ~ .map-tabs .map-tab[for="map-view-diagram"],
+#map-view-apps:focus-visible ~ .map-tabs .map-tab[for="map-view-apps"] { outline:2px solid var(--ball-navy); outline-offset:-3px; }
+/* 약도 속 글자는 이미 5~7px로 앉는다. 카드 안쪽 여백을 없애 표시 폭을 한 픽셀이라도 더 준다. */
+.map-pane--diagram { padding:0 0 .75rem; }
+/* 그래도 이미지 속 글자에는 '글자 크게'도 핀치 줌도 먹지 않는다. 원본을 새 탭에서 여는 탈출구가
+   유일한 복구 수단이므로 밑줄 링크가 아니라 눈에 띄는 버튼으로 둔다. */
+.map-zoom { display:flex; width:min(100% - 2rem,320px); min-height:44px; align-items:center; justify-content:center; margin:.75rem auto 0; border-color:rgba(12,21,40,.4); color:var(--ball-navy); font-size:1rem; text-decoration:none; }
+.ball-page .map-zoom:hover, .ball-page .map-zoom:focus-visible { background:var(--ball-navy); color:var(--ball-cream); }
+/* display는 반드시 :checked 규칙 안에만 둔다 — 기본 선택자에 넣으면 common.css의 display:none을
+   덮어써서 두 탭이 동시에 보인다. */
+.map-pane--apps { gap:.6rem; padding:1.25rem 1rem 1.5rem; }
+#map-view-apps:checked ~ .map-pane--apps { display:grid; }
+.map-pane__note { margin:0; font-size:.9375rem; line-height:1.6; text-align:center; word-break:keep-all; }
+.map-pane--apps .action-button { border-color:rgba(12,21,40,.4); color:var(--ball-navy); }
+.ball-page .map-pane--apps .action-button:hover, .ball-page .map-pane--apps .action-button:focus-visible { background:var(--ball-navy); color:var(--ball-cream); }
+/* 예식장 문의 버튼과 같은 폭으로 맞춘다 — 나란히 놓인 두 버튼이 서로 다른 폭일 근거가 없다. */
+.venue-actions { display:grid; justify-items:center; }
+.venue-actions .action-button { width:min(100%,450px); }
 .calendar-actions { display:grid; justify-items:center; gap:.75rem; margin-top:1.5rem; }
 .calendar-primary { min-width:12rem; background:var(--ball-gold); color:var(--ball-navy); border-color:var(--ball-gold); font-weight:600; }
 .calendar-google-link { color:rgba(240,228,207,.78); font-size:.875rem; text-underline-offset:.2em; }
@@ -81,6 +118,15 @@
 .transit-fold > p strong { color:var(--ball-gold); font-weight:600; }
 .transit-fold > p { padding:0 0 1rem; }
 .transit-fold > p + p { padding-top:.75rem; border-top:1px solid rgba(193,162,97,.14); }
+.ball-mobile .transit-fold .transit-note { padding-top:.75rem; border-top:1px solid rgba(193,162,97,.14); color:rgba(240,228,207,.72); font-size:1rem; line-height:1.65; }
+/* 라벨 문구는 고정하고 상태는 ＋/－ 로만 말한다 — 접기·계좌 보기와 같은 어휘를 쓰고,
+   체크박스 라벨이 상태에 따라 바뀌어 스크린리더에 의미가 뒤집히는 것도 막는다. */
+.shuttle-photo-label { display:flex; width:min(100%,320px); min-height:44px; align-items:center; justify-content:center; gap:.5em; margin:0 auto 1rem; cursor:pointer; font-size:1rem; }
+.shuttle-photo-label::after { content:'＋'; }
+[data-shuttle-photo]:checked ~ .shuttle-photo-label::after { content:'－'; }
+[data-shuttle-photo]:checked ~ .shuttle-photo-label { background:var(--ball-gold); border-color:var(--ball-gold); color:var(--ball-navy); font-weight:600; }
+[data-shuttle-photo]:focus-visible ~ .shuttle-photo-label { outline:2px solid var(--ball-gold); outline-offset:2px; }
+.ball-mobile .shuttle-photo { padding-bottom:1rem; }
 .venue-call { display:flex; width:min(100%,450px); align-items:center; justify-content:center; gap:.4em; margin:1rem auto 0; }
 .ball-mobile .countdown-message { color:var(--ball-gold); font-family:var(--serif-korean); }
 .account-group { display:grid; gap:.7rem; }
@@ -111,6 +157,19 @@ html.is-large-text .ball-mobile .calendar-google-link,
 html.is-large-text .ball-mobile .venue-actions .action-button { font-size:1.09375rem; }
 html.is-large-text .ball-mobile .venue-actions .action-button { white-space:normal; }
 html.is-large-text .ball-mobile .account-row span { word-break:keep-all; }
+/* 바는 3열을 유지해야 하므로 본문 배율을 그대로 따르지 않는다. 대신 두 줄까지 허용한다. */
+html.is-large-text .ball-mobile .quick-nav a { font-size:1.0625rem; letter-spacing:-.04em; line-height:1.25; }
+/* 가장 좁은 화면에서 큰 글자 모드까지 겹치면 "마음 전하실 곳"이 두 줄로 꺾여 한 칸만 높아진다.
+   내비 라벨은 읽을 문장이 아니라 이동 수단이므로, 3열 한 줄을 지키는 쪽을 택한다. */
+@media (max-width:360px) {
+  html.is-large-text .ball-mobile .quick-nav a { font-size:.9375rem; letter-spacing:-.06em; }
+}
+html.is-large-text .ball-mobile .ic-distance,
+html.is-large-text .ball-mobile .map-pane__note { font-size:1.09375rem; }
+html.is-large-text .ball-mobile .transit-fold .transit-note { font-size:1.25rem; }
+html.is-large-text .ball-mobile .map-tab,
+html.is-large-text .ball-mobile .map-zoom,
+html.is-large-text .ball-mobile .shuttle-photo-label { font-size:1.125rem; }
 
 @media print {
   .ball-page { background:transparent; }

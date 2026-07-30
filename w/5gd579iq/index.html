@@ -49,6 +49,11 @@
         <p data-field="event.shortDate">2026. 12. 5. 토요일 오후 1시 30분</p>
       </div>
     </section>
+    <nav class="quick-nav" aria-label="빠른 이동">
+      <a href="#schedule">예식 안내</a>
+      <a href="#venue">오시는 길</a>
+      <a href="#account">마음 전하실 곳</a>
+    </nav>
     <button type="button" class="action-button text-scale-toggle" data-text-scale aria-pressed="false">글자 크게</button>
     <section class="mobile-section ball-section" data-section="invitation" data-mask>
       <div class="mask-inner">
@@ -64,7 +69,7 @@
         <img src="assets/photos-v2/w1200/004-aur-09752-1.jpg" width="1200" height="1800" loading="lazy" decoding="async" alt="흰 플로럴 아치 앞에서 부케를 들고 웃는 신부와 신랑">
       </div>
     </section>
-    <section class="mobile-section ball-section--soft" data-section="schedule" data-mask>
+    <section class="mobile-section ball-section--soft" id="schedule" data-section="schedule" data-mask>
       <div class="mask-inner">
         <p class="eyebrow">Save the Date</p>
         <p class="section-title-ko">예식 안내</p>
@@ -98,42 +103,65 @@
         <img src="assets/photos-v2/w1200/008-aur-00565-1.jpg" width="1200" height="1800" loading="lazy" decoding="async" alt="빨간 하트 풍선 아래에서 결혼 소식을 알리는 케이크 팻말을 마주 든 신랑과 신부">
       </div>
     </section>
-    <section class="mobile-section ball-section--soft" data-section="venue">
+    <section class="mobile-section ball-section--soft" id="venue" data-section="venue">
       <div class="mask-inner">
         <p class="eyebrow">Directions</p>
         <h2 class="section-title-ko">티웨딩 천안 투데이홀</h2>
         <p class="venue-address"><span data-field="venue.address">충청남도 천안시 동남구 목천읍 응원3길 27</span></p>
         <p class="ic-guidance" data-field="directions.official.icGuidance">천안IC보다 독립기념관IC, 남천안IC를 이용하시면 더욱 편리합니다</p>
+        <p class="ic-distance" data-field="directions.official.icDistance">독립기념관IC 6km · 7분 / 남천안IC 3.5km · 5분</p>
         <div class="route-card">
-          <img class="route-mobile" src="venue-map.png" width="1456" height="1125" loading="lazy" alt="티웨딩 천안과 독립기념관IC·남천안IC·천안IC 나들목, 천안분기점, 주변 랜드마크와 나들목별 거리를 표시한 안내도">
-          <p class="route-caption">축척 없는 안내도입니다.</p>
+          <input class="visually-hidden" type="radio" name="map-view" id="map-view-diagram" checked>
+          <input class="visually-hidden" type="radio" name="map-view" id="map-view-apps">
+          <div class="map-tabs">
+            <label class="map-tab" for="map-view-diagram">약도</label>
+            <label class="map-tab" for="map-view-apps">지도 앱</label>
+          </div>
+          <div class="map-pane map-pane--diagram">
+            <img class="route-mobile" src="venue-map.jpg" width="764" height="769" loading="lazy" alt="티웨딩 천안과 독립기념관IC·남천안IC·천안IC 나들목, 천안분기점, 주변 랜드마크와 나들목별 거리를 표시한 예식장 공식 안내도">
+            <a class="action-button map-zoom" href="venue-map.jpg" target="_blank" rel="noreferrer">약도 크게 보기</a>
+          </div>
+          <div class="map-pane map-pane--apps">
+            <p class="map-pane__note">쓰시는 지도 앱에서 바로 길을 찾으실 수 있습니다.</p>
+            <a class="action-button" href="#" data-href-field="venue.maps.naver" target="_blank" rel="noreferrer">네이버지도</a>
+            <a class="action-button" href="#" data-href-field="venue.maps.kakao" target="_blank" rel="noreferrer">카카오맵</a>
+          </div>
         </div>
         <div class="directions-list">
           <details class="transit-fold">
-            <summary><h3>자가용</h3></summary>
-            <p data-field="directions.official.car">내비게이션 "티웨딩 천안" 검색 (주차 1500대, 무료주차)</p>
+            <summary><h3>셔틀버스</h3></summary>
+            <p class="transit-lead"><strong>운행</strong><br><span data-field="directions.official.shuttleInterval">첫 예식 1시간 전부터 20~30분 간격</span></p>
+            <p><strong>천안터미널</strong><br><span data-field="directions.official.shuttleTerminal">신세계백화점 옆 올리브영 앞 탑승 (스타벅스·애슐리 사이) · "올리브영 천안타운" 검색</span></p>
+            <p><strong>천안역</strong><br><span data-field="directions.official.shuttleStation">1번 출구 동부광장 건너편 GS25편의점 앞 탑승 · "GS25 천안역점" 검색</span></p>
+            <p class="transit-note" data-field="directions.official.shuttleNote">25인승 버스로 예식에 한해 운행하며, 행사 일정과 비수기 시즌에는 운행이 변동될 수 있습니다.</p>
+            <input class="visually-hidden" type="checkbox" id="shuttle-photo" data-shuttle-photo>
+            <label class="action-button shuttle-photo-label" for="shuttle-photo">타는 곳 사진</label>
+            <figure class="shuttle-photo">
+              <img src="shuttle-stops.jpg" width="1200" height="574" loading="lazy" decoding="async" alt="천안터미널 신세계백화점 옆 올리브영 앞과 천안역 1번 출구 동부광장 건너편 GS25편의점 앞, 두 곳의 셔틀버스 승차 위치를 표시한 사진 안내">
+            </figure>
           </details>
           <details class="transit-fold">
-            <summary><h3>셔틀버스 — <span data-field="directions.official.shuttleInterval">20분 간격</span></h3></summary>
-            <p><strong>천안터미널</strong><br><span data-field="directions.official.shuttleTerminal">100m 직진 후 올리브영 천안타운 앞 탑승</span></p>
-            <p><strong>천안역</strong><br><span data-field="directions.official.shuttleStation">1번 출구 동부광장 건너편 GS25편의점 앞 탑승</span></p>
+            <summary><h3>자가용</h3></summary>
+            <p data-field="directions.official.car">내비게이션 "티웨딩 천안" 또는 주소 "응원3길 27" 검색 · 주차 1,500대 무료 (도착 후 주차요원의 안내를 받으세요)</p>
           </details>
           <details class="transit-fold">
             <summary><h3>버스</h3></summary>
-            <p data-field="directions.official.bus">세광엔리치빌 정류장 하차 (천안역 24, 383, 400, 401, 500)</p>
+            <p data-field="directions.official.bus">세광엔리치빌 정류장 하차 · 24, 310, 381, 382, 383, 400, 402, 500, 512, 530, 531, 540</p>
+          </details>
+          <details class="transit-fold">
+            <summary><h3>전철 · 기차 · KTX</h3></summary>
+            <p data-field="directions.official.rail">천안역에서 기차·전철 하차 후 1번 출구 동부역에서 24, 383, 400, 401, 500번 승차 · KTX 천안아산역은 아산역에서 전철을 타고 천안역에서 갈아탑니다</p>
           </details>
         </div>
         <a class="action-button venue-call" href="tel:041-555-7900" data-tel-field="venue.phone">예식장 문의 <span data-field="venue.phone">041-555-7900</span></a>
         <div class="action-row venue-actions">
           <button class="action-button" type="button" data-copy-field="venue.address">주소 복사</button>
-          <a class="action-button" href="#" data-href-field="venue.maps.kakao" target="_blank" rel="noreferrer">카카오맵</a>
-          <a class="action-button" href="#" data-href-field="venue.maps.naver" target="_blank" rel="noreferrer">네이버지도</a>
         </div>
       </div>
     </section>
-    <section class="ball-section--plate photo-plate photo-plate--wide" aria-label="반려견과 함께한 웨딩 사진">
+    <section class="ball-section--plate photo-plate" aria-label="아치 뒤에서 얼굴을 내민 웨딩 사진">
       <div class="photo-frame">
-        <img src="assets/photos-v2/w1200/012-aur-09366-spread-1.jpg" width="1200" height="800" loading="lazy" decoding="async" alt="창가에 앉아 반려견 포메라니안을 안고 있는 신부와 신랑">
+        <img src="assets/photos-v2/w1200/peek-1.jpg" width="1024" height="1536" loading="lazy" decoding="async" alt="크림색 아치 벽 뒤에서 보라빛 부케를 든 채 얼굴을 내민 신부와 어깨를 감싸 안고 함께 웃는 신랑">
       </div>
     </section>
     <section class="mobile-section ball-section" data-section="family">
@@ -154,23 +182,23 @@
         <div class="feature-card" data-feature="rsvp"><p>참석 여부를 알려 주세요.</p></div>
       </div>
     </section>
-    <section class="mobile-section ball-section--soft" data-section="account">
+    <section class="mobile-section ball-section--soft" id="account" data-section="account">
       <div class="mask-inner">
         <p class="eyebrow">With Gratitude</p>
-        <h2 class="section-title shimmer" data-letter-reveal>마음 전하실 곳</h2>
+        <h2 class="section-title-ko" data-letter-reveal>마음 전하실 곳</h2>
         <p class="invitation-copy">참석이 어려우신 분들을 위해 안내드립니다. 너그러이 양해 부탁드립니다.</p>
         <details class="reveal-panel">
           <summary class="action-button reveal-summary">계좌번호 보기</summary>
           <div class="account-list">
-            <div class="account-group" aria-labelledby="bride-accounts">
-              <h3 class="account-group__label" id="bride-accounts">신부측</h3>
-              <div class="account-row"><span data-field="accounts.brideFather">은행 000-0000-0000 조현식</span><button type="button" data-copy-field="accounts.brideFather">복사</button></div>
-              <div class="account-row"><span data-field="accounts.bride">은행 000-0000-0000 조예나</span><button type="button" data-copy-field="accounts.bride">복사</button></div>
-            </div>
             <div class="account-group" aria-labelledby="groom-accounts">
               <h3 class="account-group__label" id="groom-accounts">신랑측</h3>
-              <div class="account-row"><span data-field="accounts.groomMother">은행 000-0000-0000 박주연</span><button type="button" data-copy-field="accounts.groomMother">복사</button></div>
-              <div class="account-row"><span data-field="accounts.groom">은행 000-0000-0000 박비오</span><button type="button" data-copy-field="accounts.groom">복사</button></div>
+              <div class="account-row"><span data-field="accounts.groomMother">은행 000-0000-0000 예금주</span><button type="button" data-copy-field="accounts.groomMother">복사</button></div>
+              <div class="account-row"><span data-field="accounts.groom">은행 000-0000-0000 예금주</span><button type="button" data-copy-field="accounts.groom">복사</button></div>
+            </div>
+            <div class="account-group" aria-labelledby="bride-accounts">
+              <h3 class="account-group__label" id="bride-accounts">신부측</h3>
+              <div class="account-row"><span data-field="accounts.brideFather">은행 000-0000-0000 예금주</span><button type="button" data-copy-field="accounts.brideFather">복사</button></div>
+              <div class="account-row"><span data-field="accounts.bride">은행 000-0000-0000 예금주</span><button type="button" data-copy-field="accounts.bride">복사</button></div>
             </div>
           </div>
         </details>
@@ -187,8 +215,9 @@
     <section class="ball-closing" data-section="share" data-mask>
       <div class="mask-inner">
         <div class="photo-frame">
-          <img class="closing-photo" src="assets/photos-v2/w1200/016-aur-00417-1.jpg" width="1200" height="1800" loading="lazy" decoding="async" alt="황금빛 역광 속에서 코를 맞대고 웃는 신부와 신랑">
+          <img class="closing-photo" src="assets/photos-v2/w1200/012-aur-09366-spread-1.jpg" width="1200" height="800" loading="lazy" decoding="async" alt="창가에 앉아 반려견 포메라니안을 안고 있는 신부와 신랑">
         </div>
+        <button type="button" class="action-button text-scale-toggle text-scale-toggle--closing" data-text-scale aria-pressed="false">글자 크게</button>
         <div class="mobile-section mobile-section--compact">
           <p class="eyebrow">With All Our Hearts</p>
           <h2 class="section-title"><span data-field="copy.closingLine1">첫 걸음을 함께 세어 주신 분들께,</span><br><span data-field="copy.closingLine2">오래 감사하겠습니다.</span></h2>

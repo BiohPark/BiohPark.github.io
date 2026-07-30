@@ -136,6 +136,25 @@ img { display: block; max-width: 100%; }
 .directions-list p,
 [data-section="venue"] p,
 .route-caption { word-break: keep-all; -webkit-user-select: text; user-select: text; -webkit-touch-callout: default; }
+
+/* 히어로 뒤에 앉는 퀵 내비. 스크롤 리스너 없이 sticky만 쓰고, 배경은 반드시 불투명하게 둔다 —
+   전면 사진 위 블러 바는 인앱 WebView에서 프레임마다 리페인트를 일으킨다. */
+.quick-nav { position: sticky; top: 0; z-index: 110; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.quick-nav a { display: flex; min-height: 44px; align-items: center; justify-content: center; padding: .5rem .3rem; text-align: center; text-decoration: none; word-break: keep-all; }
+/* 앵커 오프셋은 고정 px이 아니라 실측 바 높이로 잡는다. 큰 글자 모드에서 바가 높아지기 때문이다. */
+[data-section="schedule"], [data-section="venue"], [data-section="account"] { scroll-margin-top: calc(var(--quick-nav-h, 48px) + 8px); }
+/* 마우스로 눌렀을 때만 링을 숨긴다. 키보드로 이동한 사람은 착지 지점을 볼 수 있어야 한다. */
+[data-section="schedule"]:focus:not(:focus-visible), [data-section="venue"]:focus:not(:focus-visible), [data-section="account"]:focus:not(:focus-visible) { outline: none; }
+
+/* 약도 / 지도 앱 전환과 셔틀 승차장 사진 토글. details를 늘리지 않기 위해 radio·checkbox로만 만든다. */
+.map-pane { display: none; }
+#map-view-diagram:checked ~ .map-pane--diagram, #map-view-apps:checked ~ .map-pane--apps { display: block; }
+.map-tabs { display: grid; grid-template-columns: 1fr 1fr; }
+.map-tab { display: flex; min-height: 44px; align-items: center; justify-content: center; cursor: pointer; }
+/* 닫힌 동안 display:none이므로 lazy 이미지가 화면에 들어올 일이 없다 = 펼치기 전에는 내려받지 않는다. */
+.shuttle-photo { display: none; margin: .75rem 0 0; }
+[data-shuttle-photo]:checked ~ .shuttle-photo { display: block; }
+.shuttle-photo img { width: 100%; height: auto; border-radius: 6px; }
 .mobile-invitation.opening-active { overflow: hidden; }
 .mobile-shell { width: min(100%,560px); margin: 0 auto; background: var(--mobile-paper,#f5efe5); box-shadow: 0 0 80px rgba(0,0,0,.14); }
 .opening-screen { position: relative; min-height: 100svh; display: grid; place-items: center; padding: 2rem; text-align: center; }

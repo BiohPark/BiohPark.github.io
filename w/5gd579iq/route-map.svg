@@ -36,34 +36,42 @@
     <text x="190" y="36" fill="#a4332e" font-weight="700">독립기념관IC, 남천안IC를</text>
     <text x="190" y="52" fill="#31363a">이용하시면 더욱 편리합니다</text>
 
+    <!-- 이름판 아래쪽 획과 건물 지붕선이 겹쳐 "천안"이 인쇄에서 뭉갰다. 이름판은 4 올리고
+         건물은 8 내려 사이를 벌린다. 건물 위치가 예식장 지점이므로 지점 표시는 그대로 둔다. -->
     <g data-destination="venue" transform="translate(194 106)">
-      <path d="M-22 -30 H22 V1 H-22 Z" fill="#fff" stroke="#777" stroke-width="1.5"/>
-      <path d="M-7 -30 V-38 H7 V-30" fill="#fff" stroke="#777" stroke-width="1.5"/>
-      <text x="0" y="-17" text-anchor="middle" fill="#222" font-size="15" font-weight="700">티웨딩</text>
-      <text x="0" y="-2" text-anchor="middle" fill="#222" font-size="15" font-weight="700">천안</text>
-      <path d="M-10 4 V23 H10 V4 M-14 4 H14 M-8 4 V-4 L-2 1 L4 -6 L10 1 L15 -4 V23 H-15 V-4 Z" fill="#4c4b49"/>
-      <rect x="-3" y="13" width="6" height="10" rx="3" fill="#f7f3ea"/>
+      <path d="M-22 -34 H22 V-3 H-22 Z" fill="#fff" stroke="#777" stroke-width="1.5"/>
+      <path d="M-7 -34 V-42 H7 V-34" fill="#fff" stroke="#777" stroke-width="1.5"/>
+      <text x="0" y="-21" text-anchor="middle" fill="#222" font-size="15" font-weight="700">티웨딩</text>
+      <text x="0" y="-6" text-anchor="middle" fill="#222" font-size="15" font-weight="700">천안</text>
+      <g transform="translate(0 8)">
+        <path d="M-10 4 V23 H10 V4 M-14 4 H14 M-8 4 V-4 L-2 1 L4 -6 L10 1 L15 -4 V23 H-15 V-4 Z" fill="#4c4b49"/>
+        <rect x="-3" y="13" width="6" height="10" rx="3" fill="#f7f3ea"/>
+      </g>
     </g>
 
-    <g data-landmark="hospital">
-      <circle cx="135" cy="121" r="4" fill="#1f252a"/>
-      <text x="124" y="117" text-anchor="end" fill="#30363a">천안의료원</text>
-    </g>
-    <g data-landmark="apartment">
-      <circle cx="222" cy="139" r="4" fill="#1f252a"/>
-      <text x="233" y="143" fill="#30363a">세광 엔리치빌 APT</text>
-    </g>
-    <g data-landmark="booyoung">
-      <circle cx="151" cy="187" r="4" fill="#1f252a"/>
-      <text x="162" y="191" fill="#30363a">부영아파트</text>
-    </g>
-    <g data-landmark="independence-hall">
-      <circle cx="312" cy="101" r="4" fill="#1f252a"/>
-      <text x="301" y="97" text-anchor="end" fill="#30363a">독립기념관</text>
-    </g>
-    <g data-landmark="tollgate">
-      <circle cx="318" cy="153" r="4" fill="#1f252a"/>
-      <text x="307" y="169" text-anchor="end" fill="#30363a">독립기념관 톨게이트</text>
+    <!-- 랜드마크 라벨은 도로선 위에 앉는 자리가 있다. 위치를 옮기면 실제 지형과 어긋나므로
+         종이 색 테두리를 먼저 칠해(paint-order) 글자가 선을 뚫고 읽히게 한다. -->
+    <g paint-order="stroke" stroke="#f7f3ea" stroke-width="3.5" stroke-linejoin="round">
+      <g data-landmark="hospital">
+        <circle cx="135" cy="121" r="4" fill="#1f252a" stroke="none"/>
+        <text x="124" y="117" text-anchor="end" fill="#30363a">천안의료원</text>
+      </g>
+      <g data-landmark="apartment">
+        <circle cx="222" cy="139" r="4" fill="#1f252a" stroke="none"/>
+        <text x="233" y="143" fill="#30363a">세광 엔리치빌 APT</text>
+      </g>
+      <g data-landmark="booyoung">
+        <circle cx="151" cy="187" r="4" fill="#1f252a" stroke="none"/>
+        <text x="162" y="191" fill="#30363a">부영아파트</text>
+      </g>
+      <g data-landmark="independence-hall">
+        <circle cx="312" cy="101" r="4" fill="#1f252a" stroke="none"/>
+        <text x="301" y="97" text-anchor="end" fill="#30363a">독립기념관</text>
+      </g>
+      <g data-landmark="tollgate">
+        <circle cx="318" cy="153" r="4" fill="#1f252a" stroke="none"/>
+        <text x="307" y="169" text-anchor="end" fill="#30363a">독립기념관 톨게이트</text>
+      </g>
     </g>
   </g>
 </svg>

@@ -10,11 +10,6 @@ header_pages:
   - pages/about.md
   - pages/playground.md
 
-# Jekyll이 건드리지 않고 그대로 복사할 것
-# (front matter 없는 파일은 원래 그대로 복사되지만, 명시해 두면 의도가 드러난다)
-include:
-  - wedding
-
 # 빌드 산출물·로컬 도구는 사이트에 포함하지 않는다
 exclude:
   - Gemfile
