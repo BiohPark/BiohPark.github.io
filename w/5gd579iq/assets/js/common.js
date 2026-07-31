@@ -185,6 +185,8 @@
   function initBackLink() {
     const backLink = document.querySelector('.back-link');
     if (!backLink) return;
+    // 헤더 안에 놓인 닫기는 흐름에 있어 축소·투명도 변화가 없다. 리스너를 걸어 봐야 헛돈다.
+    if (backLink.closest?.('.mobile-header')) return;
     let queued = false;
     const update = () => {
       backLink.classList.toggle('is-compact', window.scrollY > 96);
@@ -353,24 +355,27 @@
     });
   }
 
-  // 아래로만 읽는 하객이 되돌리려고 히어로까지 거슬러 올라가지 않도록 같은 버튼을 두 곳에 두고
-  // 상태를 공유한다. 라벨은 고정 — 눌린 상태에서 라벨을 바꾸면 스크린리더에 의미가 반전돼 들린다.
+  // 버튼은 헤더에 상시 고정되므로 하나뿐이다. 라벨이 '다음에 일어날 일'을 말하고, 같은 상태를
+  // aria-pressed 로 한 번 더 알리지 않는다 — 둘을 겹치면 스크린리더에 의미가 두 번 반전돼 들린다.
   function initTextScale() {
     const triggers = [...document.querySelectorAll('[data-text-scale]')];
     if (!triggers.length) return;
+    const status = document.querySelector('[data-copy-status]');
     let isLarge = false;
     try {
       isLarge = localStorage.getItem('invitation-text-scale') === 'large';
     } catch {}
-    const apply = (enabled) => {
+    const apply = (enabled, announce) => {
       document.documentElement.classList.toggle('is-large-text', enabled);
-      triggers.forEach((trigger) => trigger.setAttribute('aria-pressed', String(enabled)));
+      triggers.forEach((trigger) => { trigger.textContent = enabled ? '가 글자 작게' : '가 글자 크게'; });
+      // 라벨만 바뀌면 스크린리더에는 아무 일도 안 일어난 것처럼 들린다. 기존 live region을 재사용한다.
+      if (announce && status) status.textContent = enabled ? '글자를 크게 했습니다' : '원래 크기로 되돌렸습니다';
       quickNavRefresh();
     };
-    apply(isLarge);
+    apply(isLarge, false);
     triggers.forEach((trigger) => trigger.addEventListener('click', () => {
       isLarge = !document.documentElement.classList.contains('is-large-text');
-      apply(isLarge);
+      apply(isLarge, true);
       try {
         localStorage.setItem('invitation-text-scale', isLarge ? 'large' : 'default');
       } catch {}
@@ -379,25 +384,38 @@
 
   /*
    * 퀵 내비게이션. 히어로 뒤에 sticky로 앉으므로 오프닝·대표사진을 구조적으로 가릴 수 없고
-   * 스크롤 리스너를 하나도 늘리지 않는다. 이동은 기본 앵커에 맡기고, JS는 (1) 바 높이를
-   * CSS 변수로 알려 주기 (2) 하객이 찾아온 접기를 열어 주기 (3) 포커스를 목적지로 옮기기만 한다.
+   * 스크롤 리스너를 하나도 늘리지 않는다. href는 무JS·딥링크 폴백으로 남겨 두되 클릭 이동은
+   * JS가 직접 한다(7차 — 기본 앵커가 히스토리를 쌓아 뒤로가기·닫기를 망가뜨렸다).
+   * JS가 하는 일: (1) 헤더 높이를 CSS 변수로 알려 주기 (2) 하객이 찾아온 접기를 열어 주기
+   * (3) 스크롤·포커스를 목적지로 옮기기 (4) 현재 위치 표시 하나만 켜기.
    */
   function initQuickNav() {
     const nav = document.querySelector('.quick-nav');
     if (!nav) return;
+    // 헤더는 2행이다. 내비 한 행만 재면 오프셋이 절반이 되어 모든 착지가 두 번째 행에 가려진다.
+    const header = nav.closest?.('.mobile-header') || nav.parentElement || nav;
     const links = [...nav.querySelectorAll('a[href^="#"]')];
     if (!links.length) return;
     let observer = null;
+    const intersecting = new Set();
 
     quickNavRefresh = () => {
-      document.documentElement.style.setProperty('--quick-nav-h', `${nav.offsetHeight}px`);
+      const barHeight = header.offsetHeight;
+      document.documentElement.style.setProperty('--quick-nav-h', `${barHeight}px`);
       observer?.disconnect();
       observer = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
-          const link = links.find((candidate) => candidate.getAttribute('href') === `#${entry.target.id}`);
-          link?.classList.toggle('is-current', entry.isIntersecting);
+          if (entry.isIntersecting) intersecting.add(entry.target.id);
+          else intersecting.delete(entry.target.id);
         });
-      }, { threshold: 0, rootMargin: `-${nav.offsetHeight}px 0px -70% 0px` });
+        // #shuttle 은 #venue 안에 들어 있어 둘이 동시에 걸린다. 표시는 하나여야 하므로
+        // 문서 순서상 뒤(= 더 구체적인 목적지) 하나만 남긴다.
+        let active = null;
+        links.forEach((link) => {
+          if (intersecting.has(link.getAttribute('href').slice(1))) active = link;
+        });
+        links.forEach((link) => link.classList.toggle('is-current', link === active));
+      }, { threshold: 0, rootMargin: `-${barHeight}px 0px -70% 0px` });
       links.forEach((link) => {
         const section = document.getElementById(link.getAttribute('href').slice(1));
         if (section) observer.observe(section);
@@ -410,10 +428,206 @@
       if (!link) return;
       const target = document.getElementById(link.getAttribute('href').slice(1));
       if (!target) return;
-      // 하객이 찾아온 교통 접기는 열어 준다. 계좌는 민감정보라 하객이 직접 열게 둔다.
-      target.querySelector('.transit-fold')?.setAttribute('open', '');
+      // 순정 앵커는 탭할 때마다 히스토리를 쌓는다. 세 항목을 눌러 본 하객은 청첩장을 벗어나려면
+      // 뒤로가기를 네 번 눌러야 하고, '닫기'(history.back)도 같은 이유로 제자리를 맴돈다.
+      // 그래서 이동을 스크립트가 직접 하고 주소창은 건드리지 않는다 — pushState도 location.hash도 쓰지 않는다.
+      clickEvent.preventDefault();
+      // 목적지 자신이 접기일 수 있다(셔틀). 자손만 훑으면 접힌 채로 착지한다.
+      // 계좌는 민감정보라 내비에서 뺐고, 어느 경로로도 프로그램이 열지 않는다.
+      if (target.matches?.('.transit-fold')) target.setAttribute('open', '');
+      else target.querySelector('.transit-fold')?.setAttribute('open', '');
       target.tabIndex = -1;
+      target.scrollIntoView?.({ behavior: reduced ? 'auto' : 'smooth', block: 'start' });
       window.setTimeout(() => target.focus({ preventScroll: true }), 0);
+    });
+  }
+
+  /*
+   * 지명 뱃지. hydrateFields()가 textContent를 통째로 갈아치우므로(위 hydrateFields 참고) 마크업을
+   * 미리 심을 수 없다 — 하이드레이션이 끝난 뒤 텍스트 노드를 훑어 감싼다.
+   * 반드시 긴 이름부터 훑는다. '천안역'을 먼저 걸면 'GS25 천안역점'이 'GS25 천[안역]점'으로 쪼개진다.
+   */
+  function initGeoBadges() {
+    const places = get('places');
+    const sheet = document.querySelector('[data-geo-sheet]');
+    if (!Array.isArray(places) || !places.length || !sheet) return;
+    const title = sheet.querySelector('[data-geo-sheet-title]');
+    const naverLink = sheet.querySelector('[data-geo-naver]');
+    const kakaoLink = sheet.querySelector('[data-geo-kakao]');
+    const copyButton = sheet.querySelector('[data-geo-copy]');
+    if (!title || !naverLink || !kakaoLink || !copyButton) return;
+
+    let current = null;
+    let lastTrigger = null;
+    const openSheet = (place, trigger) => {
+      current = place;
+      lastTrigger = trigger;
+      title.textContent = place.name;
+      naverLink.href = `https://map.naver.com/v5/search/${encodeURIComponent(place.query)}`;
+      kakaoLink.href = `https://map.kakao.com/link/search/${encodeURIComponent(place.query)}`;
+      copyButton.textContent = place.copyLabel;
+      sheet.showModal?.();
+    };
+    sheet.querySelector('[data-geo-close]')?.addEventListener('click', () => sheet.close());
+    // 배경 탭으로도 닫히게 하되, 65세 하객은 그 관습을 모르므로 명시 버튼이 정본이다.
+    sheet.addEventListener('click', (event) => { if (event.target === sheet) sheet.close(); });
+    // 시트를 닫은 하객이 읽던 문장으로 돌아와야 한다.
+    sheet.addEventListener('close', () => lastTrigger?.focus());
+    copyButton.addEventListener('click', () => {
+      if (!current) return;
+      const isAddress = current.copyLabel.includes('주소');
+      copyText(
+        current.query,
+        copyButton,
+        '복사했습니다',
+        isAddress ? '주소가 복사되었습니다' : '장소 이름이 복사되었습니다',
+        '복사하지 못했습니다. 화면의 글자를 길게 눌러 복사해 주세요.',
+      );
+    });
+
+    const ordered = [...places].sort((a, b) => b.name.length - a.name.length);
+    const findHit = (text, used) => {
+      let best = null;
+      ordered.forEach((place) => {
+        if (used.has(place.name)) return;
+        const index = text.indexOf(place.name);
+        // 같은 위치에서는 먼저 걸린 쪽이 이긴다 — ordered가 길이 내림차순이라 긴 이름이 이긴다.
+        if (index >= 0 && (!best || index < best.index)) best = { index, place };
+      });
+      return best;
+    };
+
+    document.querySelectorAll('.venue-address, .directions-list p').forEach((scope) => {
+      const queue = [];
+      const walker = document.createTreeWalker(scope, NodeFilter.SHOW_TEXT);
+      while (walker.nextNode()) queue.push(walker.currentNode);
+      const used = new Set();
+      // 한 문단에 뱃지가 셋 이상 몰리면 문장이 링크 밭이 된다. 발견성은 둘이면 전달된다.
+      let placed = 0;
+      while (queue.length && placed < 2) {
+        const node = queue.shift();
+        // <strong> 라벨은 제외한다 — 짝이 되는 '천안터미널'은 뱃지 대상이 아니라 한쪽만 눌리는 비대칭이 생긴다.
+        if (!node.parentElement || node.parentElement.closest('strong, .geo-badge')) continue;
+        const hit = findHit(node.nodeValue, used);
+        if (!hit) continue;
+        const tail = node.splitText(hit.index);
+        tail.nodeValue = tail.nodeValue.slice(hit.place.name.length);
+        const badge = document.createElement('button');
+        badge.type = 'button';
+        badge.className = 'geo-badge';
+        badge.setAttribute('aria-haspopup', 'dialog');
+        badge.append(document.createTextNode(hit.place.name));
+        // 보이는 텍스트가 접근 이름에 그대로 포함돼야 음성 제어에서 지명으로 호출된다(WCAG 2.5.3).
+        const hint = document.createElement('span');
+        hint.className = 'visually-hidden';
+        hint.textContent = ' 지도에서 열기';
+        badge.append(hint);
+        badge.addEventListener('click', () => openSheet(hit.place, badge));
+        tail.parentNode.insertBefore(badge, tail);
+        used.add(hit.place.name);
+        placed += 1;
+        queue.unshift(tail);
+      }
+    });
+  }
+
+  /*
+   * 지도 위젯. 탭을 열기 전에는 스크립트를 한 바이트도 받지 않는다 — 하객 대부분은 약도만 보고 떠난다.
+   * 키는 소스 저장소에 두지 않는다(공개 저장소). 배포 스크립트가 데이터에 주입하며, 값이 없으면
+   * 위젯을 시도하지 않고 '앱에서 열기' 폴백이 그대로 남는다 — 어느 경우에도 빈 화면이 되지 않는다.
+   * 네이버 SDK 파라미터는 배포 도메인에서만 인증이 성립해 로컬에서 판정할 수 없었다(7차 프로브).
+   * 공식 문서의 ncpKeyId를 먼저 쓰고, 스크립트가 실패하면 구 파라미터로 한 번 더 시도한다.
+   */
+  function initMapWidgets() {
+    const mounts = [...document.querySelectorAll('[data-map-widget]')];
+    if (!mounts.length) return;
+    const started = new Set();
+
+    const loadScript = (src) => new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = src;
+      script.async = true;
+      script.addEventListener('load', () => resolve(), { once: true });
+      script.addEventListener('error', () => reject(new Error(src)), { once: true });
+      document.head.append(script);
+    });
+    const settle = (name, ok) => {
+      const fallback = document.querySelector(`[data-map-fallback="${name}"]`);
+      if (fallback) fallback.hidden = ok;
+    };
+
+    // 스크립트가 로드돼도 인증이 거부되면 지오코딩 단계에서야 드러난다. 그래서 '스크립트 로드'가
+    // 아니라 '지도가 실제로 그려졌는가'까지를 한 번의 시도로 묶어 판정한다.
+    const tryNaver = (mount, parameter, clientId) => new Promise((resolve) => {
+      const base = 'https://oapi.map.naver.com/openapi/v3/maps.js';
+      loadScript(`${base}?${parameter}=${encodeURIComponent(clientId)}&submodules=geocoder`).then(() => {
+        const maps = window.naver?.maps;
+        if (!maps?.Service) { resolve(false); return; }
+        // 좌표를 지어내지 않는다 — 정본 주소를 지오코딩한 결과만 쓴다.
+        maps.Service.geocode({ query: get('venue.address') }, (statusCode, response) => {
+          const first = response?.v2?.addresses?.[0];
+          if (statusCode !== maps.Service.Status.OK || !first) { resolve(false); return; }
+          const position = new maps.LatLng(Number(first.y), Number(first.x));
+          const map = new maps.Map(mount, { center: position, zoom: 16 });
+          new maps.Marker({ position, map });
+          resolve(true);
+        });
+      }).catch(() => resolve(false));
+    });
+
+    const startNaver = async (mount) => {
+      const clientId = get('venue.maps.naverClientId');
+      if (!clientId) return;
+      // 배포 도메인에서만 인증이 성립해 어느 파라미터가 맞는지 사전에 판정할 수 없었다.
+      // 공식 문서 현행(ncpKeyId)을 먼저 쓰고, 안 되면 구 파라미터로 한 번 더 시도한다.
+      for (const parameter of ['ncpKeyId', 'ncpClientId']) {
+        if (await tryNaver(mount, parameter, clientId)) { settle('naver', true); return; }
+      }
+    };
+
+    const startKakao = (mount) => {
+      const roughmap = get('venue.maps.kakaoRoughmap');
+      // 퍼가기 코드는 카카오맵이 장소별로 발급한다. 검색어만으로는 초기화할 수 없고, 임의 값을 넣지 않는다.
+      if (!roughmap?.timestamp || !roughmap?.key) return;
+      // 값은 배포 설정에서 오지만 그대로 마크업에 박히므로 형식을 좁혀 둔다.
+      if (!/^\d+$/.test(String(roughmap.timestamp)) || !/^[A-Za-z0-9]+$/.test(String(roughmap.key))) return;
+      /*
+       * 퍼가기 로더는 내부에서 document.write 로 lander 를 불러온다 — 동적 async 스크립트로는
+       * 동작하지 않고, 컨테이너 id·class 도 발급 코드 그대로여야 한다. 그래서 파서가 읽는 형태
+       * 그대로 iframe 안에 넣는다. 덤으로 카카오 전역·CSS 가 초대장 본문으로 새지 않는다.
+       */
+      const frame = document.createElement('iframe');
+      frame.title = '카카오맵으로 보는 예식장 위치';
+      frame.loading = 'lazy';
+      frame.width = '100%';
+      frame.height = '280';
+      frame.style.border = '0';
+      frame.srcdoc = [
+        '<!doctype html><html lang="ko"><head><meta charset="utf-8">',
+        '<style>html,body{margin:0;padding:0}</style></head><body>',
+        `<div id="daumRoughmapContainer${roughmap.timestamp}" class="root_daum_roughmap root_daum_roughmap_landing"></div>`,
+        '<script charset="UTF-8" class="daum_roughmap_loader_script" src="https://ssl.daumcdn.net/dmaps/map_js_init/roughmapLoader.js"><\/script>',
+        `<script charset="UTF-8">new daum.roughmap.Lander({timestamp:'${roughmap.timestamp}',key:'${roughmap.key}',mapWidth:'100%',mapHeight:'280'}).render();<\/script>`,
+        '</body></html>',
+      ].join('');
+      mount.append(frame);
+      settle('kakao', true);
+    };
+
+    const start = (mount) => {
+      const name = mount.dataset.mapWidget;
+      if (started.has(name)) return;
+      started.add(name);
+      if (name === 'naver') startNaver(mount);
+      else if (name === 'kakao') startKakao(mount);
+    };
+
+    document.querySelectorAll('input[name="map-view"]').forEach((radio) => {
+      radio.addEventListener('change', () => {
+        if (!radio.checked) return;
+        const pane = document.querySelector(`.map-pane--${radio.id.replace('map-view-', '')}`);
+        pane?.querySelectorAll('[data-map-widget]').forEach(start);
+      });
     });
   }
 
@@ -459,6 +673,8 @@
       initCalendar();
       initQuickNav();
       initTextScale();
+      initGeoBadges();
+      initMapWidgets();
       initOptionalFeatures();
       initMaskWatchdog();
     } catch (error) {

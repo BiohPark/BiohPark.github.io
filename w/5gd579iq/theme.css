@@ -35,11 +35,14 @@
 .ball-hero .hero-overlay { background:linear-gradient(180deg,rgba(12,21,40,.10) 0%,rgba(12,21,40,.18) 42%,rgba(12,21,40,.72) 78%,rgba(8,13,24,.94) 100%); }
 .ball-hero .hero-media img { object-position:50% 50%; }
 .ball-hero .mobile-title { font-family:var(--serif-korean); font-size:2.25rem; font-weight:500; line-height:1.2; letter-spacing:.08em; }
-.text-scale-toggle { display:block; margin:.5rem 1.5rem .5rem auto; }
-.text-scale-toggle[aria-pressed="true"] { background:var(--ball-gold); border-color:var(--ball-gold); color:var(--ball-navy); font-weight:600; }
-.text-scale-toggle--closing { margin:1.5rem auto 0; }
+/* 2행 헤더의 도구 행. 라벨이 다음 동작을 말하므로 금색 채움(=켜짐 상태)을 쓰지 않는다 —
+   라벨과 색이 서로 다른 것을 가리키면 어느 쪽이 상태인지 알 수 없게 된다. */
+.text-scale-toggle { display:flex; min-height:44px; flex:1 1 auto; align-items:center; justify-content:center; gap:.4em; margin:0; padding-block:0; border:0; background:none; color:var(--ball-cream); font-size:1rem; }
+.text-scale-toggle:focus-visible { outline:2px solid var(--ball-gold); outline-offset:-3px; }
 /* 퀵 내비. 불투명 남색 — 사진 위에 반투명 바를 얹으면 대비가 무너지고 인앱 WebView가 버벅인다. */
-.quick-nav { padding-inline:env(safe-area-inset-left) env(safe-area-inset-right); background:var(--ball-navy); border-bottom:1px solid rgba(193,162,97,.3); }
+.mobile-header { padding-inline:env(safe-area-inset-left) env(safe-area-inset-right); background:var(--ball-navy); }
+.mobile-header__tools { border-bottom:1px solid rgba(193,162,97,.3); }
+.quick-nav { background:var(--ball-navy); border-bottom:1px solid rgba(193,162,97,.18); }
 .ball-mobile .quick-nav a { color:var(--ball-cream); font-family:var(--serif-korean); font-size:.9375rem; letter-spacing:-.03em; }
 .ball-mobile .quick-nav a + a { box-shadow:-1px 0 0 rgba(193,162,97,.18); }
 /* 활성 표시는 금색을 쓰지 않는다 — 계좌 항목이 활성이 되는 순간 강조색이 붙어 "무채색·강조 금지"
@@ -47,8 +50,12 @@
 .ball-mobile .quick-nav a.is-current { color:var(--ball-cream); font-weight:600; box-shadow:inset 0 -2px 0 rgba(240,228,207,.55); }
 .ball-mobile .quick-nav a.is-current + a { box-shadow:-1px 0 0 rgba(193,162,97,.18); }
 .ball-mobile .quick-nav a:focus-visible { outline:2px solid var(--ball-gold); outline-offset:-3px; }
-/* 닫기 링크를 문서에 붙여 두면 스크롤과 함께 사라져 sticky 바와 겹칠 일이 없다. 진입 직후에만 쓰이는 요소다. */
-.ball-mobile .back-link { position:absolute; }
+/* 7차: 닫기는 헤더 2행 좌측에 흐름으로 놓인다. 첫 화면(히어로)에서는 보이지 않고, 그 이후
+   전 구간에서 같은 자리에 남는다 — 스크롤하면 사라지던 6차 동작의 반대다. 화면 고정 알약이
+   아니므로 축소·투명도 변화도 없앤다. */
+.ball-mobile .back-link { position:static; flex:0 0 auto; padding-inline:.9rem; border:0; border-radius:0; background:none; box-shadow:none; backdrop-filter:none; color:var(--ball-cream); font-family:var(--serif-korean); font-size:.9375rem; opacity:.82; }
+.ball-mobile .back-link.is-compact { opacity:.82; transform:none; }
+.ball-mobile .back-link:hover, .ball-mobile .back-link:focus-visible { opacity:1; transform:none; }
 .ball-section--plate { padding-block:2rem; background:var(--ball-navy); }
 .ball-section--plate .photo-frame { overflow:hidden; margin-inline:1.25rem; border-radius:8px; }
 .ball-mobile .photo-frame::before { border:1px solid rgba(193,162,97,.45); }
@@ -86,9 +93,11 @@
 .route-card .route-mobile { margin:0 auto; border-radius:6px; }
 .map-tab { border-bottom:1px solid rgba(12,21,40,.16); color:rgba(12,21,40,.6); font-family:var(--serif-korean); font-size:1rem; font-weight:600; }
 #map-view-diagram:checked ~ .map-tabs .map-tab[for="map-view-diagram"],
-#map-view-apps:checked ~ .map-tabs .map-tab[for="map-view-apps"] { border-bottom:2px solid var(--ball-navy); color:var(--ball-navy); }
+#map-view-naver:checked ~ .map-tabs .map-tab[for="map-view-naver"],
+#map-view-kakao:checked ~ .map-tabs .map-tab[for="map-view-kakao"] { border-bottom:2px solid var(--ball-navy); color:var(--ball-navy); }
 #map-view-diagram:focus-visible ~ .map-tabs .map-tab[for="map-view-diagram"],
-#map-view-apps:focus-visible ~ .map-tabs .map-tab[for="map-view-apps"] { outline:2px solid var(--ball-navy); outline-offset:-3px; }
+#map-view-naver:focus-visible ~ .map-tabs .map-tab[for="map-view-naver"],
+#map-view-kakao:focus-visible ~ .map-tabs .map-tab[for="map-view-kakao"] { outline:2px solid var(--ball-navy); outline-offset:-3px; }
 /* 약도 속 글자는 이미 5~7px로 앉는다. 카드 안쪽 여백을 없애 표시 폭을 한 픽셀이라도 더 준다. */
 .map-pane--diagram { padding:0 0 .75rem; }
 /* 그래도 이미지 속 글자에는 '글자 크게'도 핀치 줌도 먹지 않는다. 원본을 새 탭에서 여는 탈출구가
@@ -97,11 +106,20 @@
 .ball-page .map-zoom:hover, .ball-page .map-zoom:focus-visible { background:var(--ball-navy); color:var(--ball-cream); }
 /* display는 반드시 :checked 규칙 안에만 둔다 — 기본 선택자에 넣으면 common.css의 display:none을
    덮어써서 두 탭이 동시에 보인다. */
-.map-pane--apps { gap:.6rem; padding:1.25rem 1rem 1.5rem; }
-#map-view-apps:checked ~ .map-pane--apps { display:grid; }
+.map-widget__fallback { gap:.6rem; padding:1.25rem 1rem 1.5rem; }
 .map-pane__note { margin:0; font-size:.9375rem; line-height:1.6; text-align:center; word-break:keep-all; }
-.map-pane--apps .action-button { border-color:rgba(12,21,40,.4); color:var(--ball-navy); }
-.ball-page .map-pane--apps .action-button:hover, .ball-page .map-pane--apps .action-button:focus-visible { background:var(--ball-navy); color:var(--ball-cream); }
+.map-widget__fallback .action-button { border-color:rgba(12,21,40,.4); color:var(--ball-navy); }
+.ball-page .map-widget__fallback .action-button:hover, .ball-page .map-widget__fallback .action-button:focus-visible { background:var(--ball-navy); color:var(--ball-cream); }
+/* 본문 안에서 눌리는 지명. 금색 밑줄 + 핀 — 채워진 금색은 이 화면에서 1차 CTA 어휘라 문장 속에 쓰지 않는다. */
+.ball-mobile .geo-badge { color:var(--ball-cream); text-decoration-color:var(--ball-gold); }
+.ball-mobile .geo-badge::after { background:var(--ball-gold); }
+.ball-mobile .geo-badge:focus-visible { outline:2px solid var(--ball-gold); outline-offset:2px; }
+/* 액션시트는 약도 카드와 같은 밝은 면을 쓴다 — 남색 본문 위에 뜨는 흰 시트가 아니라 같은 어휘다. */
+.geo-sheet { background:var(--ball-cream); color:var(--ball-navy); }
+.geo-sheet h2 { font-family:var(--serif-korean); }
+.geo-sheet .action-button { border-color:rgba(12,21,40,.4); color:var(--ball-navy); }
+.ball-page .geo-sheet .action-button:hover, .ball-page .geo-sheet .action-button:focus-visible { background:var(--ball-navy); color:var(--ball-cream); }
+.geo-sheet__close { border-color:transparent; opacity:.75; }
 /* 예식장 문의 버튼과 같은 폭으로 맞춘다 — 나란히 놓인 두 버튼이 서로 다른 폭일 근거가 없다. */
 .venue-actions { display:grid; justify-items:center; }
 .venue-actions .action-button { width:min(100%,450px); }

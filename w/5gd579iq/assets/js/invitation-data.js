@@ -39,8 +39,22 @@ window.INVITATION_DATA = Object.freeze({
     maps: {
       kakao: `https://map.kakao.com/link/search/${encodeURIComponent('티웨딩 천안')}`,
       naver: `https://map.naver.com/v5/search/${encodeURIComponent('티웨딩 천안')}`,
+      naverClientId: 'egdf0t98dc',
     },
   },
+  /*
+   * 본문 안에서 눌리는 지명. 화면에 이미 적혀 있는 문구만 넣는다 — 여기 없는 지명을 만들면
+   * 하객을 검증되지 않은 좌표로 보내게 된다. 긴 이름이 먼저 와야 한다: '천안역'을 먼저 걸면
+   * 'GS25 천안역점'이 'GS25 천[안역]점'으로 쪼개진다.
+   */
+  places: [
+    { name: '충청남도 천안시 동남구 목천읍 응원3길 27', query: '충청남도 천안시 동남구 목천읍 응원3길 27', copyLabel: '주소 복사' },
+    { name: 'GS25 천안역점', query: 'GS25 천안역점', copyLabel: '장소 이름 복사' },
+    { name: '올리브영 천안타운', query: '올리브영 천안타운', copyLabel: '장소 이름 복사' },
+    { name: '세광엔리치빌 정류장', query: '세광엔리치빌 정류장', copyLabel: '장소 이름 복사' },
+    { name: 'KTX 천안아산역', query: 'KTX 천안아산역', copyLabel: '장소 이름 복사' },
+    { name: '천안역', query: '천안역', copyLabel: '장소 이름 복사' },
+  ],
   directions: {
     car: '내비게이션에 티웨딩 천안 또는 충청남도 천안시 동남구 목천읍 응원3길 27을 입력해 주세요.',
     summary: '세 경로 모두 세광엔리치빌 정류장에서 하차하시면 됩니다. (약 40분 소요)',
@@ -90,9 +104,9 @@ window.INVITATION_DATA = Object.freeze({
   },
   // 신랑측 → 신부측 순. 실계좌는 배포 오버레이에서만 채워지며 이 저장소에는 자리표시자만 둔다.
   accounts: {
-    groomMother: revealAccount('7J2A7ZaJIDAwMC0wMDAwLTAwMDAg67CV7KO87Jew'),
+    groomMother: revealAccount('6rSR7KO87J2A7ZaJIDc0MS0xMjEtMDE0NzQ4IOuwleyjvOyXsA=='),
     groom: revealAccount('7Iug7ZWc7J2A7ZaJIDExMC0zOTMtOTUzMjM4IOuwleu5hOyYpA=='),
-    brideFather: revealAccount('7Jqw66as7J2A7ZaJIDI0MC0xMDc4NTcxMi0wMDEg7KGw7ZiE7Iud'),
+    brideFather: revealAccount('7Jqw66as7J2A7ZaJIDI0MC0xMDc4NTctMTItMDAxIOyhsO2YhOyLnQ=='),
     bride: revealAccount('7Lm07Lm07Jik67GF7YGsIDMzMzMtMjYtMTk1NDE5MSDsobDsmIjrgpg='),
   },
   site: { url: '' },

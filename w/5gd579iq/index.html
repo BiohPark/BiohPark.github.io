@@ -27,7 +27,6 @@
   <script src="assets/js/particles.js" defer></script>
 </head>
 <body class="ball-page ball-mobile mobile-invitation" data-concept="midnight" data-motion-profile="midnight">
-  <a class="back-link" href="#" data-close hidden>← 닫기</a>
   <div class="scroll-progress" data-scroll-progress aria-hidden="true"></div>
   <aside class="opening-screen ball-opening" data-opening aria-label="초대장 오프닝">
     <div class="ball-opening__plate" aria-hidden="true">
@@ -49,12 +48,17 @@
         <p data-field="event.shortDate">2026. 12. 5. 토요일 오후 1시 30분</p>
       </div>
     </section>
-    <nav class="quick-nav" aria-label="빠른 이동">
-      <a href="#schedule">예식 안내</a>
-      <a href="#venue">오시는 길</a>
-      <a href="#account">마음 전하실 곳</a>
-    </nav>
-    <button type="button" class="action-button text-scale-toggle" data-text-scale aria-pressed="false">글자 크게</button>
+    <div class="mobile-header">
+      <nav class="quick-nav" aria-label="빠른 이동">
+        <a href="#schedule">예식 안내</a>
+        <a href="#venue">오시는 길</a>
+        <a href="#shuttle">셔틀버스</a>
+      </nav>
+      <div class="mobile-header__tools">
+        <a class="back-link" href="#" data-close hidden>← 닫기</a>
+        <button type="button" class="action-button text-scale-toggle" data-text-scale>가 글자 크게</button>
+      </div>
+    </div>
     <section class="mobile-section ball-section" data-section="invitation" data-mask>
       <div class="mask-inner">
         <p class="eyebrow">A Promise in Winter</p>
@@ -65,7 +69,7 @@
       </div>
     </section>
     <section class="ball-section--plate photo-plate" aria-label="산뜻한 웨딩 사진">
-      <div class="photo-frame photo-frame--highkey">
+      <div class="photo-frame photo-frame--highkey photo-frame--guarded">
         <img src="assets/photos-v2/w1200/004-aur-09752-1.jpg" width="1200" height="1800" loading="lazy" decoding="async" alt="흰 플로럴 아치 앞에서 부케를 들고 웃는 신부와 신랑">
       </div>
     </section>
@@ -99,7 +103,7 @@
       </div>
     </section>
     <section class="ball-section--plate photo-plate" aria-label="결혼 소식을 알리는 케이크를 든 웨딩 사진">
-      <div class="photo-frame">
+      <div class="photo-frame photo-frame--guarded">
         <img src="assets/photos-v2/w1200/008-aur-00565-1.jpg" width="1200" height="1800" loading="lazy" decoding="async" alt="빨간 하트 풍선 아래에서 결혼 소식을 알리는 케이크 팻말을 마주 든 신랑과 신부">
       </div>
     </section>
@@ -112,23 +116,34 @@
         <p class="ic-distance" data-field="directions.official.icDistance">독립기념관IC 6km · 7분 / 남천안IC 3.5km · 5분</p>
         <div class="route-card">
           <input class="visually-hidden" type="radio" name="map-view" id="map-view-diagram" checked>
-          <input class="visually-hidden" type="radio" name="map-view" id="map-view-apps">
+          <input class="visually-hidden" type="radio" name="map-view" id="map-view-naver">
+          <input class="visually-hidden" type="radio" name="map-view" id="map-view-kakao">
           <div class="map-tabs">
             <label class="map-tab" for="map-view-diagram">약도</label>
-            <label class="map-tab" for="map-view-apps">지도 앱</label>
+            <label class="map-tab" for="map-view-naver">네이버맵</label>
+            <label class="map-tab" for="map-view-kakao">카카오맵</label>
           </div>
           <div class="map-pane map-pane--diagram">
-            <img class="route-mobile" src="venue-map.jpg" width="764" height="769" loading="lazy" alt="티웨딩 천안과 독립기념관IC·남천안IC·천안IC 나들목, 천안분기점, 주변 랜드마크와 나들목별 거리를 표시한 예식장 공식 안내도">
+            <img class="route-mobile" src="venue-map.jpg" width="764" height="769" loading="lazy" data-allow-save alt="티웨딩 천안과 독립기념관IC·남천안IC·천안IC 나들목, 천안분기점, 주변 랜드마크와 나들목별 거리를 표시한 예식장 공식 안내도">
             <a class="action-button map-zoom" href="venue-map.jpg" target="_blank" rel="noreferrer">약도 크게 보기</a>
           </div>
-          <div class="map-pane map-pane--apps">
-            <p class="map-pane__note">쓰시는 지도 앱에서 바로 길을 찾으실 수 있습니다.</p>
-            <a class="action-button" href="#" data-href-field="venue.maps.naver" target="_blank" rel="noreferrer">네이버지도</a>
-            <a class="action-button" href="#" data-href-field="venue.maps.kakao" target="_blank" rel="noreferrer">카카오맵</a>
+          <div class="map-pane map-pane--naver">
+            <div class="map-widget" data-map-widget="naver"></div>
+            <div class="map-widget__fallback" data-map-fallback="naver">
+              <p class="map-pane__note">지도를 불러오는 중입니다. 앱에서 바로 여실 수도 있습니다.</p>
+              <a class="action-button" href="#" data-href-field="venue.maps.naver" target="_blank" rel="noreferrer">네이버지도</a>
+            </div>
+          </div>
+          <div class="map-pane map-pane--kakao">
+            <div class="map-widget" data-map-widget="kakao"></div>
+            <div class="map-widget__fallback" data-map-fallback="kakao">
+              <p class="map-pane__note">지도를 불러오는 중입니다. 앱에서 바로 여실 수도 있습니다.</p>
+              <a class="action-button" href="#" data-href-field="venue.maps.kakao" target="_blank" rel="noreferrer">카카오맵</a>
+            </div>
           </div>
         </div>
         <div class="directions-list">
-          <details class="transit-fold">
+          <details class="transit-fold" id="shuttle" tabindex="-1">
             <summary><h3>셔틀버스</h3></summary>
             <p class="transit-lead"><strong>운행</strong><br><span data-field="directions.official.shuttleInterval">첫 예식 1시간 전부터 20~30분 간격</span></p>
             <p><strong>천안터미널</strong><br><span data-field="directions.official.shuttleTerminal">신세계백화점 옆 올리브영 앞 탑승 (스타벅스·애슐리 사이) · "올리브영 천안타운" 검색</span></p>
@@ -137,7 +152,8 @@
             <input class="visually-hidden" type="checkbox" id="shuttle-photo" data-shuttle-photo>
             <label class="action-button shuttle-photo-label" for="shuttle-photo">타는 곳 사진</label>
             <figure class="shuttle-photo">
-              <img src="shuttle-stops.jpg" width="1200" height="574" loading="lazy" decoding="async" alt="천안터미널 신세계백화점 옆 올리브영 앞과 천안역 1번 출구 동부광장 건너편 GS25편의점 앞, 두 곳의 셔틀버스 승차 위치를 표시한 사진 안내">
+              <img src="shuttle-stops.jpg" width="1200" height="574" loading="lazy" decoding="async" data-allow-save alt="천안터미널 신세계백화점 옆 올리브영 앞과 천안역 1번 출구 동부광장 건너편 GS25편의점 앞, 두 곳의 셔틀버스 승차 위치를 표시한 사진 안내">
+              <a class="action-button map-zoom" href="shuttle-stops.jpg" target="_blank" rel="noreferrer">승차장 사진 크게 보기</a>
             </figure>
           </details>
           <details class="transit-fold">
@@ -160,7 +176,7 @@
       </div>
     </section>
     <section class="ball-section--plate photo-plate" aria-label="아치 뒤에서 얼굴을 내민 웨딩 사진">
-      <div class="photo-frame">
+      <div class="photo-frame photo-frame--guarded">
         <img src="assets/photos-v2/w1200/peek-1.jpg" width="1024" height="1536" loading="lazy" decoding="async" alt="크림색 아치 벽 뒤에서 보라빛 부케를 든 채 얼굴을 내민 신부와 어깨를 감싸 안고 함께 웃는 신랑">
       </div>
     </section>
@@ -214,10 +230,9 @@
     </section>
     <section class="ball-closing" data-section="share" data-mask>
       <div class="mask-inner">
-        <div class="photo-frame">
+        <div class="photo-frame photo-frame--guarded">
           <img class="closing-photo" src="assets/photos-v2/w1200/012-aur-09366-spread-1.jpg" width="1200" height="800" loading="lazy" decoding="async" alt="창가에 앉아 반려견 포메라니안을 안고 있는 신부와 신랑">
         </div>
-        <button type="button" class="action-button text-scale-toggle text-scale-toggle--closing" data-text-scale aria-pressed="false">글자 크게</button>
         <div class="mobile-section mobile-section--compact">
           <p class="eyebrow">With All Our Hearts</p>
           <h2 class="section-title"><span data-field="copy.closingLine1">첫 걸음을 함께 세어 주신 분들께,</span><br><span data-field="copy.closingLine2">오래 감사하겠습니다.</span></h2>
@@ -225,6 +240,15 @@
       </div>
     </section>
     <p class="visually-hidden" role="status" aria-live="polite" data-copy-status></p>
+    <!-- 지명 뱃지 하나당 시트를 만들지 않는다. 상태가 하나뿐이라 열 때 제목·링크만 갈아끼운다. -->
+    <dialog class="geo-sheet" data-geo-sheet aria-labelledby="geo-sheet-title">
+      <h2 id="geo-sheet-title" data-geo-sheet-title></h2>
+      <p class="geo-sheet__note">지도 앱을 선택하세요</p>
+      <a class="action-button" data-geo-naver target="_blank" rel="noreferrer">네이버지도로 열기</a>
+      <a class="action-button" data-geo-kakao target="_blank" rel="noreferrer">카카오맵으로 열기</a>
+      <button type="button" class="action-button" data-geo-copy></button>
+      <button type="button" class="action-button geo-sheet__close" data-geo-close>닫기</button>
+    </dialog>
   </main>
 <script>
 // 닫기는 청첩장 안에서 이동해 온 경우에만 노출한다. history.length는 새 탭·인앱

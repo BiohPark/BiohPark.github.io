@@ -137,20 +137,36 @@ img { display: block; max-width: 100%; }
 [data-section="venue"] p,
 .route-caption { word-break: keep-all; -webkit-user-select: text; user-select: text; -webkit-touch-callout: default; }
 
-/* 히어로 뒤에 앉는 퀵 내비. 스크롤 리스너 없이 sticky만 쓰고, 배경은 반드시 불투명하게 둔다 —
-   전면 사진 위 블러 바는 인앱 WebView에서 프레임마다 리페인트를 일으킨다. */
-.quick-nav { position: sticky; top: 0; z-index: 110; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+/* 히어로 뒤에 앉는 2행 헤더(내비 + 도구). 스크롤 리스너 없이 sticky만 쓰고, 배경은 반드시
+   불투명하게 둔다 — 전면 사진 위 블러 바는 인앱 WebView에서 프레임마다 리페인트를 일으킨다.
+   sticky 주체는 반드시 래퍼다. 내비만 붙이면 두 번째 행이 스크롤에 흘러간다. */
+.mobile-header { position: sticky; top: 0; z-index: 110; }
+.quick-nav { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .quick-nav a { display: flex; min-height: 44px; align-items: center; justify-content: center; padding: .5rem .3rem; text-align: center; text-decoration: none; word-break: keep-all; }
-/* 앵커 오프셋은 고정 px이 아니라 실측 바 높이로 잡는다. 큰 글자 모드에서 바가 높아지기 때문이다. */
-[data-section="schedule"], [data-section="venue"], [data-section="account"] { scroll-margin-top: calc(var(--quick-nav-h, 48px) + 8px); }
+/* 2행. 좌측 닫기·우측 글자 크기 — 이동(1행)과 도구(2행)를 시각적으로 갈라 놓는다. */
+.mobile-header__tools { display: flex; align-items: stretch; justify-content: space-between; gap: .5rem; }
+/* 헤더 안의 닫기는 흐름에 놓인다. 화면 고정 알약이 아니므로 위치·크기 변화가 없다. */
+.mobile-header .back-link { position: static; min-height: 44px; border: 0; border-radius: 0; box-shadow: none; backdrop-filter: none; background: none; }
+.mobile-header .back-link.is-compact { opacity: 1; transform: none; }
+/* 앵커 오프셋은 고정 px이 아니라 실측 헤더 높이로 잡는다. 큰 글자 모드에서 바가 높아지기 때문이다. */
+[data-section="schedule"], [data-section="venue"], #shuttle { scroll-margin-top: calc(var(--quick-nav-h, 90px) + 8px); }
 /* 마우스로 눌렀을 때만 링을 숨긴다. 키보드로 이동한 사람은 착지 지점을 볼 수 있어야 한다. */
-[data-section="schedule"]:focus:not(:focus-visible), [data-section="venue"]:focus:not(:focus-visible), [data-section="account"]:focus:not(:focus-visible) { outline: none; }
+[data-section="schedule"]:focus:not(:focus-visible), [data-section="venue"]:focus:not(:focus-visible), #shuttle:focus:not(:focus-visible) { outline: none; }
 
-/* 약도 / 지도 앱 전환과 셔틀 승차장 사진 토글. details를 늘리지 않기 위해 radio·checkbox로만 만든다. */
+/* [약도]/[네이버맵]/[카카오맵] 3단 전환과 셔틀 승차장 사진 토글. details를 늘리지 않기 위해 radio·checkbox로만 만든다. */
 .map-pane { display: none; }
-#map-view-diagram:checked ~ .map-pane--diagram, #map-view-apps:checked ~ .map-pane--apps { display: block; }
-.map-tabs { display: grid; grid-template-columns: 1fr 1fr; }
+#map-view-diagram:checked ~ .map-pane--diagram,
+#map-view-naver:checked ~ .map-pane--naver,
+#map-view-kakao:checked ~ .map-pane--kakao { display: block; }
+.map-tabs { display: grid; grid-template-columns: repeat(3, 1fr); }
 .map-tab { display: flex; min-height: 44px; align-items: center; justify-content: center; cursor: pointer; }
+/* 지도 위젯은 세로 스크롤을 점유한다. 높이를 묶고 지도 밖에 스크롤 통로를 남긴다. */
+.map-widget { width: 100%; height: 280px; background: rgba(12,21,40,.06); }
+.map-widget__fallback { display: grid; gap: .6rem; padding: 1rem; }
+/* [hidden]은 display 선언에 진다(HTML 표준). 아래 두 요소는 display를 명시로 받으므로 여기서
+   되돌려 놓는다 — 빠뜨리면 '보이지만 아무 일도 하지 않는' 닫기 버튼이 그대로 배포된다. */
+.back-link[hidden], .map-widget__fallback[hidden] { display: none; }
+.map-widget__note { margin: 0; font-size: .9375rem; line-height: 1.6; text-align: center; word-break: keep-all; }
 /* 닫힌 동안 display:none이므로 lazy 이미지가 화면에 들어올 일이 없다 = 펼치기 전에는 내려받지 않는다. */
 .shuttle-photo { display: none; margin: .75rem 0 0; }
 [data-shuttle-photo]:checked ~ .shuttle-photo { display: block; }
@@ -199,6 +215,10 @@ img { display: block; max-width: 100%; }
 .photo-plate { padding-block: 0; }
 .photo-frame { position: relative; overflow: hidden; }
 .photo-frame::before, .photo-frame::after { content: ''; position: absolute; inset: 0; pointer-events: none; }
+/* 롱프레스 다운로드 억제의 유일한 실효 수단. 안드로이드 크롬은 contextmenu 취소를 무시하지만
+   히트 타깃이 <img>가 아니면 이미지 메뉴를 띄울 근거가 없다 — 히어로가 .hero-overlay(inset:0)로
+   이미 그렇게 동작하고 있다. 억제일 뿐 보호가 아니다: URL 직접 접근과 스크린샷은 그대로 된다. */
+.photo-frame--guarded::before { pointer-events: auto; }
 .photo-frame::before { z-index: 2; }
 .photo-frame::after { z-index: 1; }
 /* height:auto 필수 — 없으면 HTML의 height 속성이 presentational hint로 먹어
@@ -206,6 +226,18 @@ img { display: block; max-width: 100%; }
    (실측: 004가 375x1800, 012가 375x800으로 69% 크롭됨) */
 .photo-frame img { width: 100%; height: auto; }
 .photo-plate--wide img { width: 100%; height: auto; aspect-ratio: 3/2; object-fit: cover; }
+/* 본문 안에서 눌리는 지명 뱃지. 배경 칩을 쓰지 않는다 — 이 화면의 채워진 강조색은 1차 CTA 어휘라
+   문장 속에 박히면 광고 배지처럼 읽힌다. 실선 밑줄 + 핀 글리프만으로 어포던스를 만든다.
+   user-select:text 는 필수다. 버튼 기본값(none)이 되면 "길게 눌러 복사" 폴백 안내가 조용히 죽는다. */
+.geo-badge { --geo-pin: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z'/%3E%3C/svg%3E"); display: inline; margin: 0 -.1em; padding: .5em .1em; border: 0; background: none; color: inherit; font: inherit; cursor: pointer; text-decoration: underline solid currentColor 1px; text-underline-offset: .22em; -webkit-user-select: text; user-select: text; -webkit-touch-callout: default; }
+.geo-badge::after { content: ''; display: inline-block; width: .62em; height: .62em; margin-left: .22em; background: currentColor; -webkit-mask: var(--geo-pin) center/contain no-repeat; mask: var(--geo-pin) center/contain no-repeat; }
+/* 하단 시트. 세로로 긴 화면에서 중앙 모달은 엄지가 위로 올라가야 한다. showModal 은 top layer라
+   헤더(z-index 110) 위에 뜨므로 z-index를 따로 관리하지 않는다. */
+.geo-sheet { width: min(100%,560px); max-width: none; margin: auto auto 0; padding: 1.25rem 1rem calc(1.25rem + env(safe-area-inset-bottom)); border: 0; border-radius: 14px 14px 0 0; }
+.geo-sheet::backdrop { background: rgba(8,13,24,.6); }
+.geo-sheet h2 { margin: 0 0 .2rem; font-size: 1.25rem; line-height: 1.4; word-break: keep-all; }
+.geo-sheet__note { margin: 0 0 .9rem; font-size: .9375rem; opacity: .75; }
+.geo-sheet .action-button { display: flex; width: 100%; min-height: 56px; align-items: center; justify-content: center; margin-top: .5rem; text-decoration: none; }
 .lightbox { width: min(92vw,780px); max-width: none; padding: 3rem 1rem 1rem; border: 1px solid var(--mobile-accent); color: #fff; background: var(--lightbox-bg,rgba(10,10,10,.94)); opacity: 1; transform: scale(1); }
 .lightbox::backdrop { background: var(--lightbox-bg,rgba(10,10,10,.94)); }
 .lightbox img { width: 100%; max-height: 82vh; object-fit: contain; }
