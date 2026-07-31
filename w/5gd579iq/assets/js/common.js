@@ -551,10 +551,14 @@
       script.addEventListener('error', () => reject(new Error(src)), { once: true });
       document.head.append(script);
     });
-    const settle = (name, ok) => {
-      const fallback = document.querySelector(`[data-map-fallback="${name}"]`);
-      if (fallback) fallback.hidden = ok;
-    };
+    /*
+     * 폴백('앱에서 열기')은 어떤 경우에도 숨기지 않는다. 7차에 같은 실수를 두 번 했다 —
+     * "요소는 존재하는데 보이지 않는다". 렌더에 성공했는지 확인하지도 않고 탈출구를 치우면,
+     * 위젯이 실패한 하객에게는 빈 회색 박스만 남고 작동하던 링크는 사라진 뒤다.
+     * 게다가 지도가 떠도 딥링크는 여전히 쓸모 있다 — 하객이 원하는 건 보는 게 아니라 길찾기다.
+     * 그래서 실패했을 때 걷어내는 것은 폴백이 아니라 '빈 상자' 쪽이다.
+     */
+    const failWidget = (mount) => { mount.hidden = true; };
 
     // 스크립트가 로드돼도 인증이 거부되면 지오코딩 단계에서야 드러난다. 그래서 '스크립트 로드'가
     // 아니라 '지도가 실제로 그려졌는가'까지를 한 번의 시도로 묶어 판정한다.
@@ -581,8 +585,10 @@
       // 배포 도메인에서만 인증이 성립해 어느 파라미터가 맞는지 사전에 판정할 수 없었다.
       // 공식 문서 현행(ncpKeyId)을 먼저 쓰고, 안 되면 구 파라미터로 한 번 더 시도한다.
       for (const parameter of ['ncpKeyId', 'ncpClientId']) {
-        if (await tryNaver(mount, parameter, clientId)) { settle('naver', true); return; }
+        // 인증이 거부되면 SDK 는 이미 전역을 점유한 상태다. 두 번째 시도 전에 실패한 태그를 걷는다.
+        if (await tryNaver(mount, parameter, clientId)) return;
       }
+      failWidget(mount);
     };
 
     const startKakao = (mount) => {
@@ -598,9 +604,10 @@
        */
       const frame = document.createElement('iframe');
       frame.title = '카카오맵으로 보는 예식장 위치';
-      frame.loading = 'lazy';
+      // loading="lazy" 는 srcdoc iframe 에 대해 명세가 없다. 처리되면 display:none 안에서 영영
+      // 지연되고, 무시되면 아무 이득이 없다. 전송은 이미 '탭을 열기 전엔 시작 안 함'으로 막혀 있다.
       frame.width = '100%';
-      frame.height = '280';
+      frame.height = '100%';
       frame.style.border = '0';
       frame.srcdoc = [
         '<!doctype html><html lang="ko"><head><meta charset="utf-8">',
@@ -611,7 +618,18 @@
         '</body></html>',
       ].join('');
       mount.append(frame);
-      settle('kakao', true);
+      // 붙였다고 그려진 것이 아니다. srcdoc 은 부모와 같은 출처라 안을 들여다볼 수 있으므로
+      // 실제로 무언가 그려졌는지 확인하고, 아니면 빈 상자를 걷는다(폴백은 그대로 남아 있다).
+      frame.addEventListener('load', () => {
+        window.setTimeout(() => {
+          let rendered = false;
+          try {
+            const box = frame.contentDocument?.querySelector(`#daumRoughmapContainer${roughmap.timestamp}`);
+            rendered = Boolean(box && box.clientHeight > 0 && box.querySelector('img, canvas, iframe'));
+          } catch { rendered = false; }
+          if (!rendered) failWidget(mount);
+        }, 1500);
+      }, { once: true });
     };
 
     const start = (mount) => {
@@ -705,7 +723,11 @@
     if (backLink) backLink.inert = false;
   }
 
+  let initialized = false;
   function init() {
+    // 공개 API 로 내보낸 이상 멱등이어야 한다. 두 번 불리면 리스너와 SDK 요청이 쌓인다.
+    if (initialized) return;
+    initialized = true;
     try {
       hydrateFields();
       document.documentElement.classList.remove('js-loading');

@@ -94,7 +94,8 @@
 .ic-distance { max-width:430px; margin:.5rem auto 0; color:rgba(240,228,207,.8); font-size:.9375rem; letter-spacing:-.01em; word-break:keep-all; }
 .route-card { box-sizing:border-box; width:calc(100% + 2.25rem); max-width:540px; margin:1rem -1.125rem 0; border-radius:12px; background:var(--ball-cream); color:var(--ball-navy); overflow:hidden; }
 .route-card .route-mobile { margin:0 auto; border-radius:6px; }
-.map-tab { border-bottom:1px solid rgba(12,21,40,.16); color:rgba(12,21,40,.6); font-family:var(--serif-korean); font-size:1rem; font-weight:600; }
+/* 비활성 탭도 읽혀야 한다 — .6 은 실측 4.44:1 로 AA 경계 아래였다. */
+.map-tab { border-bottom:1px solid rgba(12,21,40,.16); color:rgba(12,21,40,.75); font-family:var(--serif-korean); font-size:1rem; font-weight:600; }
 #map-view-diagram:checked ~ .map-tabs .map-tab[for="map-view-diagram"],
 #map-view-naver:checked ~ .map-tabs .map-tab[for="map-view-naver"],
 #map-view-kakao:checked ~ .map-tabs .map-tab[for="map-view-kakao"] { border-bottom:2px solid var(--ball-navy); color:var(--ball-navy); }
@@ -109,7 +110,7 @@
    사실상 투명해지고 hover 에서만 드러난다 — 실제로 셔틀 버튼에서 그렇게 터졌다. */
 .map-zoom { display:flex; width:min(100% - 2rem,320px); min-height:44px; align-items:center; justify-content:center; margin:.75rem auto 0; font-size:1rem; text-decoration:none; }
 /* 크림색 약도 카드 위 */
-.route-card .map-zoom { border-color:rgba(12,21,40,.4); color:var(--ball-navy); }
+.route-card .map-zoom { border-color:rgba(12,21,40,.55); color:var(--ball-navy); }
 .ball-page .route-card .map-zoom:hover, .ball-page .route-card .map-zoom:focus-visible { background:var(--ball-navy); color:var(--ball-cream); }
 /* 남색 교통 접기 위 — 예식장 문의 버튼과 같은 어휘를 쓴다 */
 .shuttle-photo .map-zoom { border-color:var(--ball-cream); color:var(--ball-cream); }
@@ -117,7 +118,7 @@
    덮어써서 두 탭이 동시에 보인다. */
 .map-widget__fallback { gap:.6rem; padding:1.25rem 1rem 1.5rem; }
 .map-pane__note { margin:0; font-size:.9375rem; line-height:1.6; text-align:center; word-break:keep-all; }
-.map-widget__fallback .action-button { border-color:rgba(12,21,40,.4); color:var(--ball-navy); }
+.map-widget__fallback .action-button { border-color:rgba(12,21,40,.55); color:var(--ball-navy); }
 .ball-page .map-widget__fallback .action-button:hover, .ball-page .map-widget__fallback .action-button:focus-visible { background:var(--ball-navy); color:var(--ball-cream); }
 /* 본문 안에서 눌리는 지명. 금색 밑줄 + 핀 — 채워진 금색은 이 화면에서 1차 CTA 어휘라 문장 속에 쓰지 않는다. */
 .ball-mobile .geo-badge { color:var(--ball-cream); text-decoration-color:var(--ball-gold); }
@@ -126,7 +127,7 @@
 /* 액션시트는 약도 카드와 같은 밝은 면을 쓴다 — 남색 본문 위에 뜨는 흰 시트가 아니라 같은 어휘다. */
 .geo-sheet { background:var(--ball-cream); color:var(--ball-navy); }
 .geo-sheet h2 { font-family:var(--serif-korean); }
-.geo-sheet .action-button { border-color:rgba(12,21,40,.4); color:var(--ball-navy); }
+.geo-sheet .action-button { border-color:rgba(12,21,40,.55); color:var(--ball-navy); }
 .ball-page .geo-sheet .action-button:hover, .ball-page .geo-sheet .action-button:focus-visible { background:var(--ball-navy); color:var(--ball-cream); }
 .geo-sheet__close { border-color:transparent; opacity:.75; }
 /* 예식장 문의 버튼과 같은 폭으로 맞춘다 — 나란히 놓인 두 버튼이 서로 다른 폭일 근거가 없다. */
@@ -149,6 +150,8 @@
 .ball-mobile .shuttle-photo { padding-bottom:1rem; }
 .venue-call { display:flex; width:min(100%,450px); align-items:center; justify-content:center; gap:.4em; margin:1rem auto 0; }
 .ball-mobile .countdown-message { color:var(--ball-gold); font-family:var(--serif-korean); }
+/* 숫자 넷을 설명하는 유일한 텍스트가 영문 대문자였다. 하객 구성상 읽히지 않는다. */
+.ball-mobile .countdown span { font-family:var(--serif-korean); font-size:.9375rem; letter-spacing:0; text-transform:none; }
 .account-group { display:grid; gap:.7rem; }
 .account-group__label { margin:.25rem 0 0; color:var(--ball-gold); font-size:.95rem; font-weight:600; letter-spacing:.08em; text-align:left; }
 .family-introduction { max-width:430px; margin:2rem auto 0; border-block:1px solid var(--mobile-line); }
@@ -171,7 +174,11 @@ html.is-large-text .ball-mobile .account-row,
 html.is-large-text .ball-mobile .venue-call { font-size:1.40625rem; }
 html.is-large-text .ball-mobile .calendar-grid caption { font-size:1.5625rem; }
 html.is-large-text .ball-mobile .calendar-grid th { font-size:1.025rem; }
-html.is-large-text .ball-mobile .countdown span { font-size:.9rem; letter-spacing:.05em; }
+html.is-large-text .ball-mobile .countdown span { font-size:1.0625rem; letter-spacing:0; }
+/* 글자를 키운 하객이 되돌리려는 순간, 되돌리는 버튼만 안 커져 있으면 찾지 못한다.
+   헤더 45px 단행을 지켜야 하므로 44px 바닥 안에 들어오는 선까지만 올린다. */
+html.is-large-text .ball-mobile .text-scale-toggle,
+html.is-large-text .ball-mobile .back-link { font-size:.9375rem; letter-spacing:-.03em; }
 html.is-large-text .ball-mobile .calendar-primary { font-size:1.25rem; }
 html.is-large-text .ball-mobile .calendar-google-link,
 html.is-large-text .ball-mobile .venue-actions .action-button { font-size:1.09375rem; }

@@ -40,6 +40,7 @@ window.INVITATION_DATA = Object.freeze({
       kakao: `https://map.kakao.com/link/search/${encodeURIComponent('티웨딩 천안')}`,
       naver: `https://map.naver.com/v5/search/${encodeURIComponent('티웨딩 천안')}`,
       naverClientId: 'egdf0t98dc',
+      kakaoRoughmap: { timestamp: '1785487650547', key: 's59597zif2p' },
     },
   },
   /*
