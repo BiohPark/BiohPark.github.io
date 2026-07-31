@@ -140,16 +140,18 @@ img { display: block; max-width: 100%; }
 /* 히어로 뒤에 앉는 2행 헤더(내비 + 도구). 스크롤 리스너 없이 sticky만 쓰고, 배경은 반드시
    불투명하게 둔다 — 전면 사진 위 블러 바는 인앱 WebView에서 프레임마다 리페인트를 일으킨다.
    sticky 주체는 반드시 래퍼다. 내비만 붙이면 두 번째 행이 스크롤에 흘러간다. */
-.mobile-header { position: sticky; top: 0; z-index: 110; }
-.quick-nav { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.quick-nav a { display: flex; min-height: 44px; align-items: center; justify-content: center; padding: .5rem .3rem; text-align: center; text-decoration: none; word-break: keep-all; }
-/* 2행. 좌측 닫기·우측 글자 크기 — 이동(1행)과 도구(2행)를 시각적으로 갈라 놓는다. */
-.mobile-header__tools { display: flex; align-items: stretch; justify-content: space-between; gap: .5rem; }
+/* 한 행이다. 2행이었을 때 헤더가 90px로 화면의 10%를 상시로 먹었다 —
+   닫기·글자 크기는 도구이지 목적지가 아니므로, 내비 양옆에 작고 조용하게 붙여 45px로 줄인다.
+   가운데 3열만 셀 경계를 갖고 양끝은 배경도 테두리도 없다 = 네 번째 목적지로 읽히지 않는다. */
+.mobile-header { position: sticky; top: 0; z-index: 110; display: flex; align-items: stretch; }
+.quick-nav { flex: 1 1 auto; min-width: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.quick-nav a { display: flex; min-height: 44px; align-items: center; justify-content: center; padding: .5rem .2rem; text-align: center; text-decoration: none; word-break: keep-all; }
 /* 헤더 안의 닫기는 흐름에 놓인다. 화면 고정 알약이 아니므로 위치·크기 변화가 없다. */
-.mobile-header .back-link { position: static; min-height: 44px; border: 0; border-radius: 0; box-shadow: none; backdrop-filter: none; background: none; }
+.mobile-header .back-link { position: static; flex: 0 0 auto; min-height: 44px; border: 0; border-radius: 0; box-shadow: none; backdrop-filter: none; background: none; }
+.mobile-header .text-scale-toggle { flex: 0 0 auto; display: flex; min-height: 44px; align-items: center; justify-content: center; }
 .mobile-header .back-link.is-compact { opacity: 1; transform: none; }
 /* 앵커 오프셋은 고정 px이 아니라 실측 헤더 높이로 잡는다. 큰 글자 모드에서 바가 높아지기 때문이다. */
-[data-section="schedule"], [data-section="venue"], #shuttle { scroll-margin-top: calc(var(--quick-nav-h, 90px) + 8px); }
+[data-section="schedule"], [data-section="venue"], #shuttle { scroll-margin-top: calc(var(--quick-nav-h, 45px) + 8px); }
 /* 마우스로 눌렀을 때만 링을 숨긴다. 키보드로 이동한 사람은 착지 지점을 볼 수 있어야 한다. */
 [data-section="schedule"]:focus:not(:focus-visible), [data-section="venue"]:focus:not(:focus-visible), #shuttle:focus:not(:focus-visible) { outline: none; }
 
@@ -167,9 +169,10 @@ img { display: block; max-width: 100%; }
    되돌려 놓는다 — 빠뜨리면 '보이지만 아무 일도 하지 않는' 닫기 버튼이 그대로 배포된다. */
 .back-link[hidden], .map-widget__fallback[hidden] { display: none; }
 .map-widget__note { margin: 0; font-size: .9375rem; line-height: 1.6; text-align: center; word-break: keep-all; }
-/* 닫힌 동안 display:none이므로 lazy 이미지가 화면에 들어올 일이 없다 = 펼치기 전에는 내려받지 않는다. */
-.shuttle-photo { display: none; margin: .75rem 0 0; }
-[data-shuttle-photo]:checked ~ .shuttle-photo { display: block; }
+/* 7차: 안쪽 토글을 없앴다. 셔틀 접기가 이미 게이트이고, 접힌 동안은 display:none이라
+   lazy 이미지가 화면에 들어올 일이 없다 = 셔틀을 펼치지 않은 하객은 여전히 한 바이트도 받지 않는다.
+   약도는 탭을 열면 바로 보이는데 승차장 사진만 한 겹 더 숨어 있을 이유가 없다. */
+.shuttle-photo { margin: .75rem 0 0; }
 .shuttle-photo img { width: 100%; height: auto; border-radius: 6px; }
 .mobile-invitation.opening-active { overflow: hidden; }
 .mobile-shell { width: min(100%,560px); margin: 0 auto; background: var(--mobile-paper,#f5efe5); box-shadow: 0 0 80px rgba(0,0,0,.14); }

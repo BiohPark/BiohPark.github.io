@@ -35,14 +35,14 @@
 .ball-hero .hero-overlay { background:linear-gradient(180deg,rgba(12,21,40,.10) 0%,rgba(12,21,40,.18) 42%,rgba(12,21,40,.72) 78%,rgba(8,13,24,.94) 100%); }
 .ball-hero .hero-media img { object-position:50% 50%; }
 .ball-hero .mobile-title { font-family:var(--serif-korean); font-size:2.25rem; font-weight:500; line-height:1.2; letter-spacing:.08em; }
-/* 2행 헤더의 도구 행. 라벨이 다음 동작을 말하므로 금색 채움(=켜짐 상태)을 쓰지 않는다 —
-   라벨과 색이 서로 다른 것을 가리키면 어느 쪽이 상태인지 알 수 없게 된다. */
-.text-scale-toggle { display:flex; min-height:44px; flex:1 1 auto; align-items:center; justify-content:center; gap:.4em; margin:0; padding-block:0; border:0; background:none; color:var(--ball-cream); font-size:1rem; }
+/* 내비 오른쪽 끝의 도구. 라벨이 다음 동작을 말하므로 금색 채움(=켜짐 상태)을 쓰지 않는다 —
+   라벨과 색이 서로 다른 것을 가리키면 어느 쪽이 상태인지 알 수 없게 된다.
+   테두리·배경을 지우고 한 단계 작은 활자로 낮춰 '목적지'가 아니라 '도구'로 읽히게 한다. */
+.text-scale-toggle { margin:0; padding:.5rem .7rem; border:0; background:none; color:rgba(240,228,207,.82); font-family:var(--serif-korean); font-size:.8125rem; letter-spacing:-.04em; white-space:nowrap; }
 .text-scale-toggle:focus-visible { outline:2px solid var(--ball-gold); outline-offset:-3px; }
 /* 퀵 내비. 불투명 남색 — 사진 위에 반투명 바를 얹으면 대비가 무너지고 인앱 WebView가 버벅인다. */
-.mobile-header { padding-inline:env(safe-area-inset-left) env(safe-area-inset-right); background:var(--ball-navy); }
-.mobile-header__tools { border-bottom:1px solid rgba(193,162,97,.3); }
-.quick-nav { background:var(--ball-navy); border-bottom:1px solid rgba(193,162,97,.18); }
+.mobile-header { padding-inline:env(safe-area-inset-left) env(safe-area-inset-right); background:var(--ball-navy); border-bottom:1px solid rgba(193,162,97,.3); }
+.quick-nav { background:var(--ball-navy); }
 .ball-mobile .quick-nav a { color:var(--ball-cream); font-family:var(--serif-korean); font-size:.9375rem; letter-spacing:-.03em; }
 .ball-mobile .quick-nav a + a { box-shadow:-1px 0 0 rgba(193,162,97,.18); }
 /* 활성 표시는 금색을 쓰지 않는다 — 계좌 항목이 활성이 되는 순간 강조색이 붙어 "무채색·강조 금지"
@@ -53,7 +53,7 @@
 /* 7차: 닫기는 헤더 2행 좌측에 흐름으로 놓인다. 첫 화면(히어로)에서는 보이지 않고, 그 이후
    전 구간에서 같은 자리에 남는다 — 스크롤하면 사라지던 6차 동작의 반대다. 화면 고정 알약이
    아니므로 축소·투명도 변화도 없앤다. */
-.ball-mobile .back-link { position:static; flex:0 0 auto; padding-inline:.9rem; border:0; border-radius:0; background:none; box-shadow:none; backdrop-filter:none; color:var(--ball-cream); font-family:var(--serif-korean); font-size:.9375rem; opacity:.82; }
+.ball-mobile .back-link { position:static; flex:0 0 auto; padding:.5rem .7rem; border:0; border-radius:0; background:none; box-shadow:none; backdrop-filter:none; color:var(--ball-cream); font-family:var(--serif-korean); font-size:.8125rem; letter-spacing:-.04em; white-space:nowrap; opacity:.82; }
 .ball-mobile .back-link.is-compact { opacity:.82; transform:none; }
 .ball-mobile .back-link:hover, .ball-mobile .back-link:focus-visible { opacity:1; transform:none; }
 .ball-section--plate { padding-block:2rem; background:var(--ball-navy); }
@@ -137,13 +137,6 @@
 .transit-fold > p { padding:0 0 1rem; }
 .transit-fold > p + p { padding-top:.75rem; border-top:1px solid rgba(193,162,97,.14); }
 .ball-mobile .transit-fold .transit-note { padding-top:.75rem; border-top:1px solid rgba(193,162,97,.14); color:rgba(240,228,207,.72); font-size:1rem; line-height:1.65; }
-/* 라벨 문구는 고정하고 상태는 ＋/－ 로만 말한다 — 접기·계좌 보기와 같은 어휘를 쓰고,
-   체크박스 라벨이 상태에 따라 바뀌어 스크린리더에 의미가 뒤집히는 것도 막는다. */
-.shuttle-photo-label { display:flex; width:min(100%,320px); min-height:44px; align-items:center; justify-content:center; gap:.5em; margin:0 auto 1rem; cursor:pointer; font-size:1rem; }
-.shuttle-photo-label::after { content:'＋'; }
-[data-shuttle-photo]:checked ~ .shuttle-photo-label::after { content:'－'; }
-[data-shuttle-photo]:checked ~ .shuttle-photo-label { background:var(--ball-gold); border-color:var(--ball-gold); color:var(--ball-navy); font-weight:600; }
-[data-shuttle-photo]:focus-visible ~ .shuttle-photo-label { outline:2px solid var(--ball-gold); outline-offset:2px; }
 .ball-mobile .shuttle-photo { padding-bottom:1rem; }
 .venue-call { display:flex; width:min(100%,450px); align-items:center; justify-content:center; gap:.4em; margin:1rem auto 0; }
 .ball-mobile .countdown-message { color:var(--ball-gold); font-family:var(--serif-korean); }
@@ -182,12 +175,17 @@ html.is-large-text .ball-mobile .quick-nav a { font-size:1.0625rem; letter-spaci
 @media (max-width:360px) {
   html.is-large-text .ball-mobile .quick-nav a { font-size:.9375rem; letter-spacing:-.06em; }
 }
+/* 320px에서는 양옆 도구가 내비를 밀어 '예식 안내'가 두 줄로 꺾인다(실측 71px).
+   도구를 먼저 조이고 그래도 모자라면 내비 활자를 내린다 — 헤더는 한 행 45px을 지킨다. */
+@media (max-width:344px) {
+  .ball-mobile .back-link, .ball-mobile .text-scale-toggle { padding:.5rem .4rem; font-size:.75rem; letter-spacing:-.06em; }
+  .ball-mobile .quick-nav a, html.is-large-text .ball-mobile .quick-nav a { font-size:.875rem; letter-spacing:-.07em; }
+}
 html.is-large-text .ball-mobile .ic-distance,
 html.is-large-text .ball-mobile .map-pane__note { font-size:1.09375rem; }
 html.is-large-text .ball-mobile .transit-fold .transit-note { font-size:1.25rem; }
 html.is-large-text .ball-mobile .map-tab,
-html.is-large-text .ball-mobile .map-zoom,
-html.is-large-text .ball-mobile .shuttle-photo-label { font-size:1.125rem; }
+html.is-large-text .ball-mobile .map-zoom { font-size:1.125rem; }
 
 @media print {
   .ball-page { background:transparent; }

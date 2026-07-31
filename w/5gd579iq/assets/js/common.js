@@ -367,7 +367,7 @@
     } catch {}
     const apply = (enabled, announce) => {
       document.documentElement.classList.toggle('is-large-text', enabled);
-      triggers.forEach((trigger) => { trigger.textContent = enabled ? '가 글자 작게' : '가 글자 크게'; });
+      triggers.forEach((trigger) => { trigger.textContent = enabled ? '글자 작게' : '글자 크게'; });
       // 라벨만 바뀌면 스크린리더에는 아무 일도 안 일어난 것처럼 들린다. 기존 live region을 재사용한다.
       if (announce && status) status.textContent = enabled ? '글자를 크게 했습니다' : '원래 크기로 되돌렸습니다';
       quickNavRefresh();
@@ -631,6 +631,50 @@
     });
   }
 
+  /*
+   * 약도 ↔ 네이버맵 ↔ 카카오맵 좌우 스와이프. 탭을 못 찾은 하객도 밀어서 넘길 수 있게 한다.
+   * 세로 스크롤을 뺏으면 안 되므로 가로 이동이 세로보다 확실히 클 때만 반응하고,
+   * 리스너는 전부 passive 로 둔다(preventDefault 를 쓰지 않는다 = 스크롤을 막지 않는다).
+   */
+  function initMapSwipe() {
+    const card = document.querySelector('.route-card');
+    if (!card) return;
+    const radios = [...card.querySelectorAll('input[name="map-view"]')];
+    if (radios.length < 2) return;
+    const MIN_DISTANCE = 48;
+    const DOMINANCE = 1.6;
+    let startX = 0;
+    let startY = 0;
+    let tracking = false;
+
+    card.addEventListener('touchstart', (event) => {
+      // 지도 위젯 안에서 시작한 제스처는 지도 것이다 — 가로로 끌어 지도를 움직이는 동작을 뺏지 않는다.
+      if (event.touches.length !== 1 || event.target.closest?.('[data-map-widget]')) {
+        tracking = false;
+        return;
+      }
+      startX = event.touches[0].clientX;
+      startY = event.touches[0].clientY;
+      tracking = true;
+    }, { passive: true });
+
+    card.addEventListener('touchend', (event) => {
+      if (!tracking) return;
+      tracking = false;
+      const touch = event.changedTouches[0];
+      if (!touch) return;
+      const deltaX = touch.clientX - startX;
+      const deltaY = touch.clientY - startY;
+      if (Math.abs(deltaX) < MIN_DISTANCE || Math.abs(deltaX) < Math.abs(deltaY) * DOMINANCE) return;
+      const index = radios.findIndex((radio) => radio.checked);
+      const next = radios[index + (deltaX < 0 ? 1 : -1)];
+      if (!next) return;
+      next.checked = true;
+      // 위젯 지연 초기화가 change 를 듣는다. 라디오를 코드로 바꾸면 이벤트가 안 나므로 직접 쏜다.
+      next.dispatchEvent(new Event('change', { bubbles: true }));
+    }, { passive: true });
+  }
+
   function initOptionalFeatures() {
     document.querySelectorAll('[data-feature="rsvp"]').forEach((region) => {
       if (concept === 'midnight' && get('rsvp.endpoint')) region.closest('section')?.removeAttribute('hidden');
@@ -675,6 +719,7 @@
       initTextScale();
       initGeoBadges();
       initMapWidgets();
+      initMapSwipe();
       initOptionalFeatures();
       initMaskWatchdog();
     } catch (error) {

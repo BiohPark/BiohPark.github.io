@@ -49,15 +49,13 @@
       </div>
     </section>
     <div class="mobile-header">
+      <a class="back-link" href="#" data-close hidden>← 닫기</a>
       <nav class="quick-nav" aria-label="빠른 이동">
         <a href="#schedule">예식 안내</a>
         <a href="#venue">오시는 길</a>
         <a href="#shuttle">셔틀버스</a>
       </nav>
-      <div class="mobile-header__tools">
-        <a class="back-link" href="#" data-close hidden>← 닫기</a>
-        <button type="button" class="action-button text-scale-toggle" data-text-scale>가 글자 크게</button>
-      </div>
+      <button type="button" class="action-button text-scale-toggle" data-text-scale>글자 크게</button>
     </div>
     <section class="mobile-section ball-section" data-section="invitation" data-mask>
       <div class="mask-inner">
@@ -146,11 +144,9 @@
           <details class="transit-fold" id="shuttle" tabindex="-1">
             <summary><h3>셔틀버스</h3></summary>
             <p class="transit-lead"><strong>운행</strong><br><span data-field="directions.official.shuttleInterval">첫 예식 1시간 전부터 20~30분 간격</span></p>
-            <p><strong>천안터미널</strong><br><span data-field="directions.official.shuttleTerminal">신세계백화점 옆 올리브영 앞 탑승 (스타벅스·애슐리 사이) · "올리브영 천안타운" 검색</span></p>
-            <p><strong>천안역</strong><br><span data-field="directions.official.shuttleStation">1번 출구 동부광장 건너편 GS25편의점 앞 탑승 · "GS25 천안역점" 검색</span></p>
+            <p><strong>천안터미널</strong><br><span data-field="directions.official.shuttleTerminal">신세계백화점 옆 올리브영 앞 탑승 (스타벅스·애슐리 사이) · 올리브영 천안타운 검색</span></p>
+            <p><strong>천안역</strong><br><span data-field="directions.official.shuttleStation">1번 출구 동부광장 건너편 GS25편의점 앞 탑승 · GS25 천안역점 검색</span></p>
             <p class="transit-note" data-field="directions.official.shuttleNote">25인승 버스로 예식에 한해 운행하며, 행사 일정과 비수기 시즌에는 운행이 변동될 수 있습니다.</p>
-            <input class="visually-hidden" type="checkbox" id="shuttle-photo" data-shuttle-photo>
-            <label class="action-button shuttle-photo-label" for="shuttle-photo">타는 곳 사진</label>
             <figure class="shuttle-photo">
               <img src="shuttle-stops.jpg" width="1200" height="574" loading="lazy" decoding="async" data-allow-save alt="천안터미널 신세계백화점 옆 올리브영 앞과 천안역 1번 출구 동부광장 건너편 GS25편의점 앞, 두 곳의 셔틀버스 승차 위치를 표시한 사진 안내">
               <a class="action-button map-zoom" href="shuttle-stops.jpg" target="_blank" rel="noreferrer">승차장 사진 크게 보기</a>
