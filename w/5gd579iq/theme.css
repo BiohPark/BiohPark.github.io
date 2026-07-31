@@ -74,11 +74,22 @@
 .ball-mobile .section-title { margin:0 0 .25rem; font-size:1.25rem; font-weight:500; opacity:.7; }
 .ball-mobile .section-title-ko { margin:0 0 1rem; color:var(--ball-cream); font-size:1.625rem; font-weight:600; }
 .gold-divider { width:48px; height:1px; margin:1.5rem auto; background:var(--ball-gold); box-shadow:none; }
-.calendar-grid { width:min(100%,390px); margin:1.75rem auto 0; border-collapse:separate; border-spacing:0; table-layout:fixed; color:var(--ball-cream); font-variant-numeric:lining-nums tabular-nums; }
+/* 칸마다 밑줄을 그으면 달력이 아니라 데이터 표로 읽힌다. 테두리는 카드 바깥선 하나와
+   요일머리 아래 한 줄만 남기고, 그 자리를 여백으로 돌린다. */
+.calendar-grid { width:min(100%,390px); margin:1.75rem auto 0; border:1px solid rgba(193,162,97,.22); border-radius:14px; border-collapse:separate; border-spacing:0; table-layout:fixed; color:var(--ball-cream); font-variant-numeric:lining-nums tabular-nums; }
 .calendar-grid caption { padding-bottom:1rem; color:var(--ball-cream); font-size:1.25rem; font-weight:600; }
-.calendar-grid th, .calendar-grid td { height:2.7rem; padding:.25rem; border-bottom:1px solid rgba(193,162,97,.16); text-align:center; }
-.calendar-grid th { color:rgba(240,228,207,.7); font-size:.82rem; font-weight:500; }
+.calendar-grid th, .calendar-grid td { height:2.7rem; padding:.25rem; text-align:center; }
+.calendar-grid th { padding-bottom:.6rem; border-bottom:1px solid rgba(193,162,97,.28); color:rgba(240,228,207,.7); font-size:.82rem; font-weight:500; }
+.calendar-grid tbody tr:first-child td { padding-top:.6rem; }
+.calendar-grid tbody tr:last-child td { padding-bottom:.6rem; }
 .calendar-grid th:first-child, .calendar-grid td:first-child { color:#c39b96; }
+/* 성탄절은 일요일 열과 같은 홍색을 쓴다. 빨강을 하나 더 만들면 색이 셋이 되어 산만해지고,
+   예식일의 금색 원이 1차 표시라는 위계도 흐려진다. abbr 기본 점선 밑줄은 걷는다. */
+.calendar-grid__holiday { color:#c39b96; }
+.calendar-grid abbr { text-decoration:none; }
+/* 「예식 안내」에 날짜도 시각도 글자로 없었다 — 히어로는 이미 스크롤로 지나간 자리다.
+   '캘린더에 저장'을 누르는 순간 무엇이 저장되는지 여기서 확인된다. */
+.schedule-when { margin:1.1rem auto 0; color:var(--ball-cream); font-family:var(--serif-korean); font-size:1.0625rem; line-height:1.7; text-align:center; word-break:keep-all; }
 .calendar-grid td { position:relative; isolation:isolate; }
 .calendar-grid__wedding { color:var(--ball-navy); font-weight:600; }
 .calendar-grid__wedding::before { content:''; position:absolute; z-index:-1; inset:50% auto auto 50%; width:2.25rem; height:2.25rem; border-radius:50%; background:var(--ball-gold); transform:translate(-50%,-50%); }
@@ -112,8 +123,26 @@
 /* 크림색 약도 카드 위 */
 .route-card .map-zoom { border-color:rgba(12,21,40,.55); color:var(--ball-navy); }
 .ball-page .route-card .map-zoom:hover, .ball-page .route-card .map-zoom:focus-visible { background:var(--ball-navy); color:var(--ball-cream); }
-/* 남색 교통 접기 위 — 예식장 문의 버튼과 같은 어휘를 쓴다 */
-.shuttle-photo .map-zoom { border-color:var(--ball-cream); color:var(--ball-cream); }
+/* 셔틀 승차장은 사진·올리브영·GS25 세 탭이다. 라벨이 약도 카드보다 길어 활자를 한 단 줄이고
+   두 줄까지 허용한다 — 줄이지 않으면 320px 에서 라벨이 잘린다. */
+.shuttle-card { margin-top:.9rem; }
+.shuttle-card .map-tab { padding:.35rem .25rem; font-size:.875rem; line-height:1.25; text-align:center; word-break:keep-all; }
+#shuttle-view-photo:checked ~ .map-tabs .map-tab[for="shuttle-view-photo"],
+#shuttle-view-olive:checked ~ .map-tabs .map-tab[for="shuttle-view-olive"],
+#shuttle-view-gs25:checked ~ .map-tabs .map-tab[for="shuttle-view-gs25"] { border-bottom:2px solid var(--ball-navy); color:var(--ball-navy); }
+#shuttle-view-photo:focus-visible ~ .map-tabs .map-tab[for="shuttle-view-photo"],
+#shuttle-view-olive:focus-visible ~ .map-tabs .map-tab[for="shuttle-view-olive"],
+#shuttle-view-gs25:focus-visible ~ .map-tabs .map-tab[for="shuttle-view-gs25"] { outline:2px solid var(--ball-navy); outline-offset:-3px; }
+/* 교통수단 칩 — 채워진 금색은 이 화면의 1차 CTA 어휘라 쓰지 않는다. 테두리와 크림 글자로 둔다.
+   지도 탭(전환)과 달리 칩은 이동이므로 알약 모양으로 역할을 구분한다. */
+.transit-chip { border:1px solid rgba(240,228,207,.55); color:var(--ball-cream); font-family:var(--serif-korean); font-size:1rem; font-weight:600; }
+.ball-page .transit-chip:hover, .ball-page .transit-chip:focus-visible { background:var(--ball-cream); color:var(--ball-navy); }
+.transit-steps li { font-size:1.0625rem; }
+/* 크게 보기 — 배경이 거의 검정이므로 도구 색은 남색 본문이 아니라 크림 쪽 어휘를 쓴다. */
+.photo-sheet__tools { background:linear-gradient(to top,rgba(6,10,19,.96),rgba(6,10,19,0)); }
+.photo-sheet__note { color:var(--ball-cream); }
+.photo-sheet .action-button { border-color:var(--ball-cream); color:var(--ball-cream); background:rgba(6,10,19,.7); }
+.ball-page .photo-sheet .action-button:hover, .ball-page .photo-sheet .action-button:focus-visible { background:var(--ball-cream); color:var(--ball-navy); }
 /* display는 반드시 :checked 규칙 안에만 둔다 — 기본 선택자에 넣으면 common.css의 display:none을
    덮어써서 두 탭이 동시에 보인다. */
 .map-widget__fallback { gap:.6rem; padding:1.25rem 1rem 1.5rem; }
@@ -147,7 +176,6 @@
 .transit-fold > p { padding:0 0 1rem; }
 .transit-fold > p + p { padding-top:.75rem; border-top:1px solid rgba(193,162,97,.14); }
 .ball-mobile .transit-fold .transit-note { padding-top:.75rem; border-top:1px solid rgba(193,162,97,.14); color:rgba(240,228,207,.72); font-size:1rem; line-height:1.65; }
-.ball-mobile .shuttle-photo { padding-bottom:1rem; }
 .venue-call { display:flex; width:min(100%,450px); align-items:center; justify-content:center; gap:.4em; margin:1rem auto 0; }
 .ball-mobile .countdown-message { color:var(--ball-gold); font-family:var(--serif-korean); }
 /* 숫자 넷을 설명하는 유일한 텍스트가 영문 대문자였다. 하객 구성상 읽히지 않는다. */

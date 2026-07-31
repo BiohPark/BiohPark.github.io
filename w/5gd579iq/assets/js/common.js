@@ -17,6 +17,19 @@
       const value = get(node.dataset.field);
       if (value !== undefined) node.textContent = value;
     });
+    /*
+     * 단계 안내(전철·KTX)는 배열이다. textContent 로 넣으면 쉼표로 이어 붙은 한 줄이 되어
+     * 8차까지의 "몇 단계인지 셀 수 없는 문장"으로 되돌아간다. 목록의 li 로 펼친다.
+     */
+    document.querySelectorAll('[data-field-list]').forEach((node) => {
+      const value = get(node.dataset.fieldList);
+      if (!Array.isArray(value)) return;
+      node.replaceChildren(...value.map((line) => {
+        const item = document.createElement('li');
+        item.textContent = line;
+        return item;
+      }));
+    });
     document.querySelectorAll('[data-tel-field]').forEach((node) => {
       const value = get(node.dataset.telField);
       if (value !== undefined) node.setAttribute('href', `tel:${String(value).replace(/[^0-9+]/g, '')}`);
@@ -305,6 +318,7 @@
       'type=vnd.android.cursor.dir/event',
       `S.title=${encodeURIComponent(`${get('couple.korean')} 결혼식`)}`,
       `S.eventLocation=${encodeURIComponent(`${get('venue.name')} ${get('venue.hall')} ${get('venue.address')}`)}`,
+      ...(get('event.url') ? [`S.description=${encodeURIComponent(get('event.url'))}`] : []),
       // CalendarContract.EXTRA_EVENT_BEGIN_TIME/END_TIME 의 실제 상수 값은 'beginTime'·'endTime' 이다.
       // 다른 이름을 쓰면 캘린더 편집기는 열리되 날짜·시간이 비어 있어 하객이 직접 입력해야 한다.
       `l.beginTime=${start.getTime()}`,
@@ -313,7 +327,21 @@
     ].join(';')};end`;
   }
 
+  /*
+   * 구글 캘린더는 메모를 details 파라미터로 받는다. 마크업에 박아 두지 않고 여기서 붙이는 이유는,
+   * 주소가 배포 때만 채워지는 비공개 값이라 소스에 남으면 안 되기 때문이다(지도 키와 같은 취급).
+   */
+  function addGoogleCalendarNote() {
+    const url = get('event.url');
+    const link = document.querySelector('[data-calendar-google]');
+    if (!url || !link?.href) return;
+    const target = new URL(link.href);
+    target.searchParams.set('details', url);
+    link.href = target.href;
+  }
+
   function initCalendar() {
+    addGoogleCalendarNote();
     const ics = document.querySelector('[data-calendar-ics]');
     const intentUrl = ics && /Android/i.test(navigator.userAgent) ? buildCalendarIntent() : '';
     if (intentUrl) {
@@ -344,6 +372,9 @@
           `DTEND:${formatUtc(end)}`,
           `SUMMARY:${escapeIcsText(`${get('couple.korean')} 결혼식`)}`,
           `LOCATION:${escapeIcsText(`${get('venue.name')} ${get('venue.hall')} ${get('venue.address')}`)}`,
+          // 메모에 청첩장 주소를 남긴다. 예식 당일 일정 알림에서 약도·셔틀 안내로 바로 돌아올 수 있다.
+          // 주소는 배포 때만 채워지므로 빈 값이면 줄 자체를 넣지 않는다.
+          ...(get('event.url') ? [`DESCRIPTION:${escapeIcsText(get('event.url'))}`] : []),
           'END:VEVENT',
           'END:VCALENDAR',
         ].flatMap(foldIcsLine);
@@ -598,8 +629,13 @@
       judge('naver', mount, false);
     };
 
-    const startKakao = (mount) => {
-      const roughmap = get('venue.maps.kakaoRoughmap');
+    const startKakao = (mount, name) => {
+      /*
+       * 퍼가기 값은 장소마다 따로 발급된다(예식장·올리브영 천안타운·GS25 천안역점).
+       * 마운트가 어느 장소인지는 data-map-widget 의 접미사가 말한다: kakao / kakao-olive / kakao-gs25.
+       */
+      const place = name.startsWith('kakao-') ? name.slice(6) : 'venue';
+      const roughmap = get('venue.maps.kakaoRoughmaps')?.[place];
       // 퍼가기 코드는 카카오맵이 장소별로 발급한다. 검색어만으로는 초기화할 수 없고, 임의 값을 넣지 않는다.
       if (!roughmap?.timestamp || !roughmap?.key) return;
       // 값은 배포 설정에서 오지만 그대로 마크업에 박히므로 형식을 좁혀 둔다.
@@ -622,7 +658,7 @@
       frame.width = '100%';
       frame.height = '100%';
       frame.style.border = '0';
-      frame.src = 'kakao-map.html';
+      frame.src = `kakao-map-${place}.html`;
       mount.append(frame);
       // 붙였다고 그려진 것이 아니다. srcdoc 은 부모와 같은 출처라 안을 들여다볼 수 있으므로
       // 실제로 무언가 그려졌는지 확인하고, 아니면 빈 상자를 걷는다(폴백은 그대로 남아 있다).
@@ -636,9 +672,9 @@
             const box = frame.contentDocument?.querySelector(`#daumRoughmapContainer${roughmap.timestamp}`);
             rendered = Boolean(box && box.clientHeight > 0 && box.querySelector('img, canvas, iframe'));
           } catch { rendered = false; }
-          if (rendered) { judge('kakao', mount, true); return; }
+          if (rendered) { judge(name, mount, true); return; }
           if (remaining > 0) { window.setTimeout(() => check(remaining - 1), 700); return; }
-          judge('kakao', mount, false);
+          judge(name, mount, false);
         };
         window.setTimeout(() => check(8), 1200);
       }, { once: true });
@@ -655,13 +691,18 @@
       mount.hidden = false;
       mount.replaceChildren();
       if (name === 'naver') startNaver(mount);
-      else if (name === 'kakao') startKakao(mount);
+      else if (name.startsWith('kakao')) startKakao(mount, name);
     };
 
-    document.querySelectorAll('input[name="map-view"]').forEach((radio) => {
+    /*
+     * 탭 라디오는 지도 카드와 셔틀 접기 두 곳에 있다. 라벨은 자기 패널만 가리키므로,
+     * 라디오가 속한 카드 안에서 짝 패널을 찾는다 — 문서 전체에서 찾으면 두 카드가 서로를 켠다.
+     */
+    document.querySelectorAll('input[data-map-view]').forEach((radio) => {
       radio.addEventListener('change', () => {
         if (!radio.checked) return;
-        const pane = document.querySelector(`.map-pane--${radio.id.replace('map-view-', '')}`);
+        const scope = radio.closest('[data-map-card]') || document;
+        const pane = scope.querySelector(`[data-map-pane="${radio.dataset.mapView}"]`);
         pane?.querySelectorAll('[data-map-widget]').forEach(start);
       });
     });
@@ -672,10 +713,126 @@
    * 세로 스크롤을 뺏으면 안 되므로 가로 이동이 세로보다 확실히 클 때만 반응하고,
    * 리스너는 전부 passive 로 둔다(preventDefault 를 쓰지 않는다 = 스크롤을 막지 않는다).
    */
+  /*
+   * 교통수단 칩. 헤더 내비에 다섯 칸을 넣으려면 라벨을 두 글자로 깎아야 하고(실측: 320px 에서
+   * '전철·기차·KTX' 84px > 가용 52px), 그러면 '오시는 길'이 '약도'가 되어 뜻이 좁아진다.
+   * 대신 고를 맥락 안에 칩을 두면 풀네임을 쓸 수 있다. 헤더 퀵 내비와 같은 규칙을 따른다 —
+   * href 기본 동작을 막아 히스토리를 쌓지 않고, 접힌 안내는 열어 준 뒤 이동한다.
+   */
+  function initTransitChips() {
+    document.querySelectorAll('[data-transit-chip]').forEach((chip) => {
+      chip.addEventListener('click', (clickEvent) => {
+        const target = document.querySelector(chip.getAttribute('href'));
+        if (!target) return;
+        clickEvent.preventDefault();
+        if (target.matches?.('.transit-fold')) target.open = true;
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // 접기를 열어 준 다음 그 요약에 초점을 준다. 스크린리더가 어디로 왔는지 읽어야 한다.
+        target.querySelector?.('summary')?.focus?.({ preventScroll: true });
+      });
+    });
+  }
+
+  /*
+   * 약도·셔틀 사진 크게 보기. 새 탭으로 원본을 여는 방식은 확대는 잘 되지만 청첩장을 떠난다
+   * (카톡 인앱 브라우저에서 돌아오는 비용이 크다). 페이지 안에서 열되, 뷰포트가 확대를 막고
+   * 있으므로 확대를 직접 구현한다 — 더블탭 2배와 드래그 이동까지만. 원본 해상도가
+   * 약도 764×769 / 셔틀 1200×574 라 2배를 넘기면 어차피 뭉개져 무단계 줌은 실익이 없다.
+   * 원본을 보고 싶은 하객을 위해 '원본 열기'는 라이트박스 안에 남긴다.
+   */
+  function initLightbox() {
+    const sheet = document.querySelector('[data-lightbox]');
+    const triggers = [...document.querySelectorAll('[data-lightbox-open]')];
+    if (!sheet || !triggers.length || typeof sheet.showModal !== 'function') return;
+    const image = sheet.querySelector('[data-lightbox-image]');
+    const original = sheet.querySelector('[data-lightbox-original]');
+    const ZOOM = 2;
+    let zoomed = false;
+    let offsetX = 0;
+    let offsetY = 0;
+    let dragging = false;
+    let lastX = 0;
+    let lastY = 0;
+    let lastTap = 0;
+
+    const apply = () => {
+      image.style.transform = zoomed
+        ? `translate(${offsetX}px, ${offsetY}px) scale(${ZOOM})`
+        : 'translate(0px, 0px) scale(1)';
+      image.classList.toggle('is-zoomed', zoomed);
+    };
+
+    // 확대한 그림을 끌어도 빈 여백이 들어오지 않게 이동 범위를 그림 안으로 가둔다.
+    const clamp = () => {
+      const box = image.getBoundingClientRect();
+      const limitX = Math.max(0, (box.width * ZOOM - box.width) / 2);
+      const limitY = Math.max(0, (box.height * ZOOM - box.height) / 2);
+      offsetX = Math.min(limitX, Math.max(-limitX, offsetX));
+      offsetY = Math.min(limitY, Math.max(-limitY, offsetY));
+    };
+
+    const reset = () => { zoomed = false; offsetX = 0; offsetY = 0; apply(); };
+
+    const toggleZoom = () => {
+      zoomed = !zoomed;
+      if (!zoomed) { offsetX = 0; offsetY = 0; }
+      apply();
+    };
+
+    triggers.forEach((trigger) => {
+      trigger.addEventListener('click', (clickEvent) => {
+        clickEvent.preventDefault();
+        image.src = trigger.dataset.lightboxOpen;
+        image.alt = trigger.dataset.lightboxAlt || '';
+        if (original) original.href = trigger.dataset.lightboxOpen;
+        reset();
+        sheet.showModal();
+      });
+    });
+
+    sheet.querySelector('[data-lightbox-close]')?.addEventListener('click', () => sheet.close());
+    // 그림 바깥(배경)을 누르면 닫는다. 그림 자체는 확대·이동을 위해 남겨 둔다.
+    sheet.addEventListener('click', (clickEvent) => {
+      if (clickEvent.target === sheet) sheet.close();
+    });
+    sheet.addEventListener('close', reset);
+
+    image.addEventListener('dblclick', toggleZoom);
+    // 모바일에는 dblclick 이 늦거나 안 오는 브라우저가 있어 탭 간격을 직접 잰다.
+    image.addEventListener('pointerup', (pointerEvent) => {
+      if (pointerEvent.pointerType === 'mouse') return;
+      const now = Date.now();
+      if (now - lastTap < 300) toggleZoom();
+      lastTap = now;
+    });
+
+    image.addEventListener('pointerdown', (pointerEvent) => {
+      if (!zoomed) return;
+      dragging = true;
+      lastX = pointerEvent.clientX;
+      lastY = pointerEvent.clientY;
+      image.setPointerCapture?.(pointerEvent.pointerId);
+    });
+    image.addEventListener('pointermove', (pointerEvent) => {
+      if (!dragging) return;
+      offsetX += pointerEvent.clientX - lastX;
+      offsetY += pointerEvent.clientY - lastY;
+      lastX = pointerEvent.clientX;
+      lastY = pointerEvent.clientY;
+      clamp();
+      apply();
+    });
+    const endDrag = () => { dragging = false; };
+    image.addEventListener('pointerup', endDrag);
+    image.addEventListener('pointercancel', endDrag);
+  }
+
   function initMapSwipe() {
-    const card = document.querySelector('.route-card');
-    if (!card) return;
-    const radios = [...card.querySelectorAll('input[name="map-view"]')];
+    document.querySelectorAll('[data-map-card]').forEach(bindMapSwipe);
+  }
+
+  function bindMapSwipe(card) {
+    const radios = [...card.querySelectorAll('input[data-map-view]')];
     if (radios.length < 2) return;
     const MIN_DISTANCE = 48;
     const DOMINANCE = 1.6;
@@ -758,6 +915,8 @@
       initQuickNav();
       initTextScale();
       initGeoBadges();
+      initTransitChips();
+      initLightbox();
       initMapWidgets();
       initMapSwipe();
       initOptionalFeatures();

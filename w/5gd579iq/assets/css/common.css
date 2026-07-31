@@ -165,7 +165,10 @@ html:not(.js-loading):not(.js-ready) .mobile-header { visibility: visible; opaci
 .map-pane { display: none; }
 #map-view-diagram:checked ~ .map-pane--diagram,
 #map-view-naver:checked ~ .map-pane--naver,
-#map-view-kakao:checked ~ .map-pane--kakao { display: block; }
+#map-view-kakao:checked ~ .map-pane--kakao,
+#shuttle-view-photo:checked ~ [data-map-pane="photo"],
+#shuttle-view-olive:checked ~ [data-map-pane="olive"],
+#shuttle-view-gs25:checked ~ [data-map-pane="gs25"] { display: block; }
 .map-tabs { display: grid; grid-template-columns: repeat(3, 1fr); }
 .map-tab { display: flex; min-height: 44px; align-items: center; justify-content: center; cursor: pointer; }
 /* 지도 위젯은 세로 스크롤을 점유한다. 높이를 묶고 지도 밖에 스크롤 통로를 남긴다. */
@@ -175,11 +178,26 @@ html:not(.js-loading):not(.js-ready) .mobile-header { visibility: visible; opaci
    되돌려 놓는다 — 빠뜨리면 '보이지만 아무 일도 하지 않는' 닫기 버튼이 그대로 배포된다. */
 .back-link[hidden], .map-widget__fallback[hidden] { display: none; }
 .map-widget__note { margin: 0; font-size: .9375rem; line-height: 1.6; text-align: center; word-break: keep-all; }
-/* 7차: 안쪽 토글을 없앴다. 셔틀 접기가 이미 게이트이고, 접힌 동안은 display:none이라
-   lazy 이미지가 화면에 들어올 일이 없다 = 셔틀을 펼치지 않은 하객은 여전히 한 바이트도 받지 않는다.
-   약도는 탭을 열면 바로 보이는데 승차장 사진만 한 겹 더 숨어 있을 이유가 없다. */
-.shuttle-photo { margin: .75rem 0 0; }
-.shuttle-photo img { width: 100%; height: auto; border-radius: 6px; }
+/* 9차: 승차장 사진이 지도 탭 3종의 첫 칸으로 들어가면서 .shuttle-photo 는 없어졌다.
+   사진과 두 승차장 지도가 같은 카드에 놓이므로 버튼 색도 카드가 정한다 — 7차에 남색 위에
+   남색 글자를 올려 대비 1.07:1 을 냈던 경로가 구조적으로 사라졌다. */
+
+/* 교통수단 칩. 320px 에서 '전철·기차·KTX' 실측 84px 이라 네 칸을 한 줄에 못 넣는다.
+   auto-fit 은 320px 에서 한 줄로 무너지므로 폭과 무관하게 2열로 고정한다. */
+.transit-chips { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: .5rem; margin: .9rem 0 0; }
+.transit-chip { display: flex; min-height: 48px; align-items: center; justify-content: center; padding: 0 .5rem; border-radius: 999px; text-align: center; text-decoration: none; word-break: keep-all; }
+/* 단계 안내. 번호가 보여야 몇 걸음인지 세어진다 — 목록 표지를 지우지 말 것. */
+.transit-steps { margin: .4rem 0 1rem; padding-left: 1.4rem; }
+.transit-steps li { margin: .3rem 0; line-height: 1.65; word-break: keep-all; }
+
+/* 크게 보기. 뷰포트가 핀치 줌을 막고 있어 확대·이동을 JS 가 transform 으로 그린다.
+   touch-action:none 이 있어야 브라우저가 제스처를 먼저 가져가지 않는다. */
+.photo-sheet { width: 100%; max-width: none; height: 100%; max-height: none; margin: 0; padding: 0; border: 0; background: transparent; overflow: hidden; }
+.photo-sheet::backdrop { background: rgba(6,10,19,.94); }
+.photo-sheet img { position: absolute; inset: 0; width: 100%; height: auto; max-height: 100%; margin: auto; object-fit: contain; touch-action: none; }
+.photo-sheet__tools { position: absolute; inset: auto 0 0; display: grid; gap: .5rem; padding: 1.5rem 1rem calc(.9rem + env(safe-area-inset-bottom)); }
+.photo-sheet__note { margin: 0; font-size: .9375rem; line-height: 1.5; text-align: center; word-break: keep-all; }
+.photo-sheet .action-button { display: flex; min-height: 48px; align-items: center; justify-content: center; text-decoration: none; }
 .mobile-invitation.opening-active { overflow: hidden; }
 .mobile-shell { width: min(100%,560px); margin: 0 auto; background: var(--mobile-paper,#f5efe5); box-shadow: 0 0 80px rgba(0,0,0,.14); }
 .opening-screen { position: relative; min-height: 100svh; display: grid; place-items: center; padding: 2rem; text-align: center; }

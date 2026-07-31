@@ -84,10 +84,11 @@
             <tr><td></td><td></td><td>1</td><td>2</td><td>3</td><td>4</td><td class="calendar-grid__wedding" aria-current="date">5</td></tr>
             <tr><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td><td>11</td><td>12</td></tr>
             <tr><td>13</td><td>14</td><td>15</td><td>16</td><td>17</td><td>18</td><td>19</td></tr>
-            <tr><td>20</td><td>21</td><td>22</td><td>23</td><td>24</td><td>25</td><td>26</td></tr>
+            <tr><td>20</td><td>21</td><td>22</td><td>23</td><td>24</td><td class="calendar-grid__holiday"><abbr title="성탄절">25</abbr></td><td>26</td></tr>
             <tr><td>27</td><td>28</td><td>29</td><td>30</td><td>31</td><td></td><td></td></tr>
           </tbody>
         </table>
+        <p class="schedule-when"><span data-field="event.shortDate">2026. 12. 5. 토요일 오후 1시 30분</span><br><span data-field="venue.name">티웨딩 천안</span> <span data-field="venue.hall">투데이홀</span></p>
         <div class="countdown" aria-label="예식까지 남은 시간">
           <div><strong data-countdown="days">0</strong><span>일</span></div>
           <div><strong data-countdown="hours">00</strong><span>시간</span></div>
@@ -112,27 +113,27 @@
         <p class="venue-address"><span data-field="venue.address">충청남도 천안시 동남구 목천읍 응원3길 27</span></p>
         <p class="ic-guidance" data-field="directions.official.icGuidance">천안IC보다 독립기념관IC, 남천안IC를 이용하시면 더욱 편리합니다</p>
         <p class="ic-distance" data-field="directions.official.icDistance">독립기념관IC 6km · 7분 / 남천안IC 3.5km · 5분</p>
-        <div class="route-card">
-          <input class="visually-hidden" type="radio" name="map-view" id="map-view-diagram" checked>
-          <input class="visually-hidden" type="radio" name="map-view" id="map-view-naver">
-          <input class="visually-hidden" type="radio" name="map-view" id="map-view-kakao">
+        <div class="route-card" data-map-card>
+          <input class="visually-hidden" type="radio" name="map-view" id="map-view-diagram" data-map-view="diagram" checked>
+          <input class="visually-hidden" type="radio" name="map-view" id="map-view-naver" data-map-view="naver">
+          <input class="visually-hidden" type="radio" name="map-view" id="map-view-kakao" data-map-view="kakao">
           <div class="map-tabs">
             <label class="map-tab" for="map-view-diagram">약도</label>
             <label class="map-tab" for="map-view-naver">네이버맵</label>
             <label class="map-tab" for="map-view-kakao">카카오맵</label>
           </div>
-          <div class="map-pane map-pane--diagram">
+          <div class="map-pane map-pane--diagram" data-map-pane="diagram">
             <img class="route-mobile" src="venue-map.jpg" width="764" height="769" loading="lazy" data-allow-save alt="티웨딩 천안과 독립기념관IC·남천안IC·천안IC 나들목, 천안분기점, 주변 랜드마크와 나들목별 거리를 표시한 예식장 공식 안내도">
-            <a class="action-button map-zoom" href="venue-map.jpg" target="_blank" rel="noreferrer">약도 크게 보기</a>
+            <a class="action-button map-zoom" href="venue-map.jpg" target="_blank" rel="noreferrer" data-lightbox-open="venue-map.jpg" data-lightbox-alt="티웨딩 천안 예식장 공식 안내도 확대 보기">약도 크게 보기</a>
           </div>
-          <div class="map-pane map-pane--naver">
+          <div class="map-pane map-pane--naver" data-map-pane="naver">
             <div class="map-widget" data-map-widget="naver"></div>
             <div class="map-widget__fallback" data-map-fallback="naver">
               <p class="map-pane__note">쓰시는 지도 앱에서 바로 길을 찾으실 수 있습니다.</p>
               <a class="action-button" href="#" data-href-field="venue.maps.naver" target="_blank" rel="noreferrer">네이버지도</a>
             </div>
           </div>
-          <div class="map-pane map-pane--kakao">
+          <div class="map-pane map-pane--kakao" data-map-pane="kakao">
             <div class="map-widget" data-map-widget="kakao"></div>
             <div class="map-widget__fallback" data-map-fallback="kakao">
               <p class="map-pane__note">쓰시는 지도 앱에서 바로 길을 찾으실 수 있습니다.</p>
@@ -140,29 +141,78 @@
             </div>
           </div>
         </div>
+        <nav class="transit-chips" aria-label="교통수단별 안내">
+          <a class="transit-chip" href="#transit-car" data-transit-chip>자가용</a>
+          <a class="transit-chip" href="#transit-rail" data-transit-chip>전철·기차·KTX</a>
+          <a class="transit-chip" href="#shuttle" data-transit-chip>셔틀버스</a>
+          <a class="transit-chip" href="#transit-bus" data-transit-chip>버스</a>
+        </nav>
         <div class="directions-list">
+          <details class="transit-fold" id="transit-car" tabindex="-1">
+            <summary><h3>자가용</h3></summary>
+            <p data-field="directions.official.carNavi">내비게이션에 티웨딩천안 을 검색하세요.</p>
+            <p data-field="directions.official.carAddress">주소로 찾으실 때는 응원3길 27 또는 응원리 67-1 을 입력하세요.</p>
+            <p data-field="directions.official.carParking">주차장은 1,500대 규모이며 무료입니다. 도착하시면 주차요원의 안내를 받으시면 됩니다.</p>
+          </details>
+          <details class="transit-fold" id="transit-rail" tabindex="-1">
+            <summary><h3>전철 · 기차 · KTX</h3></summary>
+            <p class="transit-lead"><strong>천안역에 내리시는 경우</strong></p>
+            <ol class="transit-steps" data-field-list="directions.official.railStation">
+              <li>천안역에서 기차 또는 전철에서 내립니다.</li>
+              <li>1번 출구 동부역으로 나갑니다.</li>
+              <li>24, 383, 400, 401, 500번 버스를 탑니다.</li>
+              <li>세광엔리치빌 정류장에서 내립니다.</li>
+            </ol>
+            <p class="transit-lead"><strong>KTX 천안아산역에 내리시는 경우</strong></p>
+            <ol class="transit-steps" data-field-list="directions.official.railKtx">
+              <li>아산역에서 전철을 탑니다.</li>
+              <li>천안역에서 전철에서 내립니다.</li>
+              <li>1번 출구 동부역으로 나갑니다.</li>
+              <li>24, 383, 400, 401, 500번 버스를 탑니다.</li>
+              <li>세광엔리치빌 정류장에서 내립니다.</li>
+            </ol>
+            <p class="transit-note" data-field="directions.official.railToShuttle">천안역 1번 출구에서는 셔틀버스도 타실 수 있습니다. 승차 위치는 아래 셔틀버스 안내를 봐 주세요.</p>
+          </details>
           <details class="transit-fold" id="shuttle" tabindex="-1">
             <summary><h3>셔틀버스</h3></summary>
             <p class="transit-lead"><strong>운행</strong><br><span data-field="directions.official.shuttleInterval">첫 예식 1시간 전부터 20~30분 간격</span></p>
             <p><strong>천안터미널</strong><br><span data-field="directions.official.shuttleTerminal">신세계백화점 옆 올리브영 앞 탑승 (스타벅스·애슐리 사이) · 올리브영 천안타운 검색</span></p>
             <p><strong>천안역</strong><br><span data-field="directions.official.shuttleStation">1번 출구 동부광장 건너편 GS25편의점 앞 탑승 · GS25 천안역점 검색</span></p>
             <p class="transit-note" data-field="directions.official.shuttleNote">25인승 버스로 예식에 한해 운행하며, 행사 일정과 비수기 시즌에는 운행이 변동될 수 있습니다.</p>
-            <figure class="shuttle-photo">
-              <img src="shuttle-stops.jpg" width="1200" height="574" loading="lazy" decoding="async" data-allow-save alt="천안터미널 신세계백화점 옆 올리브영 앞과 천안역 1번 출구 동부광장 건너편 GS25편의점 앞, 두 곳의 셔틀버스 승차 위치를 표시한 사진 안내">
-              <a class="action-button map-zoom" href="shuttle-stops.jpg" target="_blank" rel="noreferrer">승차장 사진 크게 보기</a>
-            </figure>
+            <div class="route-card shuttle-card" data-map-card>
+              <input class="visually-hidden" type="radio" name="shuttle-view" id="shuttle-view-photo" data-map-view="photo" checked>
+              <input class="visually-hidden" type="radio" name="shuttle-view" id="shuttle-view-olive" data-map-view="olive">
+              <input class="visually-hidden" type="radio" name="shuttle-view" id="shuttle-view-gs25" data-map-view="gs25">
+              <div class="map-tabs">
+                <label class="map-tab" for="shuttle-view-photo">승차장 사진</label>
+                <label class="map-tab" for="shuttle-view-olive">올리브영 천안타운</label>
+                <label class="map-tab" for="shuttle-view-gs25">GS25 천안역점</label>
+              </div>
+              <div class="map-pane map-pane--diagram" data-map-pane="photo">
+                <img class="route-mobile" src="shuttle-stops.jpg" width="1200" height="574" loading="lazy" decoding="async" data-allow-save alt="천안터미널 신세계백화점 옆 올리브영 앞과 천안역 1번 출구 동부광장 건너편 GS25편의점 앞, 두 곳의 셔틀버스 승차 위치를 표시한 사진 안내">
+                <a class="action-button map-zoom" href="shuttle-stops.jpg" target="_blank" rel="noreferrer" data-lightbox-open="shuttle-stops.jpg" data-lightbox-alt="셔틀버스 승차 위치 사진 안내 확대 보기">승차장 사진 크게 보기</a>
+              </div>
+              <div class="map-pane map-pane--kakao" data-map-pane="olive">
+                <div class="map-widget" data-map-widget="kakao-olive"></div>
+                <div class="map-widget__fallback" data-map-fallback="kakao-olive">
+                  <p class="map-pane__note">천안터미널 승차장입니다. 지도 앱에서 바로 열어 보실 수 있습니다.</p>
+                  <a class="action-button" href="https://map.kakao.com/link/search/올리브영 천안타운" target="_blank" rel="noreferrer">카카오맵으로 열기</a>
+                </div>
+              </div>
+              <div class="map-pane map-pane--kakao" data-map-pane="gs25">
+                <div class="map-widget" data-map-widget="kakao-gs25"></div>
+                <div class="map-widget__fallback" data-map-fallback="kakao-gs25">
+                  <p class="map-pane__note">천안역 승차장입니다. 지도 앱에서 바로 열어 보실 수 있습니다.</p>
+                  <a class="action-button" href="https://map.kakao.com/link/search/GS25 천안역점" target="_blank" rel="noreferrer">카카오맵으로 열기</a>
+                </div>
+              </div>
+            </div>
           </details>
-          <details class="transit-fold">
-            <summary><h3>자가용</h3></summary>
-            <p data-field="directions.official.car">내비게이션 "티웨딩 천안" 또는 주소 "응원3길 27" 검색 · 주차 1,500대 무료 (도착 후 주차요원의 안내를 받으세요)</p>
-          </details>
-          <details class="transit-fold">
+          <details class="transit-fold" id="transit-bus" tabindex="-1">
             <summary><h3>버스</h3></summary>
-            <p data-field="directions.official.bus">세광엔리치빌 정류장 하차 · 24, 310, 381, 382, 383, 400, 402, 500, 512, 530, 531, 540</p>
-          </details>
-          <details class="transit-fold">
-            <summary><h3>전철 · 기차 · KTX</h3></summary>
-            <p data-field="directions.official.rail">천안역에서 기차·전철 하차 후 1번 출구 동부역에서 24, 383, 400, 401, 500번 승차 · KTX 천안아산역은 아산역에서 전철을 타고 천안역에서 갈아탑니다</p>
+            <p data-field="directions.official.busStop">세광엔리치빌 정류장에서 내리십니다.</p>
+            <p class="transit-note">정류장을 지나는 버스는 다음과 같습니다.</p>
+            <p data-field="directions.official.bus">24, 310, 381, 382, 383, 400, 402, 500, 512, 530, 531, 540</p>
           </details>
         </div>
         <a class="action-button venue-call" href="tel:041-555-7900" data-tel-field="venue.phone">예식장 문의 <span data-field="venue.phone">041-555-7900</span></a>
@@ -244,6 +294,16 @@
       <a class="action-button" data-geo-kakao target="_blank" rel="noreferrer">카카오맵으로 열기</a>
       <button type="button" class="action-button" data-geo-copy></button>
       <button type="button" class="action-button geo-sheet__close" data-geo-close>닫기</button>
+    </dialog>
+    <!-- 약도·셔틀 사진 확대. 뷰포트가 핀치 줌을 막고 있어 더블탭 2배와 드래그 이동을 직접 구현한다.
+         data-allow-save 를 유지해야 롱프레스 저장이 막히지 않는다(웨딩 사진과 달리 안내물은 저장 허용). -->
+    <dialog class="photo-sheet" data-lightbox aria-label="크게 보기">
+      <img data-lightbox-image data-allow-save alt="">
+      <div class="photo-sheet__tools">
+        <p class="photo-sheet__note">두 번 두드리면 확대되고, 끌어서 옮기실 수 있습니다.</p>
+        <a class="action-button" data-lightbox-original target="_blank" rel="noreferrer">원본 열기</a>
+        <button type="button" class="action-button" data-lightbox-close>닫기</button>
+      </div>
     </dialog>
   </main>
 <script>
