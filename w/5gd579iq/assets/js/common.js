@@ -604,23 +604,18 @@
        */
       const frame = document.createElement('iframe');
       frame.title = '카카오맵으로 보는 예식장 위치';
+      /*
+       * srcdoc 은 쓰지 않는다. 출처가 `about:srcdoc` 이라 카카오 로더가 지도를 그리지 못한다
+       * (라이브 실측: 스크립트 오류는 없는데 컨테이너 높이 0, 타일 0). 배포 스크립트가 같은
+       * 디렉터리에 실제 HTML 을 만들어 두고 그것을 연다 — 실제 URL·출처를 갖게 되고,
+       * 파일이 없는 환경(소스 저장소)에서는 로드가 실패해 폴백이 그대로 남는다.
+       */
       // loading="lazy" 는 srcdoc iframe 에 대해 명세가 없다. 처리되면 display:none 안에서 영영
       // 지연되고, 무시되면 아무 이득이 없다. 전송은 이미 '탭을 열기 전엔 시작 안 함'으로 막혀 있다.
       frame.width = '100%';
       frame.height = '100%';
       frame.style.border = '0';
-      frame.srcdoc = [
-        '<!doctype html><html lang="ko"><head><meta charset="utf-8">',
-        '<style>html,body{margin:0;padding:0}</style></head><body>',
-        `<div id="daumRoughmapContainer${roughmap.timestamp}" class="root_daum_roughmap root_daum_roughmap_landing"></div>`,
-        '<script charset="UTF-8" class="daum_roughmap_loader_script" src="https://ssl.daumcdn.net/dmaps/map_js_init/roughmapLoader.js"><\/script>',
-        // 로더는 실제 Lander 를 다시 한 번 비동기로 불러온다. 바로 new 하면
-        // "daum.roughmap.Lander is not a constructor" 로 죽는다(라이브 실측). 준비될 때까지 기다린다.
-        `<script charset="UTF-8">(function wait(n){if(window.daum&&daum.roughmap&&daum.roughmap.Lander){`
-          + `new daum.roughmap.Lander({timestamp:'${roughmap.timestamp}',key:'${roughmap.key}',mapWidth:'100%',mapHeight:'280'}).render();return;}`
-          + `if(n>60)return;setTimeout(function(){wait(n+1);},100);})(0);<\/script>`,
-        '</body></html>',
-      ].join('');
+      frame.src = 'kakao-map.html';
       mount.append(frame);
       // 붙였다고 그려진 것이 아니다. srcdoc 은 부모와 같은 출처라 안을 들여다볼 수 있으므로
       // 실제로 무언가 그려졌는지 확인하고, 아니면 빈 상자를 걷는다(폴백은 그대로 남아 있다).
