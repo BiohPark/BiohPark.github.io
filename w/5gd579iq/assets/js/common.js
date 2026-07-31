@@ -614,7 +614,11 @@
         '<style>html,body{margin:0;padding:0}</style></head><body>',
         `<div id="daumRoughmapContainer${roughmap.timestamp}" class="root_daum_roughmap root_daum_roughmap_landing"></div>`,
         '<script charset="UTF-8" class="daum_roughmap_loader_script" src="https://ssl.daumcdn.net/dmaps/map_js_init/roughmapLoader.js"><\/script>',
-        `<script charset="UTF-8">new daum.roughmap.Lander({timestamp:'${roughmap.timestamp}',key:'${roughmap.key}',mapWidth:'100%',mapHeight:'280'}).render();<\/script>`,
+        // 로더는 실제 Lander 를 다시 한 번 비동기로 불러온다. 바로 new 하면
+        // "daum.roughmap.Lander is not a constructor" 로 죽는다(라이브 실측). 준비될 때까지 기다린다.
+        `<script charset="UTF-8">(function wait(n){if(window.daum&&daum.roughmap&&daum.roughmap.Lander){`
+          + `new daum.roughmap.Lander({timestamp:'${roughmap.timestamp}',key:'${roughmap.key}',mapWidth:'100%',mapHeight:'280'}).render();return;}`
+          + `if(n>60)return;setTimeout(function(){wait(n+1);},100);})(0);<\/script>`,
         '</body></html>',
       ].join('');
       mount.append(frame);
@@ -628,7 +632,7 @@
             rendered = Boolean(box && box.clientHeight > 0 && box.querySelector('img, canvas, iframe'));
           } catch { rendered = false; }
           if (!rendered) failWidget(mount);
-        }, 1500);
+        }, 4000);
       }, { once: true });
     };
 
