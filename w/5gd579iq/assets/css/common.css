@@ -143,7 +143,13 @@ img { display: block; max-width: 100%; }
 /* 한 행이다. 2행이었을 때 헤더가 90px로 화면의 10%를 상시로 먹었다 —
    닫기·글자 크기는 도구이지 목적지가 아니므로, 내비 양옆에 작고 조용하게 붙여 45px로 줄인다.
    가운데 3열만 셀 경계를 갖고 양끝은 배경도 테두리도 없다 = 네 번째 목적지로 읽히지 않는다. */
-.mobile-header { position: sticky; top: 0; z-index: 110; display: flex; align-items: stretch; }
+/* 오프닝이 끝나기 전에는 내보이지 않는다 — 첫 화면 아래쪽에 남색 띠가 물려 보인다.
+   visibility 를 쓰는 이유: display 를 건드리면 높이가 0이 되어 --quick-nav-h 측정이 어긋난다. */
+.mobile-header { position: sticky; top: 0; z-index: 110; display: flex; align-items: stretch; visibility: hidden; opacity: 0; transition: opacity 400ms ease; }
+.invitation-opened .mobile-header { visibility: visible; opacity: 1; }
+/* 스크립트가 아예 없거나(js 클래스 없음) 초기화가 실패해 fail-open 한 경우(두 클래스 모두 제거)
+   에는 오프닝 자체가 없으므로 헤더를 감출 이유도 없다. 이 규칙이 없으면 영영 숨은 채로 남는다. */
+html:not(.js-loading):not(.js-ready) .mobile-header { visibility: visible; opacity: 1; }
 .quick-nav { flex: 1 1 auto; min-width: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .quick-nav a { display: flex; min-height: 44px; align-items: center; justify-content: center; padding: .5rem .2rem; text-align: center; text-decoration: none; word-break: keep-all; }
 /* 헤더 안의 닫기는 흐름에 놓인다. 화면 고정 알약이 아니므로 위치·크기 변화가 없다. */

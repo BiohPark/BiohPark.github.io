@@ -541,7 +541,6 @@
   function initMapWidgets() {
     const mounts = [...document.querySelectorAll('[data-map-widget]')];
     if (!mounts.length) return;
-    const started = new Set();
 
     const loadScript = (src) => new Promise((resolve, reject) => {
       const script = document.createElement('script');
@@ -559,6 +558,14 @@
      * 그래서 실패했을 때 걷어내는 것은 폴백이 아니라 '빈 상자' 쪽이다.
      */
     const failWidget = (mount) => { mount.hidden = true; };
+    // 'ok' 면 다시 손대지 않고, 'failed' 면 다음 방문에서 한 번 더 시도한다.
+    // 상태를 'started' 한 종류로만 두면 일시적 실패가 영구 실패가 된다.
+    const widgetState = new Map();
+    const attempts = new Map();
+    const judge = (name, mount, ok) => {
+      widgetState.set(name, ok ? 'ok' : 'failed');
+      if (!ok) failWidget(mount);
+    };
 
     // 스크립트가 로드돼도 인증이 거부되면 지오코딩 단계에서야 드러난다. 그래서 '스크립트 로드'가
     // 아니라 '지도가 실제로 그려졌는가'까지를 한 번의 시도로 묶어 판정한다.
@@ -585,10 +592,10 @@
       // 배포 도메인에서만 인증이 성립해 어느 파라미터가 맞는지 사전에 판정할 수 없었다.
       // 공식 문서 현행(ncpKeyId)을 먼저 쓰고, 안 되면 구 파라미터로 한 번 더 시도한다.
       for (const parameter of ['ncpKeyId', 'ncpClientId']) {
-        // 인증이 거부되면 SDK 는 이미 전역을 점유한 상태다. 두 번째 시도 전에 실패한 태그를 걷는다.
-        if (await tryNaver(mount, parameter, clientId)) return;
+        // 인증이 거부되면 SDK 는 이미 전역을 점유한 상태다. 두 번째 시도는 최선의 노력이다.
+        if (await tryNaver(mount, parameter, clientId)) { judge('naver', mount, true); return; }
       }
-      failWidget(mount);
+      judge('naver', mount, false);
     };
 
     const startKakao = (mount) => {
@@ -620,21 +627,33 @@
       // 붙였다고 그려진 것이 아니다. srcdoc 은 부모와 같은 출처라 안을 들여다볼 수 있으므로
       // 실제로 무언가 그려졌는지 확인하고, 아니면 빈 상자를 걷는다(폴백은 그대로 남아 있다).
       frame.addEventListener('load', () => {
-        window.setTimeout(() => {
+        const check = (remaining) => {
+          // 숨은 탭에서는 컨테이너 높이가 0이다. 여기서 판정하면 성공한 지도를 실패로 지운다 —
+          // 실제로 "카카오까지 스와이프했다 돌아왔다 다시 가면 안 나온다"는 제보가 이 경로였다.
+          if (!mount.offsetParent) { window.setTimeout(() => check(remaining), 600); return; }
           let rendered = false;
           try {
             const box = frame.contentDocument?.querySelector(`#daumRoughmapContainer${roughmap.timestamp}`);
             rendered = Boolean(box && box.clientHeight > 0 && box.querySelector('img, canvas, iframe'));
           } catch { rendered = false; }
-          if (!rendered) failWidget(mount);
-        }, 4000);
+          if (rendered) { judge('kakao', mount, true); return; }
+          if (remaining > 0) { window.setTimeout(() => check(remaining - 1), 700); return; }
+          judge('kakao', mount, false);
+        };
+        window.setTimeout(() => check(8), 1200);
       }, { once: true });
     };
 
     const start = (mount) => {
       const name = mount.dataset.mapWidget;
-      if (started.has(name)) return;
-      started.add(name);
+      const state = widgetState.get(name);
+      if (state === 'ok' || state === 'loading') return;
+      const tried = attempts.get(name) || 0;
+      if (tried >= 2) return;
+      attempts.set(name, tried + 1);
+      widgetState.set(name, 'loading');
+      mount.hidden = false;
+      mount.replaceChildren();
       if (name === 'naver') startNaver(mount);
       else if (name === 'kakao') startKakao(mount);
     };
