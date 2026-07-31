@@ -38,7 +38,10 @@
 /* 내비 오른쪽 끝의 도구. 라벨이 다음 동작을 말하므로 금색 채움(=켜짐 상태)을 쓰지 않는다 —
    라벨과 색이 서로 다른 것을 가리키면 어느 쪽이 상태인지 알 수 없게 된다.
    테두리·배경을 지우고 한 단계 작은 활자로 낮춰 '목적지'가 아니라 '도구'로 읽히게 한다. */
-.text-scale-toggle { margin:0; padding:.5rem .7rem; border:0; background:none; color:rgba(240,228,207,.82); font-family:var(--serif-korean); font-size:.8125rem; letter-spacing:-.04em; white-space:nowrap; }
+/* 테두리까지 지우면 '조용한 도구'가 아니라 '버튼이 아닌 글자'가 된다 — 실제로 hover 에서만
+   색이 들어와 눌리는 것인 줄 몰랐다는 제보를 받았다. 상시 보이는 얇은 테두리로 되돌리되
+   활자와 불투명도를 낮춰 내비 항목보다 뒤에 서게 한다. */
+.text-scale-toggle { margin:0; padding:.35rem .55rem; border:0; border-left:1px solid rgba(193,162,97,.3); background:none; color:rgba(240,228,207,.9); font-family:var(--serif-korean); font-size:.8125rem; letter-spacing:-.04em; white-space:nowrap; text-decoration:underline; text-decoration-color:rgba(193,162,97,.75); text-underline-offset:.28em; }
 .text-scale-toggle:focus-visible { outline:2px solid var(--ball-gold); outline-offset:-3px; }
 /* 퀵 내비. 불투명 남색 — 사진 위에 반투명 바를 얹으면 대비가 무너지고 인앱 WebView가 버벅인다. */
 .mobile-header { padding-inline:env(safe-area-inset-left) env(safe-area-inset-right); background:var(--ball-navy); border-bottom:1px solid rgba(193,162,97,.3); }
@@ -53,7 +56,7 @@
 /* 7차: 닫기는 헤더 2행 좌측에 흐름으로 놓인다. 첫 화면(히어로)에서는 보이지 않고, 그 이후
    전 구간에서 같은 자리에 남는다 — 스크롤하면 사라지던 6차 동작의 반대다. 화면 고정 알약이
    아니므로 축소·투명도 변화도 없앤다. */
-.ball-mobile .back-link { position:static; flex:0 0 auto; padding:.5rem .7rem; border:0; border-radius:0; background:none; box-shadow:none; backdrop-filter:none; color:var(--ball-cream); font-family:var(--serif-korean); font-size:.8125rem; letter-spacing:-.04em; white-space:nowrap; opacity:.82; }
+.ball-mobile .back-link { position:static; flex:0 0 auto; margin:0; padding:.35rem .55rem; border:0; border-right:1px solid rgba(193,162,97,.3); border-radius:0; background:none; box-shadow:none; backdrop-filter:none; color:rgba(240,228,207,.9); font-family:var(--serif-korean); font-size:.8125rem; letter-spacing:-.04em; white-space:nowrap; opacity:1; text-decoration:underline; text-decoration-color:rgba(193,162,97,.75); text-underline-offset:.28em; }
 .ball-mobile .back-link.is-compact { opacity:.82; transform:none; }
 .ball-mobile .back-link:hover, .ball-mobile .back-link:focus-visible { opacity:1; transform:none; }
 .ball-section--plate { padding-block:2rem; background:var(--ball-navy); }
@@ -102,8 +105,14 @@
 .map-pane--diagram { padding:0 0 .75rem; }
 /* 그래도 이미지 속 글자에는 '글자 크게'도 핀치 줌도 먹지 않는다. 원본을 새 탭에서 여는 탈출구가
    유일한 복구 수단이므로 밑줄 링크가 아니라 눈에 띄는 버튼으로 둔다. */
-.map-zoom { display:flex; width:min(100% - 2rem,320px); min-height:44px; align-items:center; justify-content:center; margin:.75rem auto 0; border-color:rgba(12,21,40,.4); color:var(--ball-navy); font-size:1rem; text-decoration:none; }
-.ball-page .map-zoom:hover, .ball-page .map-zoom:focus-visible { background:var(--ball-navy); color:var(--ball-cream); }
+/* 골격만 공유하고 색은 놓이는 바닥이 정한다. 남색 글자를 남색 위에 올리면 대비 1.07:1로
+   사실상 투명해지고 hover 에서만 드러난다 — 실제로 셔틀 버튼에서 그렇게 터졌다. */
+.map-zoom { display:flex; width:min(100% - 2rem,320px); min-height:44px; align-items:center; justify-content:center; margin:.75rem auto 0; font-size:1rem; text-decoration:none; }
+/* 크림색 약도 카드 위 */
+.route-card .map-zoom { border-color:rgba(12,21,40,.4); color:var(--ball-navy); }
+.ball-page .route-card .map-zoom:hover, .ball-page .route-card .map-zoom:focus-visible { background:var(--ball-navy); color:var(--ball-cream); }
+/* 남색 교통 접기 위 — 예식장 문의 버튼과 같은 어휘를 쓴다 */
+.shuttle-photo .map-zoom { border-color:var(--ball-cream); color:var(--ball-cream); }
 /* display는 반드시 :checked 규칙 안에만 둔다 — 기본 선택자에 넣으면 common.css의 display:none을
    덮어써서 두 탭이 동시에 보인다. */
 .map-widget__fallback { gap:.6rem; padding:1.25rem 1rem 1.5rem; }
