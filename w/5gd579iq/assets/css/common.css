@@ -157,9 +157,21 @@ html:not(.js-loading):not(.js-ready) .mobile-header { visibility: visible; opaci
 .mobile-header .text-scale-toggle { flex: 0 0 auto; display: flex; min-height: 44px; align-items: center; justify-content: center; }
 .mobile-header .back-link.is-compact { opacity: 1; transform: none; }
 /* 앵커 오프셋은 고정 px이 아니라 실측 헤더 높이로 잡는다. 큰 글자 모드에서 바가 높아지기 때문이다. */
-[data-section="schedule"], [data-section="venue"], #shuttle { scroll-margin-top: calc(var(--quick-nav-h, 45px) + 8px); }
+/* 「오시는 길」 소목차. 헤더 바로 아래에 붙어 함께 움직인다 — top 은 헤더 실측 높이다.
+   z-index 는 헤더(110)보다 한 단 아래: 겹칠 일은 없지만 겹치면 헤더가 이겨야 한다. */
+.section-nav { position: sticky; z-index: 109; top: var(--quick-nav-h, 45px); display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); }
+/* 44px 은 실측으로 확보한 터치 하한이다. 바 높이를 아끼려고 이 값을 내리지 말 것. */
+.section-nav a { display: flex; min-height: 44px; align-items: center; justify-content: center; padding: 0 .2rem; text-align: center; text-decoration: none; word-break: keep-all; }
+/* [hidden]은 display 선언에 진다(HTML 표준). 위에서 display:grid 를 명시로 받으므로 되돌려 놓는다 —
+   빠뜨리면 모든 구간에서 소목차가 그대로 보인다. 7차에 닫기 버튼이 같은 이유로 망가졌다. */
+.section-nav[hidden] { display: none; }
+[data-section="schedule"], [data-section="venue"], [data-section="family"] { scroll-margin-top: calc(var(--quick-nav-h, 45px) + 8px); }
+/* 접기는 소목차 바 아래로 착지해야 한다. #shuttle 을 여기 함께 쓰면 안 된다 — ID(1,0,0)가
+   클래스(0,1,0)를 이겨서 셔틀만 소목차 높이를 못 받고 40px 높게 착지한다. 네 접기가 모두
+   .transit-fold 이므로 클래스 하나로 충분하다. */
+.transit-fold { scroll-margin-top: calc(var(--quick-nav-h, 45px) + var(--section-nav-h, 0px) + 8px); }
 /* 마우스로 눌렀을 때만 링을 숨긴다. 키보드로 이동한 사람은 착지 지점을 볼 수 있어야 한다. */
-[data-section="schedule"]:focus:not(:focus-visible), [data-section="venue"]:focus:not(:focus-visible), #shuttle:focus:not(:focus-visible) { outline: none; }
+[data-section="schedule"]:focus:not(:focus-visible), [data-section="venue"]:focus:not(:focus-visible), [data-section="family"]:focus:not(:focus-visible), .transit-fold:focus:not(:focus-visible) { outline: none; }
 
 /* [약도]/[네이버맵]/[카카오맵] 3단 전환과 셔틀 승차장 사진 토글. details를 늘리지 않기 위해 radio·checkbox로만 만든다. */
 .map-pane { display: none; }
@@ -173,7 +185,10 @@ html:not(.js-loading):not(.js-ready) .mobile-header { visibility: visible; opaci
 .map-tab { display: flex; min-height: 44px; align-items: center; justify-content: center; cursor: pointer; }
 /* 지도 위젯은 세로 스크롤을 점유한다. 높이를 묶고 지도 밖에 스크롤 통로를 남긴다. */
 .map-widget { width: 100%; height: 280px; background: rgba(12,21,40,.06); }
-.map-widget__fallback { display: grid; gap: .6rem; padding: 1rem; }
+/* 버튼을 카드 폭 끝까지 늘이지 않는다 — 지도 자리에 놓이는 탈출구라 가운데 알약이 자연스럽다.
+   폭은 '약도 크게 보기'와 같은 값을 써서 두 버튼이 서로 다른 크기로 보이지 않게 한다. */
+.map-widget__fallback { display: grid; justify-items: center; gap: .6rem; padding: 1rem; }
+.map-widget__fallback .action-button { display: flex; width: min(100% - 2rem,320px); min-height: 44px; align-items: center; justify-content: center; text-decoration: none; }
 /* [hidden]은 display 선언에 진다(HTML 표준). 아래 두 요소는 display를 명시로 받으므로 여기서
    되돌려 놓는다 — 빠뜨리면 '보이지만 아무 일도 하지 않는' 닫기 버튼이 그대로 배포된다. */
 .back-link[hidden], .map-widget__fallback[hidden] { display: none; }
@@ -182,10 +197,6 @@ html:not(.js-loading):not(.js-ready) .mobile-header { visibility: visible; opaci
    사진과 두 승차장 지도가 같은 카드에 놓이므로 버튼 색도 카드가 정한다 — 7차에 남색 위에
    남색 글자를 올려 대비 1.07:1 을 냈던 경로가 구조적으로 사라졌다. */
 
-/* 교통수단 칩. 320px 에서 '전철·기차·KTX' 실측 84px 이라 네 칸을 한 줄에 못 넣는다.
-   auto-fit 은 320px 에서 한 줄로 무너지므로 폭과 무관하게 2열로 고정한다. */
-.transit-chips { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: .5rem; margin: .9rem 0 0; }
-.transit-chip { display: flex; min-height: 48px; align-items: center; justify-content: center; padding: 0 .5rem; border-radius: 999px; text-align: center; text-decoration: none; word-break: keep-all; }
 /* 단계 안내. 번호가 보여야 몇 걸음인지 세어진다 — 목록 표지를 지우지 말 것. */
 .transit-steps { margin: .4rem 0 1rem; padding-left: 1.4rem; }
 .transit-steps li { margin: .3rem 0; line-height: 1.65; word-break: keep-all; }
@@ -212,7 +223,11 @@ html:not(.js-loading):not(.js-ready) .mobile-header { visibility: visible; opaci
 .js-ready .opening-content > :nth-child(4) { transition-delay: 270ms; }
 .open-button { min-width: 160px; min-height: 48px; padding: .75rem 1.2rem; border: 1px solid currentColor; background: transparent; cursor: pointer; letter-spacing: .08em; }
 
-.scroll-progress { position: fixed; z-index: 90; top: 0; left: 0; width: 100%; height: var(--progress-height,2px); transform: scaleX(0); transform-origin: left; background: var(--progress-color,#b89a5a); pointer-events: none; }
+/* 헤더 안쪽 기준으로 헤더 바로 아래 칸에 놓는다. 화면 상단에 고정하면 sticky 헤더(z-index 110)가
+   그대로 덮어 스크롤 양이 보이지 않는다 — 실제로 그렇게 가려져 있었다. */
+/* top:100% 는 헤더의 패딩 박스 기준이라 아래 테두리 '위'에 앉는다. 테두리와 진행바가 둘 다
+   금색이면 어느 쪽이 스크롤 양인지 분간되지 않는다 — 테두리 두께만큼 더 내려 그 아래 칸에 놓는다. */
+.scroll-progress { position: absolute; z-index: 1; top: calc(100% + var(--header-border-h, 0px)); left: 0; width: 100%; height: var(--progress-height,2px); transform: scaleX(0); transform-origin: left; background: var(--progress-color,#b89a5a); pointer-events: none; }
 .scroll-progress::after { content: var(--progress-glyph,''); position: absolute; right: -.5rem; top: 50%; transform: translateY(-50%); color: var(--progress-end,#b89a5a); font-size: .8rem; }
 .hero-photo { position: relative; min-height: 92svh; overflow: hidden; }
 .hero-media { position: absolute; inset: -40px 0; transform: translate3d(0,var(--parallax-y,0),0); }

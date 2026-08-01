@@ -528,7 +528,12 @@
       return best;
     };
 
-    document.querySelectorAll('.venue-address, .directions-list p').forEach((scope) => {
+    /*
+     * 지도 폴백 문구(.map-pane__note)는 제외한다. 바로 옆에 '카카오맵으로 열기' 버튼이 있어
+     * 뱃지가 같은 일을 두 번 하고, 그 문단은 남색이 아니라 크림 카드 위에 놓여 있어
+     * 크림색 뱃지가 그대로 배경에 묻혔다 — 실측 대비 1:1, 지명이 통째로 안 보였다.
+     */
+    document.querySelectorAll('.venue-address, .directions-list p:not(.map-pane__note)').forEach((scope) => {
       const queue = [];
       const walker = document.createTreeWalker(scope, NodeFilter.SHOW_TEXT);
       while (walker.nextNode()) queue.push(walker.currentNode);
@@ -714,23 +719,114 @@
    * 리스너는 전부 passive 로 둔다(preventDefault 를 쓰지 않는다 = 스크롤을 막지 않는다).
    */
   /*
-   * 교통수단 칩. 헤더 내비에 다섯 칸을 넣으려면 라벨을 두 글자로 깎아야 하고(실측: 320px 에서
-   * '전철·기차·KTX' 84px > 가용 52px), 그러면 '오시는 길'이 '약도'가 되어 뜻이 좁아진다.
-   * 대신 고를 맥락 안에 칩을 두면 풀네임을 쓸 수 있다. 헤더 퀵 내비와 같은 규칙을 따른다 —
-   * href 기본 동작을 막아 히스토리를 쌓지 않고, 접힌 안내는 열어 준 뒤 이동한다.
+   * 구간 소목차. 헤더 아래에 걸려 「오시는 길」 안에 있는 동안만 교통수단 네 갈래를 보여 준다.
+   * 헤더 내비에 다섯 칸을 넣는 안은 실측으로 기각됐다(320px 가용 52px < '전철·기차·KTX' 84px).
+   * 본문에 칩으로 두는 안도 걷었다 — 바로 아래 접기 목록이 같은 네 항목이라 중복이었다.
+   *
+   * 두 가지를 조심한다.
+   * 1) 등장·소멸이 헤더 총 높이를 45↔85 로 바꾼다. 그대로 두면 scroll-margin-top 이 함께 흔들려
+   *    내비로 이동한 하객의 착지점이 밀린다. 그래서 높이를 --section-nav-h 로 따로 내보내고,
+   *    이동 중에는 표시 전환을 미룬다.
+   * 2) [hidden] 은 display 선언에 진다(HTML 표준). CSS 쪽에 [hidden] 복구 규칙이 함께 있어야 한다.
    */
-  function initTransitChips() {
-    document.querySelectorAll('[data-transit-chip]').forEach((chip) => {
-      chip.addEventListener('click', (clickEvent) => {
-        const target = document.querySelector(chip.getAttribute('href'));
-        if (!target) return;
-        clickEvent.preventDefault();
-        if (target.matches?.('.transit-fold')) target.open = true;
-        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        // 접기를 열어 준 다음 그 요약에 초점을 준다. 스크린리더가 어디로 왔는지 읽어야 한다.
-        target.querySelector?.('summary')?.focus?.({ preventScroll: true });
+  function initSectionNav() {
+    const nav = document.querySelector('[data-section-nav]');
+    if (!nav) return;
+    const scope = document.getElementById(nav.dataset.sectionNav)
+      || document.querySelector(`[data-section="${nav.dataset.sectionNav}"]`);
+    const links = [...nav.querySelectorAll('a[href^="#"]')];
+    if (!scope || !links.length) return;
+
+    const setHeight = () => {
+      const height = nav.hidden ? 0 : nav.offsetHeight;
+      document.documentElement.style.setProperty('--section-nav-h', `${height}px`);
+    };
+
+    /*
+     * 프로그램 이동이 끝나기 전에 바가 나타나면 착지점이 바 높이만큼 밀려 접기 제목이 가려진다.
+     * 그렇다고 그동안 들어온 신호를 버리면 안 된다 — 구간에 들어서는 순간이 바로 그 신호이고,
+     * 한 번 버리면 다시 올 일이 없어 바가 영영 안 뜬다(실측으로 그렇게 터졌다). 미루되 기억한다.
+     */
+    let settling = 0;
+    let desired = false;
+    let pending = 0;
+    const apply = () => {
+      if (nav.hidden !== desired) return;
+      nav.hidden = !desired;
+      setHeight();
+      refreshMarker();
+    };
+    const show = (visible) => {
+      desired = visible;
+      const remaining = settling - window.performance.now();
+      if (remaining > 0) {
+        window.clearTimeout(pending);
+        pending = window.setTimeout(apply, remaining + 50);
+        return;
+      }
+      apply();
+    };
+
+    new IntersectionObserver((entries) => {
+      entries.forEach((entry) => show(entry.isIntersecting));
+    }, { threshold: 0 }).observe(scope);
+
+    // 어느 갈래를 보고 있는지.
+    const intersecting = new Set();
+    let marker = null;
+    function refreshMarker() {
+      /*
+       * 판정선은 고정 픽셀이 아니라 '가려지는 높이'다. 헤더 45 + 소목차 41 = 86px 인데 46px 로
+       * 잡아 두었더니, 바 뒤에 숨은 접기가 여전히 '보이는 것'으로 세어져 강조가 한 칸씩 뒤처졌다.
+       * 큰 글자 모드에서 바 높이가 달라지므로 값이 아니라 실측으로 다시 잡는다.
+       */
+      const covered = Math.round(
+        parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--quick-nav-h')) || 45,
+      ) + (nav.hidden ? 0 : nav.offsetHeight)
+        // 착지 여백(scroll-margin 8px)보다 살짝 아래에서 센다. 판정선을 바 바로 아래에 두면
+        // 눌러서 착지한 순간 바로 위 접기의 끝자락이 1~2px 걸려 이전 항목이 이긴다.
+        + 12;
+      marker?.disconnect();
+      intersecting.clear();
+      marker = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) intersecting.add(entry.target.id);
+          else intersecting.delete(entry.target.id);
+        });
+        /*
+         * 헤더 내비와 반대로 '문서 순서상 처음'을 쓴다. 거기는 #venue 안에 #shuttle 이 든 중첩이라
+         * 더 구체적인 뒤쪽이 답이었지만, 여기 넷은 형제다. 접기가 다 닫히면 176px 안에 전부 들어와
+         * 동시에 걸리는데, 뒤쪽을 고르면 자가용을 보고 있어도 늘 '버스'가 켜진다(실측 확인).
+         * 화면 위쪽에 있는 것이 지금 보고 있는 것이다.
+         */
+        const active = links.find((link) => intersecting.has(link.getAttribute('href').slice(1))) || null;
+        links.forEach((link) => link.classList.toggle('is-current', link === active));
+      }, { threshold: 0, rootMargin: `-${covered}px 0px -70% 0px` });
+      links.forEach((link) => {
+        const target = document.getElementById(link.getAttribute('href').slice(1));
+        if (target) marker.observe(target);
       });
+    }
+    refreshMarker();
+
+    nav.addEventListener('click', (clickEvent) => {
+      const link = clickEvent.target.closest('a[href^="#"]');
+      if (!link) return;
+      const target = document.getElementById(link.getAttribute('href').slice(1));
+      if (!target) return;
+      // 헤더 내비와 같은 규칙 — 주소창도 히스토리도 건드리지 않는다. 접기는 열어 준 뒤 이동한다.
+      clickEvent.preventDefault();
+      settling = window.performance.now() + 700;
+      // 누른 항목을 즉시 켠다. 스크롤이 끝나면 바로 위 접기의 끝자락이 판정선에 1~2px 걸쳐
+      // 이전 항목이 이겨 버리는 일이 있다 — 누른 사람에게는 그것이 그냥 오작동으로 보인다.
+      links.forEach((other) => other.classList.toggle('is-current', other === link));
+      if (target.matches?.('.transit-fold')) target.setAttribute('open', '');
+      target.scrollIntoView?.({ behavior: reduced ? 'auto' : 'smooth', block: 'start' });
+      target.querySelector?.('summary')?.focus?.({ preventScroll: true });
     });
+
+    window.addEventListener('resize', () => { setHeight(); refreshMarker(); });
+    setHeight();
   }
 
   /*
@@ -915,7 +1011,7 @@
       initQuickNav();
       initTextScale();
       initGeoBadges();
-      initTransitChips();
+      initSectionNav();
       initLightbox();
       initMapWidgets();
       initMapSwipe();

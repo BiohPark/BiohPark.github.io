@@ -27,7 +27,6 @@
   <script src="assets/js/particles.js" defer></script>
 </head>
 <body class="ball-page ball-mobile mobile-invitation" data-concept="midnight" data-motion-profile="midnight">
-  <div class="scroll-progress" data-scroll-progress aria-hidden="true"></div>
   <aside class="opening-screen ball-opening" data-opening aria-label="초대장 오프닝">
     <div class="ball-opening__plate" aria-hidden="true">
       <img class="ball-opening__photo" src="assets/photos-v2/w1200/001-aur-00652-1.jpg" srcset="assets/photos-v2/w1200/001-aur-00652-1.jpg 1200w, assets/photos-v2/w1600/001-aur-00652-1.jpg 1600w" sizes="(max-width:560px) 100vw, 560px" width="1200" height="1800" alt="" aria-hidden="true">
@@ -53,10 +52,22 @@
       <nav class="quick-nav" aria-label="빠른 이동">
         <a href="#schedule">예식 안내</a>
         <a href="#venue">오시는 길</a>
-        <a href="#shuttle">셔틀버스</a>
+        <a href="#family">가족 소개</a>
       </nav>
       <button type="button" class="action-button text-scale-toggle" data-text-scale>글자 크게</button>
+      <!-- 진행바는 헤더의 자식이다. 형제로 두면 헤더(z-index 110)에 가려지고, 화면에 따로 고정하면
+           헤더가 숨은 오프닝 중에도 혼자 떠 있게 된다. 헤더에 붙여 두면 둘이 항상 함께 움직인다. -->
+      <div class="scroll-progress" data-scroll-progress aria-hidden="true"></div>
     </div>
+    <!-- 「오시는 길」 구간에서만 헤더 아래에 걸리는 소목차. 접기 목록과 같은 네 항목을 가리키므로
+         라벨도 접기 제목과 글자까지 같게 둔다 — 다르면 눌러서 도착했는지 알 수 없다.
+         JS 가 없으면 끝까지 숨어 있다: 본문의 접기 목록이 이미 같은 일을 하므로 잃는 것이 없다. -->
+    <nav class="section-nav" data-section-nav="venue" aria-label="교통수단별 안내" hidden>
+      <a href="#transit-car" data-section-nav-link>자가용</a>
+      <a href="#transit-rail" data-section-nav-link>전철·기차·KTX</a>
+      <a href="#shuttle" data-section-nav-link>셔틀버스</a>
+      <a href="#transit-bus" data-section-nav-link>버스</a>
+    </nav>
     <section class="mobile-section ball-section" data-section="invitation" data-mask>
       <div class="mask-inner">
         <p class="eyebrow">A Promise in Winter</p>
@@ -128,25 +139,18 @@
           </div>
           <div class="map-pane map-pane--naver" data-map-pane="naver">
             <div class="map-widget" data-map-widget="naver"></div>
+            <!-- 안내 문구를 두지 않는다. 버튼 라벨이 이미 무슨 일이 일어나는지 말한다. -->
             <div class="map-widget__fallback" data-map-fallback="naver">
-              <p class="map-pane__note">쓰시는 지도 앱에서 바로 길을 찾으실 수 있습니다.</p>
-              <a class="action-button" href="#" data-href-field="venue.maps.naver" target="_blank" rel="noreferrer">네이버지도</a>
+              <a class="action-button" href="#" data-href-field="venue.maps.naver" target="_blank" rel="noreferrer">네이버지도에서 열기</a>
             </div>
           </div>
           <div class="map-pane map-pane--kakao" data-map-pane="kakao">
             <div class="map-widget" data-map-widget="kakao"></div>
             <div class="map-widget__fallback" data-map-fallback="kakao">
-              <p class="map-pane__note">쓰시는 지도 앱에서 바로 길을 찾으실 수 있습니다.</p>
-              <a class="action-button" href="#" data-href-field="venue.maps.kakao" target="_blank" rel="noreferrer">카카오맵</a>
+              <a class="action-button" href="#" data-href-field="venue.maps.kakao" target="_blank" rel="noreferrer">카카오맵에서 열기</a>
             </div>
           </div>
         </div>
-        <nav class="transit-chips" aria-label="교통수단별 안내">
-          <a class="transit-chip" href="#transit-car" data-transit-chip>자가용</a>
-          <a class="transit-chip" href="#transit-rail" data-transit-chip>전철·기차·KTX</a>
-          <a class="transit-chip" href="#shuttle" data-transit-chip>셔틀버스</a>
-          <a class="transit-chip" href="#transit-bus" data-transit-chip>버스</a>
-        </nav>
         <div class="directions-list">
           <details class="transit-fold" id="transit-car" tabindex="-1">
             <summary><h3>자가용</h3></summary>
@@ -195,14 +199,14 @@
               <div class="map-pane map-pane--kakao" data-map-pane="olive">
                 <div class="map-widget" data-map-widget="kakao-olive"></div>
                 <div class="map-widget__fallback" data-map-fallback="kakao-olive">
-                  <p class="map-pane__note">천안터미널 승차장입니다. 지도 앱에서 바로 열어 보실 수 있습니다.</p>
+                  <p class="map-pane__note">천안터미널 승차장입니다.</p>
                   <a class="action-button" href="https://map.kakao.com/link/search/올리브영 천안타운" target="_blank" rel="noreferrer">카카오맵으로 열기</a>
                 </div>
               </div>
               <div class="map-pane map-pane--kakao" data-map-pane="gs25">
                 <div class="map-widget" data-map-widget="kakao-gs25"></div>
                 <div class="map-widget__fallback" data-map-fallback="kakao-gs25">
-                  <p class="map-pane__note">천안역 승차장입니다. 지도 앱에서 바로 열어 보실 수 있습니다.</p>
+                  <p class="map-pane__note">GS25 천안역점 승차장입니다.</p>
                   <a class="action-button" href="https://map.kakao.com/link/search/GS25 천안역점" target="_blank" rel="noreferrer">카카오맵으로 열기</a>
                 </div>
               </div>
@@ -216,9 +220,6 @@
           </details>
         </div>
         <a class="action-button venue-call" href="tel:041-555-7900" data-tel-field="venue.phone">예식장 문의 <span data-field="venue.phone">041-555-7900</span></a>
-        <div class="action-row venue-actions">
-          <button class="action-button" type="button" data-copy-field="venue.address">주소 복사</button>
-        </div>
       </div>
     </section>
     <section class="ball-section--plate photo-plate" aria-label="아치 뒤에서 얼굴을 내민 웨딩 사진">
@@ -226,7 +227,7 @@
         <img src="assets/photos-v2/w1200/peek-1.jpg" width="1024" height="1536" loading="lazy" decoding="async" alt="크림색 아치 벽 뒤에서 보라빛 부케를 든 채 얼굴을 내민 신부와 어깨를 감싸 안고 함께 웃는 신랑">
       </div>
     </section>
-    <section class="mobile-section ball-section" data-section="family">
+    <section class="mobile-section ball-section" id="family" data-section="family" tabindex="-1">
       <div class="mask-inner">
         <p class="eyebrow">Our Families</p>
         <h2 class="section-title-ko">가족 소개</h2>
