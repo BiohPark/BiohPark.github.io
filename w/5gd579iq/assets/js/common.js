@@ -325,62 +325,58 @@
   }
 
   /*
+   * 캘린더 메모에 들어갈 한 줄. 주소만 덜렁 있으면 몇 달 뒤 일정을 연 하객에게 그것이 무엇인지
+   * 알려 주는 글자가 하나도 없다 — 무엇의 주소인지 이름을 붙인다(사용자 지시).
+   * .ics 의 DESCRIPTION 과 구글 캘린더의 details 가 같은 문구를 써야 두 경로가 갈리지 않는다.
+   */
+  const CALENDAR_NOTE_LABEL = '모바일 청첩장';
+  const calendarNote = () => (get('event.url') ? `${CALENDAR_NOTE_LABEL}: ${get('event.url')}` : '');
+
+  /*
    * 구글 캘린더는 메모를 details 파라미터로 받는다. 마크업에 박아 두지 않고 여기서 붙이는 이유는,
    * 주소가 배포 때만 채워지는 비공개 값이라 소스에 남으면 안 되기 때문이다(지도 키와 같은 취급).
    */
   function addGoogleCalendarNote() {
-    const url = get('event.url');
+    const note = calendarNote();
     const link = document.querySelector('[data-calendar-google]');
-    if (!url || !link?.href) return;
+    if (!note || !link?.href) return;
     const target = new URL(link.href);
-    target.searchParams.set('details', url);
+    target.searchParams.set('details', note);
     link.href = target.href;
   }
 
   /*
-   * 12차: 안드로이드에서 주 버튼을 구글 캘린더의 일정 추가 화면으로 보낸다. 라벨도 함께 바꾼다.
+   * '캘린더에 저장'이 눌린 자리에서 바로 저장 화면이 뜨게 하는 것이 이 함수의 전부다.
+   * **라벨은 절대 건드리지 않는다**(사용자 지시): 어느 브라우저에서든 두 버튼은 늘
+   * [캘린더에 저장] · [Google 캘린더로 열기] 다. 옮기는 것은 주 버튼의 목적지 하나뿐이고,
+   * 보조 버튼은 손대지 않는다 — 맞바꾸기가 아니다.
    *
-   * 왜 여기로 가나 — calendar.google.com 이 /.well-known/assetlinks.json 에
+   * 왜 안드로이드만 — 브라우저별로 '즉시 저장'에 닿는 길이 다르다.
+   *   iOS 사파리·데스크톱 : .ics 를 누르면 일정 미리보기가 그 자리에서 뜬다. 이미 최선이라 무변경.
+   *   카카오톡 인앱       : .ics 가 시스템으로 넘어가 캘린더가 바로 뜬다(실기기 확인). 무변경.
+   *   삼성 인터넷·안드 크롬: .ics 가 다운로드 매니저로 빠진다. 여기만 목적지를 바꾼다.
+   *
+   * 왜 구글 캘린더 주소인가 — calendar.google.com 이 /.well-known/assetlinks.json 에
    * com.google.android.calendar 를 handle_all_urls 로 선언한 **검증된 App Link** 다(실측 200).
-   * 그래서 판정이 브라우저가 아니라 안드로이드 OS 층에서 일어나고, 앱이 깔려 있으면 브라우저를
-   * 거치지 않고 일정 추가 화면이 바로 열린다 — 삼성 인터넷에서도 같다. 파일이 끼어들 자리가 없다.
+   * 판정이 브라우저가 아니라 안드로이드 OS 층에서 일어나므로, 어느 브라우저로 열든 캘린더 앱의
+   * 일정 추가 화면이 바로 열린다. QR 로 들어온 하객이 기본 브라우저를 쓰더라도 같다.
    *
    * 왜 intent: 를 걷었나 — Chrome 문서상 intent: 로는 CATEGORY_BROWSABLE 을 선언한 액티비티만
    * 실행된다. 캘린더의 INSERT 액티비티는 앱 간 호출용이라 그것을 선언하지 않는다. 즉 6차의 그
-   * 경로는 어느 기기에서도 매칭된 적이 없고 늘 browser_fallback_url(.ics 내려받기)로 떨어졌다.
-   * 게다가 800ms 보정 타이머가 같은 내려받기를 한 번 더 걸었다 — 제스처가 끊긴 뒤의 두 번째
-   * 요청은 '자동 다운로드'로 분류돼 차단된다. 한 번 취소하면 다시 눌러도 무반응이던 원인이다.
-   *
-   * 왜 라벨까지 바꾸나 — href 만 맞바꾸면 '캘린더에 저장'이라 적힌 버튼이 구글 캘린더를 연다.
-   * 6차에 맞바꾸기를 막아 둔 이유가 정확히 그 어긋남이었다. 둘을 함께 옮기면 어긋나지 않는다.
-   * iOS·데스크톱은 손대지 않는다: .ics 를 눌렀을 때 일정 미리보기가 바로 뜨는 쪽이 이미 낫다.
+   * 경로는 어느 기기에서도 매칭된 적이 없고 늘 .ics 내려받기로 떨어졌다. 게다가 800ms 보정
+   * 타이머가 같은 내려받기를 한 번 더 걸었다 — 제스처가 끊긴 뒤의 두 번째 요청은 '자동 다운로드'
+   * 로 분류돼 차단된다. 한 번 취소하면 다시 눌러도 무반응이던 원인이다.
    */
   function routeCalendarForAndroid() {
     const agent = navigator.userAgent;
-    if (!/Android/i.test(agent)) return;
-    /*
-     * 카카오톡 인앱 브라우저는 건드리지 않는다. 거기서는 .ics 가 시스템으로 넘어가 캘린더가
-     * 바로 뜨는 것이 실기기에서 확인됐고(사용자 제보), 인앱 WebView 는 App Link 를 가로채지 않아
-     * 같은 주소가 구글 캘린더 **웹**(로그인 요구)으로 열릴 수 있다. 청첩장이 카카오톡으로
-     * 퍼지는 이상 그쪽이 가장 흔한 환경이므로, 되는 것을 확인한 경로는 그대로 둔다.
-     */
-    if (/KAKAOTALK/i.test(agent)) return;
+    if (!/Android/i.test(agent) || /KAKAOTALK/i.test(agent)) return;
     const primary = document.querySelector('[data-calendar-ics]');
-    const secondary = document.querySelector('[data-calendar-google]');
-    if (!primary || !secondary) return;
-    const googleUrl = secondary.getAttribute('href');
-    const icsUrl = primary.getAttribute('href');
-    if (!googleUrl || !icsUrl) return;
+    const googleUrl = document.querySelector('[data-calendar-google]')?.getAttribute('href');
+    if (!primary || !googleUrl) return;
     // 링크의 기본 동작 그대로 이동시킨다. preventDefault 후 스크립트가 주소를 바꾸면 그 이동에는
     // 사용자 제스처가 붙지 않아, 내려받기로 끝나는 경우 두 번째부터 브라우저가 조용히 막는다.
-    // 새 탭으로 열지 않는다: App Link 로 앱이 가로채면 빈 탭만 남고, 앱이 없어 웹으로 떨어질
-    // 때는 뒤로가기 한 번으로 청첩장에 돌아오는 편이 낫다.
+    // 새 탭으로 열지 않는다: App Link 로 앱이 가로채면 빈 탭만 남는다.
     primary.setAttribute('href', googleUrl);
-    primary.textContent = '구글 캘린더에 저장';
-    secondary.setAttribute('href', icsUrl);
-    secondary.textContent = '.ics 파일 내려받기';
-    secondary.removeAttribute('target');
-    secondary.removeAttribute('rel');
   }
 
   function initCalendar() {
@@ -405,7 +401,7 @@
           `LOCATION:${escapeIcsText(`${get('venue.name')} ${get('venue.hall')} ${get('venue.address')}`)}`,
           // 메모에 청첩장 주소를 남긴다. 예식 당일 일정 알림에서 약도·셔틀 안내로 바로 돌아올 수 있다.
           // 주소는 배포 때만 채워지므로 빈 값이면 줄 자체를 넣지 않는다.
-          ...(get('event.url') ? [`DESCRIPTION:${escapeIcsText(get('event.url'))}`] : []),
+          ...(calendarNote() ? [`DESCRIPTION:${escapeIcsText(calendarNote())}`] : []),
           'END:VEVENT',
           'END:VCALENDAR',
         ].flatMap(foldIcsLine);
