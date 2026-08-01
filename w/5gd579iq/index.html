@@ -55,10 +55,14 @@
         <a href="#family">가족 소개</a>
       </nav>
       <button type="button" class="action-button text-scale-toggle" data-text-scale>글자 크게</button>
-      <!-- 진행바는 헤더의 자식이다. 형제로 두면 헤더(z-index 110)에 가려지고, 화면에 따로 고정하면
-           헤더가 숨은 오프닝 중에도 혼자 떠 있게 된다. 헤더에 붙여 두면 둘이 항상 함께 움직인다. -->
-      <div class="scroll-progress" data-scroll-progress aria-hidden="true"></div>
     </div>
+    <!-- 11차: 진행바를 헤더 밖으로 꺼내 화면 맨 아래에 고정한다. 헤더 안에 있으면 히어로에서
+         화면 중간(헤더가 sticky 로 붙기 전 자리)에 있다가 스크롤과 함께 맨 위로 튄다 — 위치가
+         변하는 것이 거슬린다는 지적이 이 경로였다. 아래 테두리도 없는 자리라 덜 찬 구간이
+         '빈 트랙'으로 읽히지도 않는다.
+         반드시 헤더 밖이어야 한다: 헤더는 오프닝 중 opacity:0 이고, opacity<1 인 조상은
+         position:fixed 자손의 컨테이닝 블록이 되어 바를 헤더 안에 가둔다. -->
+    <div class="scroll-progress" data-scroll-progress aria-hidden="true"></div>
     <!-- 「오시는 길」 구간에서만 헤더 아래에 걸리는 소목차. 접기 목록과 같은 네 항목을 가리키므로
          라벨도 접기 제목과 글자까지 같게 둔다 — 다르면 눌러서 도착했는지 알 수 없다.
          JS 가 없으면 끝까지 숨어 있다: 본문의 접기 목록이 이미 같은 일을 하므로 잃는 것이 없다. -->
@@ -125,28 +129,23 @@
         <p class="ic-guidance" data-field="directions.official.icGuidance">천안IC보다 독립기념관IC, 남천안IC를 이용하시면 더욱 편리합니다</p>
         <p class="ic-distance" data-field="directions.official.icDistance">독립기념관IC 6km · 7분 / 남천안IC 3.5km · 5분</p>
         <div class="route-card" data-map-card>
+          <!-- 11차: 네이버 지도 SDK 를 걷고 탭을 둘로 줄였다. 같은 위치를 세 번 보여 주는 대신
+               지도는 카카오 하나만 그리고, 두 앱으로 나가는 길은 그 아래 링크 둘로 남긴다. -->
           <input class="visually-hidden" type="radio" name="map-view" id="map-view-diagram" data-map-view="diagram" checked>
-          <input class="visually-hidden" type="radio" name="map-view" id="map-view-naver" data-map-view="naver">
           <input class="visually-hidden" type="radio" name="map-view" id="map-view-kakao" data-map-view="kakao">
           <div class="map-tabs">
             <label class="map-tab" for="map-view-diagram">약도</label>
-            <label class="map-tab" for="map-view-naver">네이버맵</label>
             <label class="map-tab" for="map-view-kakao">카카오맵</label>
           </div>
           <div class="map-pane map-pane--diagram" data-map-pane="diagram">
             <img class="route-mobile" src="venue-map.jpg" width="764" height="769" loading="lazy" data-allow-save alt="티웨딩 천안과 독립기념관IC·남천안IC·천안IC 나들목, 천안분기점, 주변 랜드마크와 나들목별 거리를 표시한 예식장 공식 안내도">
             <a class="action-button map-zoom" href="venue-map.jpg" target="_blank" rel="noreferrer" data-lightbox-open="venue-map.jpg" data-lightbox-alt="티웨딩 천안 예식장 공식 안내도 확대 보기">약도 크게 보기</a>
           </div>
-          <div class="map-pane map-pane--naver" data-map-pane="naver">
-            <div class="map-widget" data-map-widget="naver"></div>
-            <!-- 안내 문구를 두지 않는다. 버튼 라벨이 이미 무슨 일이 일어나는지 말한다. -->
-            <div class="map-widget__fallback" data-map-fallback="naver">
-              <a class="action-button" href="#" data-href-field="venue.maps.naver" target="_blank" rel="noreferrer">네이버지도에서 열기</a>
-            </div>
-          </div>
           <div class="map-pane map-pane--kakao" data-map-pane="kakao">
             <div class="map-widget" data-map-widget="kakao"></div>
+            <!-- 안내 문구를 두지 않는다. 버튼 라벨이 이미 무슨 일이 일어나는지 말한다. -->
             <div class="map-widget__fallback" data-map-fallback="kakao">
+              <a class="action-button" href="#" data-href-field="venue.maps.naver" target="_blank" rel="noreferrer">네이버지도에서 열기</a>
               <a class="action-button" href="#" data-href-field="venue.maps.kakao" target="_blank" rel="noreferrer">카카오맵에서 열기</a>
             </div>
           </div>
@@ -163,18 +162,19 @@
             <p class="transit-lead"><strong>천안역에 내리시는 경우</strong></p>
             <ol class="transit-steps" data-field-list="directions.official.railStation">
               <li>천안역에서 기차 또는 전철에서 내립니다.</li>
-              <li>1번 출구 동부역으로 나갑니다.</li>
-              <li>24, 383, 400, 401, 500번 버스를 탑니다.</li>
+              <li>1번 출구로 나가 동부광장(온양나드리방면) 정류장으로 갑니다.</li>
+              <li>24, 383, 400번 버스를 탑니다.</li>
               <li>세광엔리치빌 정류장에서 내립니다.</li>
             </ol>
             <p class="transit-lead"><strong>KTX 천안아산역에 내리시는 경우</strong></p>
             <ol class="transit-steps" data-field-list="directions.official.railKtx">
               <li>아산역에서 전철을 탑니다.</li>
               <li>천안역에서 전철에서 내립니다.</li>
-              <li>1번 출구 동부역으로 나갑니다.</li>
-              <li>24, 383, 400, 401, 500번 버스를 탑니다.</li>
+              <li>1번 출구로 나가 동부광장(온양나드리방면) 정류장으로 갑니다.</li>
+              <li>24, 383, 400번 버스를 탑니다.</li>
               <li>세광엔리치빌 정류장에서 내립니다.</li>
             </ol>
+            <p class="transit-note" data-field="directions.official.railBus500">500번 버스는 삼도상가(동부광장방면) 정류장에서 타실 수 있습니다.</p>
             <p class="transit-note" data-field="directions.official.railToShuttle">천안역 1번 출구에서는 셔틀버스도 타실 수 있습니다. 승차 위치는 아래 셔틀버스 안내를 봐 주세요.</p>
           </details>
           <details class="transit-fold" id="shuttle" tabindex="-1">
@@ -200,14 +200,16 @@
                 <div class="map-widget" data-map-widget="kakao-olive"></div>
                 <div class="map-widget__fallback" data-map-fallback="kakao-olive">
                   <p class="map-pane__note">천안터미널 승차장입니다.</p>
-                  <a class="action-button" href="https://map.kakao.com/link/search/올리브영 천안타운" target="_blank" rel="noreferrer">카카오맵으로 열기</a>
+                  <a class="action-button" href="#" data-href-field="shuttleStops.olive.naver" target="_blank" rel="noreferrer">네이버지도에서 열기</a>
+                  <a class="action-button" href="#" data-href-field="shuttleStops.olive.kakao" target="_blank" rel="noreferrer">카카오맵에서 열기</a>
                 </div>
               </div>
               <div class="map-pane map-pane--kakao" data-map-pane="gs25">
                 <div class="map-widget" data-map-widget="kakao-gs25"></div>
                 <div class="map-widget__fallback" data-map-fallback="kakao-gs25">
                   <p class="map-pane__note">GS25 천안역점 승차장입니다.</p>
-                  <a class="action-button" href="https://map.kakao.com/link/search/GS25 천안역점" target="_blank" rel="noreferrer">카카오맵으로 열기</a>
+                  <a class="action-button" href="#" data-href-field="shuttleStops.gs25.naver" target="_blank" rel="noreferrer">네이버지도에서 열기</a>
+                  <a class="action-button" href="#" data-href-field="shuttleStops.gs25.kakao" target="_blank" rel="noreferrer">카카오맵에서 열기</a>
                 </div>
               </div>
             </div>
@@ -291,8 +293,10 @@
     <dialog class="geo-sheet" data-geo-sheet aria-labelledby="geo-sheet-title">
       <h2 id="geo-sheet-title" data-geo-sheet-title></h2>
       <p class="geo-sheet__note">지도 앱을 선택하세요</p>
-      <a class="action-button" data-geo-naver target="_blank" rel="noreferrer">네이버지도로 열기</a>
-      <a class="action-button" data-geo-kakao target="_blank" rel="noreferrer">카카오맵으로 열기</a>
+      <!-- 문구는 지도 카드의 두 버튼과 글자까지 같아야 한다. 같은 일을 하는 버튼이 한 화면에서
+           '…로 열기'와 '…에서 열기'로 갈리면 둘이 다른 기능처럼 읽힌다. -->
+      <a class="action-button" data-geo-naver target="_blank" rel="noreferrer">네이버지도에서 열기</a>
+      <a class="action-button" data-geo-kakao target="_blank" rel="noreferrer">카카오맵에서 열기</a>
       <button type="button" class="action-button" data-geo-copy></button>
       <button type="button" class="action-button geo-sheet__close" data-geo-close>닫기</button>
     </dialog>

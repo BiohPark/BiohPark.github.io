@@ -533,7 +533,12 @@
      * 뱃지가 같은 일을 두 번 하고, 그 문단은 남색이 아니라 크림 카드 위에 놓여 있어
      * 크림색 뱃지가 그대로 배경에 묻혔다 — 실측 대비 1:1, 지명이 통째로 안 보였다.
      */
-    document.querySelectorAll('.venue-address, .directions-list p:not(.map-pane__note)').forEach((scope) => {
+    /*
+     * 11차: 단계 목록의 <li> 를 범위에 넣는다. 하객이 실제로 찾아 헤매는 이름(정류장)이 전부
+     * 거기 있는데 <p> 만 훑고 있어 전철 안내에는 뱃지가 하나도 없었다. li 하나가 곧 한 단계라
+     * 문단당 둘 제한도 단계별로 걸린다.
+     */
+    document.querySelectorAll('.venue-address, .directions-list p:not(.map-pane__note), .directions-list li').forEach((scope) => {
       const queue = [];
       const walker = document.createTreeWalker(scope, NodeFilter.SHOW_TEXT);
       while (walker.nextNode()) queue.push(walker.currentNode);
@@ -571,21 +576,15 @@
    * 지도 위젯. 탭을 열기 전에는 스크립트를 한 바이트도 받지 않는다 — 하객 대부분은 약도만 보고 떠난다.
    * 키는 소스 저장소에 두지 않는다(공개 저장소). 배포 스크립트가 데이터에 주입하며, 값이 없으면
    * 위젯을 시도하지 않고 '앱에서 열기' 폴백이 그대로 남는다 — 어느 경우에도 빈 화면이 되지 않는다.
-   * 네이버 SDK 파라미터는 배포 도메인에서만 인증이 성립해 로컬에서 판정할 수 없었다(7차 프로브).
-   * 공식 문서의 ncpKeyId를 먼저 쓰고, 스크립트가 실패하면 구 파라미터로 한 번 더 시도한다.
+   *
+   * 11차: 네이버 SDK 를 걷었다. 같은 위치를 지도 둘로 두 번 보여 줄 이유가 없고, 인증이 배포
+   * 도메인에서만 성립해 로컬에서는 끝내 판정할 수 없는 코드였다(7차 프로브). 네이버로 가는 길은
+   * 딥링크 버튼으로 남아 있고, 하객이 실제로 원하는 것도 보기가 아니라 길찾기다.
    */
   function initMapWidgets() {
     const mounts = [...document.querySelectorAll('[data-map-widget]')];
     if (!mounts.length) return;
 
-    const loadScript = (src) => new Promise((resolve, reject) => {
-      const script = document.createElement('script');
-      script.src = src;
-      script.async = true;
-      script.addEventListener('load', () => resolve(), { once: true });
-      script.addEventListener('error', () => reject(new Error(src)), { once: true });
-      document.head.append(script);
-    });
     /*
      * 폴백('앱에서 열기')은 어떤 경우에도 숨기지 않는다. 7차에 같은 실수를 두 번 했다 —
      * "요소는 존재하는데 보이지 않는다". 렌더에 성공했는지 확인하지도 않고 탈출구를 치우면,
@@ -601,37 +600,6 @@
     const judge = (name, mount, ok) => {
       widgetState.set(name, ok ? 'ok' : 'failed');
       if (!ok) failWidget(mount);
-    };
-
-    // 스크립트가 로드돼도 인증이 거부되면 지오코딩 단계에서야 드러난다. 그래서 '스크립트 로드'가
-    // 아니라 '지도가 실제로 그려졌는가'까지를 한 번의 시도로 묶어 판정한다.
-    const tryNaver = (mount, parameter, clientId) => new Promise((resolve) => {
-      const base = 'https://oapi.map.naver.com/openapi/v3/maps.js';
-      loadScript(`${base}?${parameter}=${encodeURIComponent(clientId)}&submodules=geocoder`).then(() => {
-        const maps = window.naver?.maps;
-        if (!maps?.Service) { resolve(false); return; }
-        // 좌표를 지어내지 않는다 — 정본 주소를 지오코딩한 결과만 쓴다.
-        maps.Service.geocode({ query: get('venue.address') }, (statusCode, response) => {
-          const first = response?.v2?.addresses?.[0];
-          if (statusCode !== maps.Service.Status.OK || !first) { resolve(false); return; }
-          const position = new maps.LatLng(Number(first.y), Number(first.x));
-          const map = new maps.Map(mount, { center: position, zoom: 16 });
-          new maps.Marker({ position, map });
-          resolve(true);
-        });
-      }).catch(() => resolve(false));
-    });
-
-    const startNaver = async (mount) => {
-      const clientId = get('venue.maps.naverClientId');
-      if (!clientId) return;
-      // 배포 도메인에서만 인증이 성립해 어느 파라미터가 맞는지 사전에 판정할 수 없었다.
-      // 공식 문서 현행(ncpKeyId)을 먼저 쓰고, 안 되면 구 파라미터로 한 번 더 시도한다.
-      for (const parameter of ['ncpKeyId', 'ncpClientId']) {
-        // 인증이 거부되면 SDK 는 이미 전역을 점유한 상태다. 두 번째 시도는 최선의 노력이다.
-        if (await tryNaver(mount, parameter, clientId)) { judge('naver', mount, true); return; }
-      }
-      judge('naver', mount, false);
     };
 
     const startKakao = (mount, name) => {
@@ -695,8 +663,7 @@
       widgetState.set(name, 'loading');
       mount.hidden = false;
       mount.replaceChildren();
-      if (name === 'naver') startNaver(mount);
-      else if (name.startsWith('kakao')) startKakao(mount, name);
+      if (name.startsWith('kakao')) startKakao(mount, name);
     };
 
     /*
@@ -843,12 +810,17 @@
     const image = sheet.querySelector('[data-lightbox-image]');
     const original = sheet.querySelector('[data-lightbox-original]');
     const ZOOM = 2;
+    const TAP_GAP = 300;
+    // 손끝은 같은 자리를 눌러도 몇 픽셀 흔들린다. 이 여유보다 작게 움직였으면 탭으로 센다.
+    const TAP_SLOP = 10;
     let zoomed = false;
     let offsetX = 0;
     let offsetY = 0;
     let dragging = false;
     let lastX = 0;
     let lastY = 0;
+    let downX = 0;
+    let downY = 0;
     let lastTap = 0;
 
     const apply = () => {
@@ -858,16 +830,24 @@
       image.classList.toggle('is-zoomed', zoomed);
     };
 
-    // 확대한 그림을 끌어도 빈 여백이 들어오지 않게 이동 범위를 그림 안으로 가둔다.
+    /*
+     * 확대한 그림을 끌어도 빈 배경이 들어오지 않게 이동 범위를 가둔다. 한계는 '화면 밖으로 넘친 만큼'의
+     * 절반이다 — 넘치지 않는 축은 아예 움직이지 않는다.
+     * 두 가지를 조심한다.
+     * 1) getBoundingClientRect 는 확대가 이미 반영된 값을 준다. 그것으로 계산하면 한계가 정확히
+     *    두 배로 잡혀 그림을 화면 밖으로 절반이나 밀 수 있다(실측: 한계 195 여야 할 자리에 390).
+     *    변환이 섞이지 않는 배치 크기(offsetWidth)를 쓴다.
+     * 2) 넘친 양은 그림 크기가 아니라 '그림 - 화면'이다. 그림끼리 비교하면 세로가 다 보이는데도
+     *    위아래로 끌려 여백이 들어온다.
+     */
     const clamp = () => {
-      const box = image.getBoundingClientRect();
-      const limitX = Math.max(0, (box.width * ZOOM - box.width) / 2);
-      const limitY = Math.max(0, (box.height * ZOOM - box.height) / 2);
+      const limitX = Math.max(0, (image.offsetWidth * ZOOM - sheet.clientWidth) / 2);
+      const limitY = Math.max(0, (image.offsetHeight * ZOOM - sheet.clientHeight) / 2);
       offsetX = Math.min(limitX, Math.max(-limitX, offsetX));
       offsetY = Math.min(limitY, Math.max(-limitY, offsetY));
     };
 
-    const reset = () => { zoomed = false; offsetX = 0; offsetY = 0; apply(); };
+    const reset = () => { zoomed = false; offsetX = 0; offsetY = 0; lastTap = 0; apply(); };
 
     const toggleZoom = () => {
       zoomed = !zoomed;
@@ -893,22 +873,27 @@
     });
     sheet.addEventListener('close', reset);
 
-    image.addEventListener('dblclick', toggleZoom);
-    // 모바일에는 dblclick 이 늦거나 안 오는 브라우저가 있어 탭 간격을 직접 잰다.
-    image.addEventListener('pointerup', (pointerEvent) => {
-      if (pointerEvent.pointerType === 'mouse') return;
-      const now = Date.now();
-      if (now - lastTap < 300) toggleZoom();
-      lastTap = now;
-    });
-
+    /*
+     * 더블탭 판정은 반드시 한 곳에서만 한다. 10차까지는 dblclick 과 탭 간격 측정을 둘 다 걸어 두어,
+     * 터치로 두 번 누르면 pointerup 이 켜고 뒤이어 합성된 dblclick 이 그대로 껐다 — 확대했다가
+     * 즉시 원복되는 것처럼 보인 것이 이것이다. pointerup 하나만 남긴다(마우스 더블클릭도 여기로 온다).
+     */
     image.addEventListener('pointerdown', (pointerEvent) => {
+      downX = pointerEvent.clientX;
+      downY = pointerEvent.clientY;
       if (!zoomed) return;
       dragging = true;
       lastX = pointerEvent.clientX;
       lastY = pointerEvent.clientY;
       image.setPointerCapture?.(pointerEvent.pointerId);
     });
+    /*
+     * <img> 는 기본적으로 끌어 옮길 수 있다. 확대한 그림을 밀면 브라우저가 그것을 이미지 드래그로
+     * 채 가면서 pointercancel 을 쏘고, 그 순간 이동이 죽는다 — 실측하면 손을 떼기 전에 딱 한 번만
+     * 움직이고 멈춘다. guard.js 가 draggable 을 꺼 주지만 이 그림은 data-allow-save 라 예외였다.
+     * dragstart 만 막는다: 롱프레스 저장은 contextmenu 경로라 그대로 남는다.
+     */
+    image.addEventListener('dragstart', (dragEvent) => dragEvent.preventDefault());
     image.addEventListener('pointermove', (pointerEvent) => {
       if (!dragging) return;
       offsetX += pointerEvent.clientX - lastX;
@@ -918,9 +903,18 @@
       clamp();
       apply();
     });
-    const endDrag = () => { dragging = false; };
-    image.addEventListener('pointerup', endDrag);
-    image.addEventListener('pointercancel', endDrag);
+    image.addEventListener('pointerup', (pointerEvent) => {
+      dragging = false;
+      // 끌어서 옮긴 손가락은 탭이 아니다. 이 검사가 없으면 확대 상태에서 두 번 끌 때마다 축소된다.
+      const moved = Math.abs(pointerEvent.clientX - downX) > TAP_SLOP
+        || Math.abs(pointerEvent.clientY - downY) > TAP_SLOP;
+      if (moved) { lastTap = 0; return; }
+      const now = Date.now();
+      // 성립한 뒤에는 시각을 지운다 — 남겨 두면 세 번째 탭이 두 번째와 짝지어 또 뒤집힌다.
+      if (now - lastTap < TAP_GAP) { toggleZoom(); lastTap = 0; return; }
+      lastTap = now;
+    });
+    image.addEventListener('pointercancel', () => { dragging = false; lastTap = 0; });
   }
 
   function initMapSwipe() {

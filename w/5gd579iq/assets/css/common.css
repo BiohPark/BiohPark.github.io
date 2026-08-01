@@ -173,15 +173,16 @@ html:not(.js-loading):not(.js-ready) .mobile-header { visibility: visible; opaci
 /* 마우스로 눌렀을 때만 링을 숨긴다. 키보드로 이동한 사람은 착지 지점을 볼 수 있어야 한다. */
 [data-section="schedule"]:focus:not(:focus-visible), [data-section="venue"]:focus:not(:focus-visible), [data-section="family"]:focus:not(:focus-visible), .transit-fold:focus:not(:focus-visible) { outline: none; }
 
-/* [약도]/[네이버맵]/[카카오맵] 3단 전환과 셔틀 승차장 사진 토글. details를 늘리지 않기 위해 radio·checkbox로만 만든다. */
+/* [약도]/[카카오맵] 전환과 셔틀 승차장 3단 토글. details를 늘리지 않기 위해 radio·checkbox로만 만든다. */
 .map-pane { display: none; }
 #map-view-diagram:checked ~ .map-pane--diagram,
-#map-view-naver:checked ~ .map-pane--naver,
 #map-view-kakao:checked ~ .map-pane--kakao,
 #shuttle-view-photo:checked ~ [data-map-pane="photo"],
 #shuttle-view-olive:checked ~ [data-map-pane="olive"],
 #shuttle-view-gs25:checked ~ [data-map-pane="gs25"] { display: block; }
-.map-tabs { display: grid; grid-template-columns: repeat(3, 1fr); }
+/* 칸 수를 세지 않는다 — 예식장 카드는 2탭, 셔틀 카드는 3탭이다. 고정 개수를 적어 두면
+   한쪽을 줄이는 순간 다른 쪽이 조용히 어긋난다(11차에 네이버 탭을 걷으며 실제로 겪었다). */
+.map-tabs { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); }
 .map-tab { display: flex; min-height: 44px; align-items: center; justify-content: center; cursor: pointer; }
 /* 지도 위젯은 세로 스크롤을 점유한다. 높이를 묶고 지도 밖에 스크롤 통로를 남긴다. */
 .map-widget { width: 100%; height: 280px; background: rgba(12,21,40,.06); }
@@ -223,12 +224,13 @@ html:not(.js-loading):not(.js-ready) .mobile-header { visibility: visible; opaci
 .js-ready .opening-content > :nth-child(4) { transition-delay: 270ms; }
 .open-button { min-width: 160px; min-height: 48px; padding: .75rem 1.2rem; border: 1px solid currentColor; background: transparent; cursor: pointer; letter-spacing: .08em; }
 
-/* 헤더 안쪽 기준으로 헤더 바로 아래 칸에 놓는다. 화면 상단에 고정하면 sticky 헤더(z-index 110)가
-   그대로 덮어 스크롤 양이 보이지 않는다 — 실제로 그렇게 가려져 있었다. */
-/* top:100% 는 헤더의 패딩 박스 기준이라 아래 테두리 '위'에 앉는다. 테두리와 진행바가 둘 다
-   금색이면 어느 쪽이 스크롤 양인지 분간되지 않는다 — 테두리 두께만큼 더 내려 그 아래 칸에 놓는다. */
-.scroll-progress { position: absolute; z-index: 1; top: calc(100% + var(--header-border-h, 0px)); left: 0; width: 100%; height: var(--progress-height,2px); transform: scaleX(0); transform-origin: left; background: var(--progress-color,#b89a5a); pointer-events: none; }
-.scroll-progress::after { content: var(--progress-glyph,''); position: absolute; right: -.5rem; top: 50%; transform: translateY(-50%); color: var(--progress-end,#b89a5a); font-size: .8rem; }
+/* 화면 맨 아래에 고정한다. 헤더 안(position:absolute)에 있던 10차까지는 히어로에서 화면 중간에
+   놓였다가 스크롤과 함께 맨 위로 튀었다 — '위치가 변한다'는 지적이 그 자리였다.
+   상단 고정은 답이 아니다: sticky 헤더(z-index 110)가 그대로 덮는다(9차에 실제로 그랬다).
+   아래에는 헤더 테두리 같은 전폭 금색 선이 없으므로 덜 찬 구간이 '빈 트랙'으로 읽히지 않는다.
+   z-index 는 헤더(110)보다 위 — 2px 라 무엇도 가리지 않고, 가려지면 존재 이유가 없다.
+   ::after 글리프는 두지 않는다. scaleX 로 늘어난 좌표계에 놓여 배율마다 다른 폭으로 찌그러진다. */
+.scroll-progress { position: fixed; z-index: 130; bottom: 0; left: 0; width: 100%; height: var(--progress-height,2px); transform: scaleX(0); transform-origin: left; background: var(--progress-color,#b89a5a); pointer-events: none; }
 .hero-photo { position: relative; min-height: 92svh; overflow: hidden; }
 .hero-media { position: absolute; inset: -40px 0; transform: translate3d(0,var(--parallax-y,0),0); }
 .hero-media img { width: 100%; height: calc(92svh + 80px); object-fit: cover; transform: scale(1); transform-origin: var(--ken-burns-origin,50% 50%); }
@@ -270,8 +272,11 @@ html:not(.js-loading):not(.js-ready) .mobile-header { visibility: visible; opaci
 .photo-plate--wide img { width: 100%; height: auto; aspect-ratio: 3/2; object-fit: cover; }
 /* 본문 안에서 눌리는 지명 뱃지. 배경 칩을 쓰지 않는다 — 이 화면의 채워진 강조색은 1차 CTA 어휘라
    문장 속에 박히면 광고 배지처럼 읽힌다. 실선 밑줄 + 핀 글리프만으로 어포던스를 만든다.
-   user-select:text 는 필수다. 버튼 기본값(none)이 되면 "길게 눌러 복사" 폴백 안내가 조용히 죽는다. */
-.geo-badge { --geo-pin: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z'/%3E%3C/svg%3E"); display: inline; margin: 0 -.1em; padding: .5em .1em; border: 0; background: none; color: inherit; font: inherit; cursor: pointer; text-decoration: underline solid currentColor 1px; text-underline-offset: .22em; -webkit-user-select: text; user-select: text; -webkit-touch-callout: default; }
+   user-select:text 는 필수다. 버튼 기본값(none)이 되면 "길게 눌러 복사" 폴백 안내가 조용히 죽는다.
+   밑줄은 반드시 longhand 로 쓴다. `text-decoration: underline solid currentColor 1px` 처럼 두께까지
+   넣은 4값 단축은 사파리가 파싱에 실패하면 **선언 전체**를 버려 밑줄이 아예 사라진다 — 아이폰에서만
+   밑줄이 안 보인다는 제보가 이 경로였다. longhand 로 쪼개면 못 읽는 한 줄만 무시되고 밑줄은 남는다. */
+.geo-badge { --geo-pin: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z'/%3E%3C/svg%3E"); display: inline; margin: 0 -.1em; padding: .5em .1em; border: 0; background: none; color: inherit; font: inherit; cursor: pointer; text-decoration: underline; -webkit-text-decoration: underline; text-decoration-color: currentColor; text-decoration-thickness: 1px; text-underline-offset: .22em; -webkit-user-select: text; user-select: text; -webkit-touch-callout: default; }
 .geo-badge::after { content: ''; display: inline-block; width: .62em; height: .62em; margin-left: .22em; background: currentColor; -webkit-mask: var(--geo-pin) center/contain no-repeat; mask: var(--geo-pin) center/contain no-repeat; }
 /* 하단 시트. 세로로 긴 화면에서 중앙 모달은 엄지가 위로 올라가야 한다. showModal 은 top layer라
    헤더(z-index 110) 위에 뜨므로 z-index를 따로 관리하지 않는다. */

@@ -1,5 +1,5 @@
 :root { --ball-navy:#0c1528; --ball-navy-soft:#16223a; --ball-burgundy:#6a2634; --ball-gold:#c1a261; --ball-cream:#f0e4cf; }
-.ball-page { --serif-display:'Cormorant Garamond',Georgia,'Times New Roman',serif; --serif-korean:'Noto Serif KR','Nanum Myeongjo',Batang,serif; --mobile-paper:var(--ball-navy); --mobile-accent:var(--ball-gold); --mobile-line:rgba(215,184,117,.28); --shimmer-solid:var(--ball-gold); --shimmer-gradient:linear-gradient(90deg,#8a6d2f,#f0dca6,#8a6d2f); --progress-height:1px; --progress-color:var(--ball-gold); --progress-end:var(--ball-gold); --lightbox-bg:rgba(6,10,19,.95); --back-paper:var(--ball-cream); --back-ink:var(--ball-navy); color:var(--ball-cream); background:#080e1a; }
+.ball-page { --serif-display:'Cormorant Garamond',Georgia,'Times New Roman',serif; --serif-korean:'Noto Serif KR','Nanum Myeongjo',Batang,serif; --mobile-paper:var(--ball-navy); --mobile-accent:var(--ball-gold); --mobile-line:rgba(215,184,117,.28); --shimmer-solid:var(--ball-gold); --shimmer-gradient:linear-gradient(90deg,#8a6d2f,#f0dca6,#8a6d2f); --progress-height:1px; --progress-color:var(--ball-gold); --lightbox-bg:rgba(6,10,19,.95); --back-paper:var(--ball-cream); --back-ink:var(--ball-navy); color:var(--ball-cream); background:#080e1a; }
 .ball-page .eyebrow { font-size:.82rem; font-weight:600; }
 .ball-paper .paper-panel { color:var(--ball-cream); background:repeating-radial-gradient(ellipse at 50% 0%,transparent 0 8mm,rgba(193,162,97,.035) 8.2mm 8.5mm),var(--ball-navy); }
 .ball-paper .paper-panel::before { border:.55mm double var(--ball-gold); }
@@ -44,9 +44,9 @@
 .text-scale-toggle { margin:0; padding:.35rem .55rem; border:0; border-left:1px solid rgba(193,162,97,.3); background:none; color:rgba(240,228,207,.9); font-family:var(--serif-korean); font-size:.8125rem; letter-spacing:-.04em; white-space:nowrap; text-decoration:underline; text-decoration-color:rgba(193,162,97,.75); text-underline-offset:.28em; }
 .text-scale-toggle:focus-visible { outline:2px solid var(--ball-gold); outline-offset:-3px; }
 /* 퀵 내비. 불투명 남색 — 사진 위에 반투명 바를 얹으면 대비가 무너지고 인앱 WebView가 버벅인다. */
-/* --header-border-h 는 진행바가 이 테두리 아래로 내려가기 위해 알아야 하는 값이다. 테두리 두께를
-   바꾸면 여기도 같이 바꾼다 — 어긋나면 진행바가 테두리에 겹쳐 스크롤 양이 안 보인다. */
-.mobile-header { padding-inline:env(safe-area-inset-left) env(safe-area-inset-right); background:var(--ball-navy); border-bottom:1px solid rgba(193,162,97,.3); --header-border-h:1px; }
+/* 11차: 아래 테두리 두께를 진행바에 알려 주던 변수를 걷었다. 진행바가 화면 맨 아래로 내려가
+   더는 이 테두리와 이웃하지 않는다. */
+.mobile-header { padding-inline:env(safe-area-inset-left) env(safe-area-inset-right); background:var(--ball-navy); border-bottom:1px solid rgba(193,162,97,.3); }
 .quick-nav { background:var(--ball-navy); }
 .ball-mobile .quick-nav a { color:var(--ball-cream); font-family:var(--serif-korean); font-size:.9375rem; letter-spacing:-.03em; }
 .ball-mobile .quick-nav a + a { box-shadow:-1px 0 0 rgba(193,162,97,.18); }
@@ -119,10 +119,8 @@ html.is-large-text .ball-mobile .section-nav a { font-size:.9375rem; letter-spac
 /* 비활성 탭도 읽혀야 한다 — .6 은 실측 4.44:1 로 AA 경계 아래였다. */
 .map-tab { border-bottom:1px solid rgba(12,21,40,.16); color:rgba(12,21,40,.75); font-family:var(--serif-korean); font-size:1rem; font-weight:600; }
 #map-view-diagram:checked ~ .map-tabs .map-tab[for="map-view-diagram"],
-#map-view-naver:checked ~ .map-tabs .map-tab[for="map-view-naver"],
 #map-view-kakao:checked ~ .map-tabs .map-tab[for="map-view-kakao"] { border-bottom:2px solid var(--ball-navy); color:var(--ball-navy); }
 #map-view-diagram:focus-visible ~ .map-tabs .map-tab[for="map-view-diagram"],
-#map-view-naver:focus-visible ~ .map-tabs .map-tab[for="map-view-naver"],
 #map-view-kakao:focus-visible ~ .map-tabs .map-tab[for="map-view-kakao"] { outline:2px solid var(--ball-navy); outline-offset:-3px; }
 /* 약도 속 글자는 이미 5~7px로 앉는다. 카드 안쪽 여백을 없애 표시 폭을 한 픽셀이라도 더 준다. */
 .map-pane--diagram { padding:0 0 .75rem; }
@@ -186,6 +184,15 @@ html.is-large-text .ball-mobile .section-nav a { font-size:.9375rem; letter-spac
 .transit-fold > p strong { color:var(--ball-gold); font-weight:600; }
 .transit-fold > p { padding:0 0 1rem; }
 .transit-fold > p + p { padding-top:.75rem; border-top:1px solid rgba(193,162,97,.14); }
+/* 11차: 접기 넷의 본문 활자를 단계 목록(1.0625rem)에 맞춰 내린다. 전철만 목록이라 한 단 작았고
+   나머지 셋이 커서, 같은 접기인데 서로 다른 문서처럼 보였다(사용자 지적). 큰 쪽을 줄여 맞춘다.
+   금색 <strong> 라벨만 한 단 위에 남긴다 — 강조와 본문이 같은 크기면 강조가 강조로 읽히지 않는다.
+   .ball-mobile 을 붙여야 한다: `.transit-fold > p`(0,1,1)는 `.ball-mobile .directions-list p`(0,2,1)에 진다. */
+.ball-mobile .transit-fold > p { font-size:1.0625rem; }
+.ball-mobile .transit-fold > p strong { font-size:1.1875rem; }
+/* 천안역 경로와 KTX 경로 사이의 구분선. 두 목록이 맞닿아 있으면 어디서 다른 경로가 시작되는지
+   보이지 않는다 — 목록 뒤에 오는 소제목은 p+p 가 아니라 이 선택자만 잡는다. */
+.ball-mobile .transit-fold .transit-steps + .transit-lead { padding-top:1rem; border-top:1px solid rgba(193,162,97,.24); }
 .ball-mobile .transit-fold .transit-note { padding-top:.75rem; border-top:1px solid rgba(193,162,97,.14); color:rgba(240,228,207,.72); font-size:1rem; line-height:1.65; }
 .venue-call { display:flex; width:min(100%,450px); align-items:center; justify-content:center; gap:.4em; margin:1rem auto 0; }
 .ball-mobile .countdown-message { color:var(--ball-gold); font-family:var(--serif-korean); }
@@ -205,6 +212,11 @@ html.is-large-text .ball-mobile .section-nav a { font-size:.9375rem; letter-spac
 html.is-large-text .ball-mobile .mobile-section { font-size:1.40625rem; }
 html.is-large-text .ball-mobile .invitation-copy,
 html.is-large-text .ball-mobile .directions-list p { font-size:1.484375rem; }
+/* 접기 안쪽은 위의 축소 규칙과 같은 비율(×1.25)로 따로 키운다. 이 세 줄이 없으면 큰 글자 모드에서
+   단계 목록만 17px 에 머물러, 방금 맞춰 놓은 활자가 다시 갈라진다. */
+html.is-large-text .ball-mobile .transit-fold > p,
+html.is-large-text .ball-mobile .transit-steps li { font-size:1.328125rem; }
+html.is-large-text .ball-mobile .transit-fold > p strong { font-size:1.484375rem; }
 html.is-large-text .ball-mobile .venue-address { font-size:1.1875rem; letter-spacing:0; white-space:normal; }
 html.is-large-text .ball-mobile .ic-guidance,
 html.is-large-text .ball-mobile .transit-fold summary h3 { font-size:1.328125rem; }
