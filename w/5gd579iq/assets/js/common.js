@@ -325,32 +325,6 @@
   }
 
   /*
-   * 안드로이드에서 .ics 링크는 "다운로드 후 앱 선택"이라는 2단계를 강제한다. Chrome for Android가
-   * 문서화한 intent: URI로 캘린더 앱의 일정 추가 화면을 직접 열어 그 단계를 없앤다.
-   * 스킴 뒤에 host를 붙이면(즉 슬래시 두 개를 쓰면) data URI가 설정되고, 캘린더의 인텐트
-   * 필터는 mimeType만 선언하므로 매칭에 실패한다. 반드시 host 없는 형태여야 한다.
-   * 참고: developer.chrome.com/docs/android/intents · developer.android.com/guide/components/intents-common
-   */
-  function buildCalendarIntent() {
-    const start = new Date(get('event.iso'));
-    if (Number.isNaN(start.getTime())) return '';
-    const end = new Date(start.getTime() + 90 * 60 * 1000);
-    const fallback = new URL('event.ics', window.location.href).href;
-    return `intent:#Intent;${[
-      'action=android.intent.action.INSERT',
-      'type=vnd.android.cursor.dir/event',
-      `S.title=${encodeURIComponent(`${get('couple.korean')} 결혼식`)}`,
-      `S.eventLocation=${encodeURIComponent(`${get('venue.name')} ${get('venue.hall')} ${get('venue.address')}`)}`,
-      ...(get('event.url') ? [`S.description=${encodeURIComponent(get('event.url'))}`] : []),
-      // CalendarContract.EXTRA_EVENT_BEGIN_TIME/END_TIME 의 실제 상수 값은 'beginTime'·'endTime' 이다.
-      // 다른 이름을 쓰면 캘린더 편집기는 열리되 날짜·시간이 비어 있어 하객이 직접 입력해야 한다.
-      `l.beginTime=${start.getTime()}`,
-      `l.endTime=${end.getTime()}`,
-      `S.browser_fallback_url=${encodeURIComponent(fallback)}`,
-    ].join(';')};end`;
-  }
-
-  /*
    * 구글 캘린더는 메모를 details 파라미터로 받는다. 마크업에 박아 두지 않고 여기서 붙이는 이유는,
    * 주소가 배포 때만 채워지는 비공개 값이라 소스에 남으면 안 되기 때문이다(지도 키와 같은 취급).
    */
@@ -363,21 +337,55 @@
     link.href = target.href;
   }
 
+  /*
+   * 12차: 안드로이드에서 주 버튼을 구글 캘린더의 일정 추가 화면으로 보낸다. 라벨도 함께 바꾼다.
+   *
+   * 왜 여기로 가나 — calendar.google.com 이 /.well-known/assetlinks.json 에
+   * com.google.android.calendar 를 handle_all_urls 로 선언한 **검증된 App Link** 다(실측 200).
+   * 그래서 판정이 브라우저가 아니라 안드로이드 OS 층에서 일어나고, 앱이 깔려 있으면 브라우저를
+   * 거치지 않고 일정 추가 화면이 바로 열린다 — 삼성 인터넷에서도 같다. 파일이 끼어들 자리가 없다.
+   *
+   * 왜 intent: 를 걷었나 — Chrome 문서상 intent: 로는 CATEGORY_BROWSABLE 을 선언한 액티비티만
+   * 실행된다. 캘린더의 INSERT 액티비티는 앱 간 호출용이라 그것을 선언하지 않는다. 즉 6차의 그
+   * 경로는 어느 기기에서도 매칭된 적이 없고 늘 browser_fallback_url(.ics 내려받기)로 떨어졌다.
+   * 게다가 800ms 보정 타이머가 같은 내려받기를 한 번 더 걸었다 — 제스처가 끊긴 뒤의 두 번째
+   * 요청은 '자동 다운로드'로 분류돼 차단된다. 한 번 취소하면 다시 눌러도 무반응이던 원인이다.
+   *
+   * 왜 라벨까지 바꾸나 — href 만 맞바꾸면 '캘린더에 저장'이라 적힌 버튼이 구글 캘린더를 연다.
+   * 6차에 맞바꾸기를 막아 둔 이유가 정확히 그 어긋남이었다. 둘을 함께 옮기면 어긋나지 않는다.
+   * iOS·데스크톱은 손대지 않는다: .ics 를 눌렀을 때 일정 미리보기가 바로 뜨는 쪽이 이미 낫다.
+   */
+  function routeCalendarForAndroid() {
+    const agent = navigator.userAgent;
+    if (!/Android/i.test(agent)) return;
+    /*
+     * 카카오톡 인앱 브라우저는 건드리지 않는다. 거기서는 .ics 가 시스템으로 넘어가 캘린더가
+     * 바로 뜨는 것이 실기기에서 확인됐고(사용자 제보), 인앱 WebView 는 App Link 를 가로채지 않아
+     * 같은 주소가 구글 캘린더 **웹**(로그인 요구)으로 열릴 수 있다. 청첩장이 카카오톡으로
+     * 퍼지는 이상 그쪽이 가장 흔한 환경이므로, 되는 것을 확인한 경로는 그대로 둔다.
+     */
+    if (/KAKAOTALK/i.test(agent)) return;
+    const primary = document.querySelector('[data-calendar-ics]');
+    const secondary = document.querySelector('[data-calendar-google]');
+    if (!primary || !secondary) return;
+    const googleUrl = secondary.getAttribute('href');
+    const icsUrl = primary.getAttribute('href');
+    if (!googleUrl || !icsUrl) return;
+    // 링크의 기본 동작 그대로 이동시킨다. preventDefault 후 스크립트가 주소를 바꾸면 그 이동에는
+    // 사용자 제스처가 붙지 않아, 내려받기로 끝나는 경우 두 번째부터 브라우저가 조용히 막는다.
+    // 새 탭으로 열지 않는다: App Link 로 앱이 가로채면 빈 탭만 남고, 앱이 없어 웹으로 떨어질
+    // 때는 뒤로가기 한 번으로 청첩장에 돌아오는 편이 낫다.
+    primary.setAttribute('href', googleUrl);
+    primary.textContent = '구글 캘린더에 저장';
+    secondary.setAttribute('href', icsUrl);
+    secondary.textContent = '.ics 파일 내려받기';
+    secondary.removeAttribute('target');
+    secondary.removeAttribute('rel');
+  }
+
   function initCalendar() {
     addGoogleCalendarNote();
-    const ics = document.querySelector('[data-calendar-ics]');
-    const intentUrl = ics && /Android/i.test(navigator.userAgent) ? buildCalendarIntent() : '';
-    if (intentUrl) {
-      ics.addEventListener('click', (clickEvent) => {
-        clickEvent.preventDefault();
-        // 인텐트를 풀 수 없으면 Chrome이 browser_fallback_url로 보내고, 인앱 브라우저가 intent:를
-        // 통째로 무시하면 이 타이머가 오늘과 같은 다운로드 경로로 되돌린다. 무반응은 발생하지 않는다.
-        window.setTimeout(() => {
-          if (!document.hidden) window.location.href = 'event.ics';
-        }, 800);
-        window.location.href = intentUrl;
-      });
-    }
+    routeCalendarForAndroid();
     document.querySelectorAll('[data-calendar]').forEach((trigger) => {
       trigger.addEventListener('click', () => {
         const start = new Date(get('event.iso'));
