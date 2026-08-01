@@ -105,7 +105,10 @@ html.is-large-text .ball-mobile .section-nav a { font-size:.9375rem; letter-spac
 .calendar-grid__wedding { color:var(--ball-navy); font-weight:600; }
 .calendar-grid__wedding::before { content:''; position:absolute; z-index:-1; inset:50% auto auto 50%; width:2.25rem; height:2.25rem; border-radius:50%; background:var(--ball-gold); transform:translate(-50%,-50%); }
 .ball-mobile .invitation-copy, .ball-mobile .directions-list p { font-size:1.1875rem; letter-spacing:0; }
-.ball-mobile .directions-list h3 { font-size:1.0625rem; }
+/* 12차: 접기 넷의 대제목이 그 안의 소제목보다 작았다(17px vs 19px) — 펼치고 나면 무엇이 상위
+   항목인지 활자로는 알 수 없었다(사용자 지적). 대제목만 올려 세 단(22 / 19 / 17)을 만든다. */
+.ball-mobile .directions-list h3 { font-size:1.375rem; }
+.ball-mobile .directions-list h4 { font-size:1.1875rem; }
 .ball-mobile .venue-address { width:calc(100% + 2rem); margin:0 -1rem; font-size:.95rem; letter-spacing:-.02em; line-height:1.6; word-break:keep-all; }
 .ic-guidance { max-width:430px; margin:1.5rem auto 0; color:var(--ball-cream); font-size:1.0625rem; font-weight:600; line-height:1.65; word-break:keep-all; }
 /* 최종 약도의 교통 문구가 길어져 30mm 고정 행을 15px 넘겼다. 사실을 줄이지 않고 조판만 조인다
@@ -179,8 +182,22 @@ html.is-large-text .ball-mobile .section-nav a { font-size:.9375rem; letter-spac
 .transit-fold summary { display:flex; min-height:44px; align-items:center; justify-content:space-between; gap:.75rem; cursor:pointer; list-style:none; }
 .transit-fold summary::-webkit-details-marker { display:none; }
 .transit-fold summary::after { content:'＋'; flex:0 0 auto; color:var(--ball-gold); }
-.transit-fold[open] summary::after { content:'－'; }
-.ball-mobile .transit-fold summary h3 { margin:0; color:var(--ball-gold); }
+/* 반드시 자식 결합자(>)여야 한다. 후손 선택자로 두면 바깥 접기가 열린 순간 안쪽 접기의
+   summary 까지 함께 잡혀, 닫혀 있는 소제목이 '－'(열림)로 표시된다. */
+.transit-fold[open] > summary::after, .transit-subfold[open] > summary::after { content:'－'; }
+.ball-mobile .transit-fold summary h3, .ball-mobile .transit-subfold summary h4 { margin:0; color:var(--ball-gold); font-weight:600; }
+/* 12차: 전철 안내 안의 두 경로를 각각 접는다. 경계선은 둘 사이에만 둔다 — 첫 줄 위에 그으면
+   바깥 접기의 제목과 붙어 한 겹 더 접힌 것처럼 보인다. */
+.transit-subfold + .transit-subfold { border-top:1px solid rgba(193,162,97,.24); }
+/* 승차 정류장이 둘이라는 사실은 문장이 아니라 배치로 말한다. 상자 둘이 나란히 서면 고를 것이
+   있다는 뜻이고, 노선 번호를 금색으로 끝에 붙여 두 줄이 같은 꼴로 읽히게 한다. */
+.transit-options { display:grid; gap:.35rem; margin:.55rem 0 0; padding:0; list-style:none; }
+/* 이름과 노선을 한 줄에 붙이려 하면 안 된다. 정류장 이름 길이가 서로 달라 한쪽만 접히고(실측:
+   390px 에서 동부광장은 두 줄, 삼도상가는 한 줄), 나란히 놓아 비교시키려던 두 상자가 서로 다른
+   꼴이 된다. 게다가 이름에는 띄어쓰기가 없어 좁은 화면에서 접힐 자리도 없다. 늘 두 줄로 쌓는다. */
+.ball-mobile .transit-options li { display:grid; gap:.15rem; margin:0; padding:.5rem .7rem; border:1px solid rgba(193,162,97,.28); border-radius:.4rem; }
+.transit-options__stop { justify-self:start; }
+.transit-options__buses { color:var(--ball-gold); font-weight:600; }
 .transit-fold > p strong { color:var(--ball-gold); font-weight:600; }
 .transit-fold > p { padding:0 0 1rem; }
 .transit-fold > p + p { padding-top:.75rem; border-top:1px solid rgba(193,162,97,.14); }
@@ -190,9 +207,6 @@ html.is-large-text .ball-mobile .section-nav a { font-size:.9375rem; letter-spac
    .ball-mobile 을 붙여야 한다: `.transit-fold > p`(0,1,1)는 `.ball-mobile .directions-list p`(0,2,1)에 진다. */
 .ball-mobile .transit-fold > p { font-size:1.0625rem; }
 .ball-mobile .transit-fold > p strong { font-size:1.1875rem; }
-/* 천안역 경로와 KTX 경로 사이의 구분선. 두 목록이 맞닿아 있으면 어디서 다른 경로가 시작되는지
-   보이지 않는다 — 목록 뒤에 오는 소제목은 p+p 가 아니라 이 선택자만 잡는다. */
-.ball-mobile .transit-fold .transit-steps + .transit-lead { padding-top:1rem; border-top:1px solid rgba(193,162,97,.24); }
 .ball-mobile .transit-fold .transit-note { padding-top:.75rem; border-top:1px solid rgba(193,162,97,.14); color:rgba(240,228,207,.72); font-size:1rem; line-height:1.65; }
 .venue-call { display:flex; width:min(100%,450px); align-items:center; justify-content:center; gap:.4em; margin:1rem auto 0; }
 .ball-mobile .countdown-message { color:var(--ball-gold); font-family:var(--serif-korean); }
@@ -218,8 +232,10 @@ html.is-large-text .ball-mobile .transit-fold > p,
 html.is-large-text .ball-mobile .transit-steps li { font-size:1.328125rem; }
 html.is-large-text .ball-mobile .transit-fold > p strong { font-size:1.484375rem; }
 html.is-large-text .ball-mobile .venue-address { font-size:1.1875rem; letter-spacing:0; white-space:normal; }
-html.is-large-text .ball-mobile .ic-guidance,
-html.is-large-text .ball-mobile .transit-fold summary h3 { font-size:1.328125rem; }
+html.is-large-text .ball-mobile .ic-guidance { font-size:1.328125rem; }
+/* 대제목·소제목도 같은 비율(×1.25)로 따라와야 세 단이 큰 글자 모드에서도 그대로 유지된다. */
+html.is-large-text .ball-mobile .transit-fold summary h3 { font-size:1.71875rem; }
+html.is-large-text .ball-mobile .transit-subfold summary h4 { font-size:1.484375rem; }
 html.is-large-text .ball-mobile .calendar-grid,
 html.is-large-text .ball-mobile .account-row,
 html.is-large-text .ball-mobile .venue-call { font-size:1.40625rem; }

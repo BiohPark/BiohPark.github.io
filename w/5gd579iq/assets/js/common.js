@@ -21,12 +21,35 @@
      * 단계 안내(전철·KTX)는 배열이다. textContent 로 넣으면 쉼표로 이어 붙은 한 줄이 되어
      * 8차까지의 "몇 단계인지 셀 수 없는 문장"으로 되돌아간다. 목록의 li 로 펼친다.
      */
+    /*
+     * 12차: 단계 하나가 선택지를 들 수 있다({ text, options }). 승차 정류장이 둘이라 그렇다 —
+     * 목록 밖 덧말로 빼 두면 "예외"로 읽히지 지, 고를 것이 있다고 읽히지 않는다.
+     * 정류장 이름은 별도 span 에 담는다: 지명 뱃지가 이름만 감싸고 노선 번호는 남겨야 한다.
+     */
     document.querySelectorAll('[data-field-list]').forEach((node) => {
       const value = get(node.dataset.fieldList);
       if (!Array.isArray(value)) return;
       node.replaceChildren(...value.map((line) => {
         const item = document.createElement('li');
-        item.textContent = line;
+        if (typeof line === 'string') {
+          item.textContent = line;
+          return item;
+        }
+        item.textContent = line.text;
+        const options = document.createElement('ul');
+        options.className = 'transit-options';
+        options.append(...(line.options || []).map((option) => {
+          const choice = document.createElement('li');
+          const stop = document.createElement('span');
+          stop.className = 'transit-options__stop';
+          stop.textContent = option.stop;
+          const buses = document.createElement('span');
+          buses.className = 'transit-options__buses';
+          buses.textContent = option.buses;
+          choice.append(stop, buses);
+          return choice;
+        }));
+        item.append(options);
         return item;
       }));
     });
@@ -494,8 +517,10 @@
       current = place;
       lastTrigger = trigger;
       title.textContent = place.name;
-      naverLink.href = `https://map.naver.com/v5/search/${encodeURIComponent(place.query)}`;
-      kakaoLink.href = `https://map.kakao.com/link/search/${encodeURIComponent(place.query)}`;
+      // 12차: 검색으로 잡히지 않는 곳(버스 정류장)은 데이터가 직접 가진 링크를 쓴다. 검색어를
+      // 아무리 다듬어도 정류장은 장소 색인에 없다 — 없는 것을 계속 검색시키면 하객만 헤맨다.
+      naverLink.href = place.naver || `https://map.naver.com/v5/search/${encodeURIComponent(place.query)}`;
+      kakaoLink.href = place.kakao || `https://map.kakao.com/link/search/${encodeURIComponent(place.query)}`;
       copyButton.textContent = place.copyLabel;
       sheet.showModal?.();
     };

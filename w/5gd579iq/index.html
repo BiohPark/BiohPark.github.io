@@ -135,7 +135,9 @@
           <input class="visually-hidden" type="radio" name="map-view" id="map-view-kakao" data-map-view="kakao">
           <div class="map-tabs">
             <label class="map-tab" for="map-view-diagram">약도</label>
-            <label class="map-tab" for="map-view-kakao">카카오맵</label>
+            <!-- 12차: 라벨은 '지도'다. 이 탭 안에서 나가는 길은 네이버·카카오 둘이므로,
+                 한쪽 앱 이름을 걸면 다른 앱 버튼이 잘못 들어와 있는 것처럼 읽힌다. -->
+            <label class="map-tab" for="map-view-kakao">지도</label>
           </div>
           <div class="map-pane map-pane--diagram" data-map-pane="diagram">
             <img class="route-mobile" src="venue-map.jpg" width="764" height="769" loading="lazy" data-allow-save alt="티웨딩 천안과 독립기념관IC·남천안IC·천안IC 나들목, 천안분기점, 주변 랜드마크와 나들목별 거리를 표시한 예식장 공식 안내도">
@@ -159,27 +161,44 @@
           </details>
           <details class="transit-fold" id="transit-rail" tabindex="-1">
             <summary><h3>전철 · 기차 · KTX</h3></summary>
-            <p class="transit-lead"><strong>천안역에 내리시는 경우</strong></p>
-            <ol class="transit-steps" data-field-list="directions.official.railStation">
-              <li>천안역에서 기차 또는 전철에서 내립니다.</li>
-              <li>1번 출구로 나가 동부광장(온양나드리방면) 정류장으로 갑니다.</li>
-              <li>24, 383, 400번 버스를 탑니다.</li>
-              <li>세광엔리치빌 정류장에서 내립니다.</li>
-            </ol>
-            <p class="transit-lead"><strong>KTX 천안아산역에 내리시는 경우</strong></p>
-            <ol class="transit-steps" data-field-list="directions.official.railKtx">
-              <li>아산역에서 전철을 탑니다.</li>
-              <li>천안역에서 전철에서 내립니다.</li>
-              <li>1번 출구로 나가 동부광장(온양나드리방면) 정류장으로 갑니다.</li>
-              <li>24, 383, 400번 버스를 탑니다.</li>
-              <li>세광엔리치빌 정류장에서 내립니다.</li>
-            </ol>
-            <p class="transit-note" data-field="directions.official.railBus500">500번 버스는 삼도상가(동부광장방면) 정류장에서 타실 수 있습니다.</p>
+            <!-- 12차: 두 경로를 각각 접는다. 펼친 하객이 자기와 상관없는 경로까지 5단계 읽어 내려야
+                 했다 — 여기서 갈리는 것은 순서가 아니라 '어느 역에 내렸는가' 하나다.
+                 접기 안의 접기지만 details 중첩은 표준 동작이고, 바깥 접기가 이미 닫혀 있으므로
+                 하객이 처음 보는 것은 두 줄짜리 선택지다. 정적 마크업은 JS 없이도 그대로 읽힌다. -->
+            <details class="transit-subfold" id="rail-station">
+              <summary><h4>천안역에 내리시는 경우</h4></summary>
+              <ol class="transit-steps" data-field-list="directions.official.railStation">
+                <li>천안역에서 기차 또는 전철에서 내립니다.</li>
+                <li>1번 출구로 나갑니다.</li>
+                <li>아래 두 정류장 중 편하신 곳에서 버스를 탑니다.
+                  <ul class="transit-options">
+                    <li><span class="transit-options__stop">동부광장(온양나드리방면)</span><span class="transit-options__buses">24, 383, 400번</span></li>
+                    <li><span class="transit-options__stop">삼도상가(동부광장방면)</span><span class="transit-options__buses">402, 500번</span></li>
+                  </ul>
+                </li>
+                <li>세광엔리치빌 정류장에서 내립니다.</li>
+              </ol>
+            </details>
+            <details class="transit-subfold" id="rail-ktx">
+              <summary><h4>KTX 천안아산역에 내리시는 경우</h4></summary>
+              <ol class="transit-steps" data-field-list="directions.official.railKtx">
+                <li>아산역에서 전철을 탑니다.</li>
+                <li>천안역에서 전철에서 내립니다.</li>
+                <li>1번 출구로 나갑니다.</li>
+                <li>아래 두 정류장 중 편하신 곳에서 버스를 탑니다.
+                  <ul class="transit-options">
+                    <li><span class="transit-options__stop">동부광장(온양나드리방면)</span><span class="transit-options__buses">24, 383, 400번</span></li>
+                    <li><span class="transit-options__stop">삼도상가(동부광장방면)</span><span class="transit-options__buses">402, 500번</span></li>
+                  </ul>
+                </li>
+                <li>세광엔리치빌 정류장에서 내립니다.</li>
+              </ol>
+            </details>
             <p class="transit-note" data-field="directions.official.railToShuttle">천안역 1번 출구에서는 셔틀버스도 타실 수 있습니다. 승차 위치는 아래 셔틀버스 안내를 봐 주세요.</p>
           </details>
           <details class="transit-fold" id="shuttle" tabindex="-1">
             <summary><h3>셔틀버스</h3></summary>
-            <p class="transit-lead"><strong>운행</strong><br><span data-field="directions.official.shuttleInterval">첫 예식 1시간 전부터 20~30분 간격</span></p>
+            <p><strong>운행</strong><br><span data-field="directions.official.shuttleInterval">첫 예식 1시간 전부터 20~30분 간격</span></p>
             <p><strong>천안터미널</strong><br><span data-field="directions.official.shuttleTerminal">신세계백화점 옆 올리브영 앞 탑승 (스타벅스·애슐리 사이) · 올리브영 천안타운 검색</span></p>
             <p><strong>천안역</strong><br><span data-field="directions.official.shuttleStation">1번 출구 동부광장 건너편 GS25편의점 앞 탑승 · GS25 천안역점 검색</span></p>
             <p class="transit-note" data-field="directions.official.shuttleNote">25인승 버스로 예식에 한해 운행하며, 행사 일정과 비수기 시즌에는 운행이 변동될 수 있습니다.</p>
