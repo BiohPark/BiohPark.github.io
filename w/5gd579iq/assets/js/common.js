@@ -346,24 +346,56 @@
   }
 
   /*
-   * 캘린더 버튼은 어느 브라우저에서든 마크업 그대로 둔다 — [캘린더에 저장]은 .ics,
-   * [Google 캘린더로 열기]는 구글 템플릿. 스크립트가 목적지를 갈아끼우지 않는다(사용자 지시).
+   * 안드로이드에서 캘린더 앱의 '일정 추가' 화면을 그 자리에서 여는 경로. 스킴 뒤에 host 를 붙이면
+   * (슬래시 두 개) data URI 가 설정되고, 캘린더의 인텐트 필터는 mimeType 만 선언하므로 매칭에
+   * 실패한다. 반드시 host 없는 intent: 형태여야 한다.
+   * 참고: developer.chrome.com/docs/android/intents · developer.android.com/guide/components/intents-common
+   */
+  function buildCalendarIntent() {
+    const start = new Date(get('event.iso'));
+    if (Number.isNaN(start.getTime())) return '';
+    const end = new Date(start.getTime() + 90 * 60 * 1000);
+    const fallback = new URL('event.ics', window.location.href).href;
+    return `intent:#Intent;${[
+      'action=android.intent.action.INSERT',
+      'type=vnd.android.cursor.dir/event',
+      `S.title=${encodeURIComponent(`${get('couple.korean')} 결혼식`)}`,
+      `S.eventLocation=${encodeURIComponent(`${get('venue.name')} ${get('venue.hall')} ${get('venue.address')}`)}`,
+      ...(calendarNote() ? [`S.description=${encodeURIComponent(calendarNote())}`] : []),
+      // CalendarContract.EXTRA_EVENT_BEGIN_TIME/END_TIME 의 실제 상수 값은 'beginTime'·'endTime' 이다.
+      // 다른 이름을 쓰면 캘린더 편집기는 열리되 날짜·시간이 비어 있어 하객이 직접 입력해야 한다.
+      `l.beginTime=${start.getTime()}`,
+      `l.endTime=${end.getTime()}`,
+      // 인텐트를 풀 수 없는 브라우저는 이 주소로 스스로 되돌아간다. 폴백은 이것 하나뿐이어야 한다.
+      `S.browser_fallback_url=${encodeURIComponent(fallback)}`,
+    ].join(';')};end`;
+  }
+
+  /*
+   * 12차 정정: intent: 는 죽은 코드가 아니다. BROWSABLE 제약은 **안드로이드가 아니라 브라우저가
+   * 스스로 거는 소독**이다 — 크롬·삼성 인터넷은 Intent.parseUri 뒤에 addCategory(BROWSABLE) 와
+   * setComponent(null) 을 붙이므로 BROWSABLE 이 없는 캘린더 INSERT 액티비티를 실행하지 못한다.
+   * 반면 인앱 WebView 다수는 그 소독 없이 그대로 startActivity 한다. 그래서 카카오톡에서는
+   * 파일 없이 캘린더가 바로 떴고(사용자 실기기), 삼성 인터넷에서만 .ics 내려받기로 떨어졌다.
+   * 6·7차에 이 경로가 실제로 하던 일이 그것이다. 되살린다.
    *
-   * 12차에 안드로이드에서만 주 버튼을 구글 캘린더로 보내 봤지만 되돌렸다. 두 버튼이 같은 곳으로
-   * 가 버려 하객에게는 선택지가 사라진 것으로 보였다.
+   * 다만 그때의 800ms 보정 타이머는 되살리지 않는다. browser_fallback_url 이 이미 같은 일을
+   * 하고 있어서 한 번의 탭에 내려받기가 두 번 걸렸고, 제스처가 끊긴 두 번째 요청이 '자동
+   * 다운로드'로 분류돼 차단됐다 — 한 번 취소하면 다시 눌러도 무반응이던 원인이 그것이다.
+   * 폴백 경로는 하나만 둔다.
    *
-   * 안드로이드에서 .ics 가 내려받기로 빠지는 것은 페이지가 고칠 수 있는 문제가 아니다. 확인한 것:
-   *   - 서버 헤더로 못 바꾼다. GitHub Pages 는 text/calendar 로 내려줄 뿐 Content-Disposition 을
-   *     설정할 수 없고, 크로미움 계열은 렌더할 수 없는 MIME 을 전부 다운로드 매니저로 보낸다.
-   *   - intent: 로 못 넘긴다. Chrome 문서상 CATEGORY_BROWSABLE 을 선언한 액티비티만 실행되는데
-   *     캘린더의 INSERT 는 그것을 선언하지 않는다(6차의 그 경로가 늘 실패하던 이유).
-   *   - navigator.share 로도 못 넘긴다. 크로미움의 Web Share 허용 확장자 목록에 .ics 가 없다
-   *     (share_service_impl.cc — avif·bmp·css·csv·…·txt·wav·webm·webp·xbm 뿐).
-   * iOS 사파리는 .ics 를 그 자리에서 일정 미리보기로 연다. 그래서 정적 마크업이 iOS 에 최선이고,
-   * 안드로이드에서는 '내려받기 → 열기' 2단계가 웹에서 갈 수 있는 끝이다.
+   * 라벨과 마크업의 href 는 건드리지 않는다(사용자 지시). JS 가 죽으면 정적 .ics 링크가 그대로다.
    */
   function initCalendar() {
     addGoogleCalendarNote();
+    const ics = document.querySelector('[data-calendar-ics]');
+    const intentUrl = ics && /Android/i.test(navigator.userAgent) ? buildCalendarIntent() : '';
+    if (intentUrl) {
+      ics.addEventListener('click', (clickEvent) => {
+        clickEvent.preventDefault();
+        window.location.href = intentUrl;
+      });
+    }
     document.querySelectorAll('[data-calendar]').forEach((trigger) => {
       trigger.addEventListener('click', () => {
         const start = new Date(get('event.iso'));
