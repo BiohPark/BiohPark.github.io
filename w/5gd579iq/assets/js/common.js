@@ -346,42 +346,24 @@
   }
 
   /*
-   * '캘린더에 저장'이 눌린 자리에서 바로 저장 화면이 뜨게 하는 것이 이 함수의 전부다.
-   * **라벨은 절대 건드리지 않는다**(사용자 지시): 어느 브라우저에서든 두 버튼은 늘
-   * [캘린더에 저장] · [Google 캘린더로 열기] 다. 옮기는 것은 주 버튼의 목적지 하나뿐이고,
-   * 보조 버튼은 손대지 않는다 — 맞바꾸기가 아니다.
+   * 캘린더 버튼은 어느 브라우저에서든 마크업 그대로 둔다 — [캘린더에 저장]은 .ics,
+   * [Google 캘린더로 열기]는 구글 템플릿. 스크립트가 목적지를 갈아끼우지 않는다(사용자 지시).
    *
-   * 왜 안드로이드만 — 브라우저별로 '즉시 저장'에 닿는 길이 다르다.
-   *   iOS 사파리·데스크톱 : .ics 를 누르면 일정 미리보기가 그 자리에서 뜬다. 이미 최선이라 무변경.
-   *   카카오톡 인앱       : .ics 가 시스템으로 넘어가 캘린더가 바로 뜬다(실기기 확인). 무변경.
-   *   삼성 인터넷·안드 크롬: .ics 가 다운로드 매니저로 빠진다. 여기만 목적지를 바꾼다.
+   * 12차에 안드로이드에서만 주 버튼을 구글 캘린더로 보내 봤지만 되돌렸다. 두 버튼이 같은 곳으로
+   * 가 버려 하객에게는 선택지가 사라진 것으로 보였다.
    *
-   * 왜 구글 캘린더 주소인가 — calendar.google.com 이 /.well-known/assetlinks.json 에
-   * com.google.android.calendar 를 handle_all_urls 로 선언한 **검증된 App Link** 다(실측 200).
-   * 판정이 브라우저가 아니라 안드로이드 OS 층에서 일어나므로, 어느 브라우저로 열든 캘린더 앱의
-   * 일정 추가 화면이 바로 열린다. QR 로 들어온 하객이 기본 브라우저를 쓰더라도 같다.
-   *
-   * 왜 intent: 를 걷었나 — Chrome 문서상 intent: 로는 CATEGORY_BROWSABLE 을 선언한 액티비티만
-   * 실행된다. 캘린더의 INSERT 액티비티는 앱 간 호출용이라 그것을 선언하지 않는다. 즉 6차의 그
-   * 경로는 어느 기기에서도 매칭된 적이 없고 늘 .ics 내려받기로 떨어졌다. 게다가 800ms 보정
-   * 타이머가 같은 내려받기를 한 번 더 걸었다 — 제스처가 끊긴 뒤의 두 번째 요청은 '자동 다운로드'
-   * 로 분류돼 차단된다. 한 번 취소하면 다시 눌러도 무반응이던 원인이다.
+   * 안드로이드에서 .ics 가 내려받기로 빠지는 것은 페이지가 고칠 수 있는 문제가 아니다. 확인한 것:
+   *   - 서버 헤더로 못 바꾼다. GitHub Pages 는 text/calendar 로 내려줄 뿐 Content-Disposition 을
+   *     설정할 수 없고, 크로미움 계열은 렌더할 수 없는 MIME 을 전부 다운로드 매니저로 보낸다.
+   *   - intent: 로 못 넘긴다. Chrome 문서상 CATEGORY_BROWSABLE 을 선언한 액티비티만 실행되는데
+   *     캘린더의 INSERT 는 그것을 선언하지 않는다(6차의 그 경로가 늘 실패하던 이유).
+   *   - navigator.share 로도 못 넘긴다. 크로미움의 Web Share 허용 확장자 목록에 .ics 가 없다
+   *     (share_service_impl.cc — avif·bmp·css·csv·…·txt·wav·webm·webp·xbm 뿐).
+   * iOS 사파리는 .ics 를 그 자리에서 일정 미리보기로 연다. 그래서 정적 마크업이 iOS 에 최선이고,
+   * 안드로이드에서는 '내려받기 → 열기' 2단계가 웹에서 갈 수 있는 끝이다.
    */
-  function routeCalendarForAndroid() {
-    const agent = navigator.userAgent;
-    if (!/Android/i.test(agent) || /KAKAOTALK/i.test(agent)) return;
-    const primary = document.querySelector('[data-calendar-ics]');
-    const googleUrl = document.querySelector('[data-calendar-google]')?.getAttribute('href');
-    if (!primary || !googleUrl) return;
-    // 링크의 기본 동작 그대로 이동시킨다. preventDefault 후 스크립트가 주소를 바꾸면 그 이동에는
-    // 사용자 제스처가 붙지 않아, 내려받기로 끝나는 경우 두 번째부터 브라우저가 조용히 막는다.
-    // 새 탭으로 열지 않는다: App Link 로 앱이 가로채면 빈 탭만 남는다.
-    primary.setAttribute('href', googleUrl);
-  }
-
   function initCalendar() {
     addGoogleCalendarNote();
-    routeCalendarForAndroid();
     document.querySelectorAll('[data-calendar]').forEach((trigger) => {
       trigger.addEventListener('click', () => {
         const start = new Date(get('event.iso'));
