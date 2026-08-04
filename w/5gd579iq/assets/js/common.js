@@ -355,7 +355,6 @@
     const start = new Date(get('event.iso'));
     if (Number.isNaN(start.getTime())) return '';
     const end = new Date(start.getTime() + 90 * 60 * 1000);
-    const fallback = new URL('event.ics', window.location.href).href;
     return `intent:#Intent;${[
       'action=android.intent.action.INSERT',
       'type=vnd.android.cursor.dir/event',
@@ -366,8 +365,13 @@
       // 다른 이름을 쓰면 캘린더 편집기는 열리되 날짜·시간이 비어 있어 하객이 직접 입력해야 한다.
       `l.beginTime=${start.getTime()}`,
       `l.endTime=${end.getTime()}`,
-      // 인텐트를 풀 수 없는 브라우저는 이 주소로 스스로 되돌아간다. 폴백은 이것 하나뿐이어야 한다.
-      `S.browser_fallback_url=${encodeURIComponent(fallback)}`,
+      /*
+       * browser_fallback_url 을 일부러 넣지 않는다. 넣으면 인텐트를 거절한 브라우저가 **하객이
+       * 시키지도 않았는데** .ics 내려받기 확인창을 띄운다 — 초대장을 열었을 뿐인 사람에게 파일
+       * 다운로드를 묻는 것은 부담스럽고, 이름이 event.ics 라 더 그렇다(사용자 지적).
+       * 대신 화면이 그대로 남아 있으면 안내를 열고, 파일은 하객이 직접 누를 때만 받게 한다.
+       * 그 링크는 사용자 제스처라 '자동 다운로드'로 차단되지도 않는다.
+       */
     ].join(';')};end`;
   }
 
@@ -389,10 +393,35 @@
   function initCalendar() {
     addGoogleCalendarNote();
     const ics = document.querySelector('[data-calendar-ics]');
-    const intentUrl = ics && /Android/i.test(navigator.userAgent) ? buildCalendarIntent() : '';
+    const help = document.querySelector('[data-calendar-help]');
+    // 안내(안전망)가 없으면 인텐트도 걸지 않는다. 폴백 주소를 뺐으므로 안내가 유일한 탈출구다.
+    const intentUrl = ics && help && /Android/i.test(navigator.userAgent) ? buildCalendarIntent() : '';
     if (intentUrl) {
+      /*
+       * 파일 이름은 하객이 알아볼 수 있어야 한다. 'event.ics' 는 무엇을 받는지 알려 주는 글자가
+       * 하나도 없어 낯선 파일처럼 보인다(사용자 지적). 이름은 데이터에서 만든다 — 소스 저장소에는
+       * 자리표시자가, 배포본에는 실명이 들어간다. 가운뎃점은 파일명에서 지저분해 공백으로 바꾼다.
+       */
+      const file = help.querySelector('[data-calendar-file]');
+      if (file) file.setAttribute('download', `${String(get('couple.korean')).replace(/\s*·\s*/g, ' ')} 결혼식.ics`);
       ics.addEventListener('click', (clickEvent) => {
         clickEvent.preventDefault();
+        /*
+         * 캘린더 앱이 열리면 이 페이지는 뒤로 물러난다. 그대로 남아 있다는 것은 인텐트가 거절됐다는
+         * 뜻이므로 그때만 안내를 연다 — 카카오톡·아이폰 하객은 이 문구를 영영 보지 않는다.
+         * 이건 6·7차의 그 타이머와 다르다: 저기서는 두 번째 '이동'을 걸어 내려받기가 겹쳤지만,
+         * 여기서는 화면만 갱신하므로 자동 다운로드 판정에 걸릴 것이 없다.
+         */
+        let escaped = false;
+        const markEscaped = () => { escaped = true; };
+        document.addEventListener('visibilitychange', markEscaped, { once: true });
+        window.addEventListener('pagehide', markEscaped, { once: true });
+        window.setTimeout(() => {
+          document.removeEventListener('visibilitychange', markEscaped);
+          window.removeEventListener('pagehide', markEscaped);
+          if (escaped || document.hidden) return;
+          help.hidden = false;
+        }, 1500);
         window.location.href = intentUrl;
       });
     }

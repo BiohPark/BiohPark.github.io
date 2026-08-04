@@ -177,6 +177,12 @@ html.is-large-text .ball-mobile .section-nav a { font-size:.9375rem; letter-spac
 .calendar-actions { display:grid; justify-items:center; gap:.75rem; margin-top:1.5rem; }
 .calendar-primary { min-width:12rem; background:var(--ball-gold); color:var(--ball-navy); border-color:var(--ball-gold); font-weight:600; }
 .calendar-google-link { color:rgba(240,228,207,.78); font-size:.875rem; text-underline-offset:.2em; }
+/* 캘린더가 열리지 않은 하객에게만 뒤늦게 열리는 안내. display 선언이 있으면 [hidden] 이 그것에
+   지므로(HTML 표준) 숨김 규칙을 반드시 함께 둔다 — 이 저장소에서 이미 한 번 밟은 함정이다. */
+.calendar-help { display:grid; justify-items:center; gap:.6rem; width:min(100%,26rem); margin-top:.25rem; padding:1rem; border:1px solid rgba(193,162,97,.3); border-radius:.5rem; }
+.calendar-help[hidden] { display:none; }
+.calendar-help__lead { margin:0; color:var(--ball-gold); font-size:1rem; line-height:1.55; word-break:keep-all; }
+.calendar-help__note { margin:0; color:rgba(240,228,207,.72); font-size:.9375rem; line-height:1.55; word-break:keep-all; }
 .transit-fold { border-top:1px solid var(--mobile-line); }
 .transit-fold:last-child { border-bottom:1px solid var(--mobile-line); }
 .transit-fold summary { display:flex; min-height:44px; align-items:center; justify-content:space-between; gap:.75rem; cursor:pointer; list-style:none; }
@@ -247,6 +253,8 @@ html.is-large-text .ball-mobile .countdown span { font-size:1.0625rem; letter-sp
 html.is-large-text .ball-mobile .text-scale-toggle,
 html.is-large-text .ball-mobile .back-link { font-size:.9375rem; letter-spacing:-.03em; }
 html.is-large-text .ball-mobile .calendar-primary { font-size:1.25rem; }
+html.is-large-text .ball-mobile .calendar-help__lead { font-size:1.25rem; }
+html.is-large-text .ball-mobile .calendar-help__note { font-size:1.171875rem; }
 html.is-large-text .ball-mobile .calendar-google-link,
 html.is-large-text .ball-mobile .venue-actions .action-button { font-size:1.09375rem; }
 html.is-large-text .ball-mobile .venue-actions .action-button { white-space:normal; }

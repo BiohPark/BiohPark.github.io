@@ -113,6 +113,16 @@
         <div class="calendar-actions">
           <a class="action-button calendar-primary" href="event.ics" data-calendar-ics>캘린더에 저장</a>
           <a class="calendar-google-link" data-calendar-google href="https://calendar.google.com/calendar/render?action=TEMPLATE&amp;text=%EB%B0%95%EB%B9%84%EC%98%A4%20%C2%B7%20%EC%A1%B0%EC%98%88%EB%82%98%20%EA%B2%B0%ED%98%BC%EC%8B%9D&amp;dates=20261205T043000Z/20261205T060000Z&amp;location=%ED%8B%B0%EC%9B%A8%EB%94%A9%20%EC%B2%9C%EC%95%88%20%ED%88%AC%EB%8D%B0%EC%9D%B4%ED%99%80" target="_blank" rel="noreferrer">Google 캘린더로 열기</a>
+          <!-- 12차: 캘린더가 열리지 않은 하객에게만 뒤늦게 나타나는 안내. 처음부터 보이면 잘 되는
+               하객(카카오톡·아이폰)에게는 없는 문제를 걱정시키는 글자가 된다. 그래서 hidden 으로
+               두고, 탭 후에도 화면이 그대로면 그때 연다.
+               파일 받기는 여기서만 준다 — 위 버튼이 자동으로 내려받지 않으므로, 하객이 스스로
+               누르기 전에는 확인창이 뜨지 않는다. -->
+          <div class="calendar-help" data-calendar-help hidden>
+            <p class="calendar-help__lead">이 브라우저에서는 캘린더가 바로 열리지 않습니다.</p>
+            <a class="action-button" href="event.ics" data-calendar-file>일정 파일 받기</a>
+            <p class="calendar-help__note">받으신 파일을 누르면 캘린더에 추가됩니다.</p>
+          </div>
         </div>
       </div>
     </section>
